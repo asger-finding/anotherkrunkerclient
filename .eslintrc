@@ -8,7 +8,8 @@
 		"linebreak-style": "off",
 		"max-classes-per-file": "off",
 		"sort-keys": "off",
-		"array-bracket-spacing": [ "error", "always", { "singleValue": false } ]
+		"array-bracket-spacing": [ "error", "always", { "singleValue": false } ],
+		"no-trailing-spaces": [ "error", { "ignoreComments": true } ]
 	},
 	"env": {
 		"browser": true,

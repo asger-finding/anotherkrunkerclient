@@ -1,9 +1,9 @@
-const clientPackage = require('../package.json');
+const pkg = require('../package.json');
 
 module.exports = {
-	CLIENT_AUTHOR: clientPackage.author,
+	CLIENT_AUTHOR: pkg.author,
+	CLIENT_VERSION: pkg.version,
 	CLIENT_REPO: 'asger-finding/anotherkrunkerclient',
-	CLIENT_VERSION: clientPackage.version,
 	ELECTRON_FLAGS: [
 
 		/* Unlock the frame rate */
@@ -34,5 +34,16 @@ module.exports = {
 		frame: false,
 		vibrancy: 'dark',
 		visualEffectState: 'active'
+	},
+	SPLASH_WEBPREFERENCES: {
+
+		// Allow the preload script to add window features
+		contextIsolation: false,
+
+		// Make things play right
+		nodeIntegration: true,
+
+		// Disable developer tools in splash window
+		devTools: false
 	}
 };

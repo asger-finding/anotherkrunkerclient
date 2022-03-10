@@ -12,6 +12,7 @@
          * body padding: 0
          */
 
+         /* https://csscomb.herokuapp.com/online */
         @keyframes fade-in {
             from {
                 opacity: 0;
@@ -21,36 +22,51 @@
                 opacity: 1;
             }
         }
+
         body {
-            --text-color: rgb(239, 239, 239);
-            --margin: 10px;
+            font-family: 'Tahoma', 'Lucida Grande', 'Arial', sans-serif;
+
             margin: 0;
             padding: 0;
-            font-family: 'Tahoma', 'Lucida Grande', 'Arial', sans-serif;
-            color: var(--text-color);
+
             user-select: none;
             animation: fade-in 1.5s ease-in-out;
+
+            color: var(--text-color);
+
+            --text-color: rgb(239, 239, 239);
+            --margin: 10px;
         }
+
+        a[href] {
+            color: #58a6ff;
+        }
+
         #clientLogo {
             position: absolute;
-            width: 65%;
-            left: 50%;
             top: calc(50% - 1.2em);
+            left: 50%;
+
+            width: 65%;
+
             transform: translate(-50%, -50%);
-            filter: drop-shadow(0 0 1.6em rgba(0, 0, 0, 0.7));
+
+            filter: drop-shadow(0 0 1.6em rgba(0, 0, 0, .7));
         }
+
         #clientVersion {
+            font-size: 1.2em;
+
             position: absolute;
             bottom: var(--margin);
             left: var(--margin);
-            font-size: 1.2em;
         }
     </style>
 </head>
 
 <body>
     <img id="clientLogo" src="../assets/akc.svg">
-    <div id='clientVersion'>Loading ...</div>
+    <div id='clientVersion'>An error may have occurred</div> <!-- Static fallback message -->
 </body>
 
 </html>
