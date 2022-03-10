@@ -1,0 +1,33 @@
+{
+  "name": "anotherkrunkerclient",
+  "version": "0.1.0",
+  "description": "Another damn Krunker client",
+  "author": "Asger Finding",
+  "license": "GPLV3",
+  "main": "app/main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "dependencies": {
+    "axios": "^0.26.1",
+    "electron-acrylic-window": "^0.5.11",
+    "electron-log": "^4.4.6",
+    "electron-prompt": "^1.7.0",
+    "electron-store": "^8.0.1",
+    "electron-updater": "4.6.5",
+    "express": "^4.17.3",
+    "register-scheme": "^0.0.2",
+    "uuid": "^8.3.2",
+    "v8-compile-cache": "^2.3.0"
+  },
+  "devDependencies": {
+    "cli-truncate": "^3.1.0",
+    "electron": "^9.4.4",
+    "electron-builder": "^22.14.13",
+    "eslint": "^8.10.0",
+    "eslint-config-raven": "^1.0.3"
+  }
+}
