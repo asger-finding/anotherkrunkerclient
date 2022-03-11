@@ -1,4 +1,7 @@
-const { CLIENT_REPO, CLIENT_VERSION } = require('../constants.js');
+const {
+	CLIENT_REPO,
+	CLIENT_VERSION
+} = require('../constants.js');
 const { get } = require('axios');
 
 module.exports = class {

@@ -1,4 +1,8 @@
-const { ELECTRON_FLAGS, SPLASH_PHYSICAL_PARAMETERS, SPLASH_WEBPREFERENCES } = require('../constants.js');
+const {
+	ELECTRON_FLAGS,
+	SPLASH_PHYSICAL_PARAMETERS,
+	SPLASH_WEBPREFERENCES
+} = require('../constants.js');
 const { setVibrancy } = require('electron-acrylic-window');
 const { BrowserWindow } = require('electron');
 const path = require('path');
