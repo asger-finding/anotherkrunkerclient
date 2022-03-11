@@ -35,13 +35,7 @@ module.exports = {
 		visualEffectState: 'active'
 	},
 	SPLASH_WEBPREFERENCES: {
-
-		/*
-		 * // Allow the preload script to add window features
-		 *contextIsolation: false,
-		 */
-
-		// Make things play right
-		nodeIntegration: true
+		// Allow the preload script to add window features
+		contextIsolation: false
 	}
 };
