@@ -7,9 +7,9 @@ module.exports = class {
 
 	/**
 	 * @param  {Electron.App} app
-	 * @returns {string[][]} Constants.ELECTRON_FLAGS The Constants.js array of flags
+	 * @returns {string[][]} Constants.ELECTRON_FLAGS The constants.js array of flags
 	 * @description
-	 * Get the Electron flags from the Constants.js file and set them in the electron app.  
+	 * Get the Electron flags from the constants.js file and set them in the electron app.  
 	 * Return the flags.
 	 */
 	static setFlags(app) {
@@ -48,7 +48,6 @@ module.exports = class {
 		// Show the splash window when the DOM is fully loaded.
 		splash.webContents.once('dom-ready', () => {
 			splash.show();
-			splash.webContents.openDevTools();
 		});
 
 		return splash;

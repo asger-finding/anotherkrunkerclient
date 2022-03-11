@@ -19,7 +19,7 @@ module.exports = class {
 	 * @returns {string} releaseUrl The release URL from GitHub
 	 * @description
 	 * Get the latest release from GitHub.  
-	 * If none is found, return 0.0.0 to resolve with semver.
+	 * If none is found, return v0.0.0 to resolve with semver.
 	 */
 	static async getLatestGitHubRelease() {
 		const newest = await get(`https://api.github.com/repos/${ CLIENT_REPO }/releases/latest`)
