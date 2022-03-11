@@ -1,3 +1,4 @@
+const { MESSAGE_SPLASH_DONE, SPLASH_DONE_WAIT, MESSAGE_EXIT_CLIENT, MESSAGE_OPEN_SETTINGS } = require('../constants.js');
 const { ipcRenderer, shell } = require('electron');
 const { gt: versionGreater, diff: versionDifference } = require('semver');
 const SplashPreloadUtils = require('../utils/SplashPreloadUtils.js');
@@ -14,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async() => {
 		const { releaseVersion, releaseUrl } = await SplashPreloadUtils.getLatestGitHubRelease();
 
 		if (versionGreater(releaseVersion, clientVersion)) {
-			info(`New version of client is available!`);
+			info(`New version of the client is available!`);
 
 			clientUpdateElement.innerText += `new ${ versionDifference(clientVersion, releaseVersion) } release available: `;
 			clientUpdateElement.append(Object.assign(document.createElement('a'), {
@@ -28,11 +29,15 @@ document.addEventListener('DOMContentLoaded', async() => {
 			clientUpdateElement.innerText += 'up to date';
 		}
 	}
+
+	// Invoke success callback
+	info(`Invoking ${ MESSAGE_SPLASH_DONE } in ${ SPLASH_DONE_WAIT } ms`);
+	setTimeout(() => ipcRenderer.send(MESSAGE_SPLASH_DONE), SPLASH_DONE_WAIT);
 });
 
 window.openSettings = function() {
-	ipcRenderer.send('openSettings');
+	ipcRenderer.send(MESSAGE_EXIT_CLIENT);
 };
 window.exitClient = function() {
-	ipcRenderer.send('exitClient');
+	ipcRenderer.send(MESSAGE_OPEN_SETTINGS);
 };

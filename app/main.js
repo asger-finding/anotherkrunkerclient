@@ -23,13 +23,13 @@ class Initializer {
 	 * @description
 	 * Initialize the app and create the splash window.
 	 */
-	init() {
-		info('Initializing app');
+	async init() {
+		info('INITIALIZING SPLASH WINDOW');
 
 		this.splashWindow = SplashUtils.createSplashWindow();
-		SplashUtils.load(this.splashWindow);
+		await SplashUtils.load(this.splashWindow);
 
-		return true;
+		info('INITIALIZING GAME WINDOW');
 	}
 
 }

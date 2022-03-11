@@ -37,5 +37,9 @@ module.exports = {
 	SPLASH_WEBPREFERENCES: {
 		// Allow the preload script to add window features
 		contextIsolation: false
-	}
+	},
+	SPLASH_DONE_WAIT: 2000,
+	MESSAGE_SPLASH_DONE: 'splash-done',
+	MESSAGE_EXIT_CLIENT: 'exit-client',
+	MESSAGE_OPEN_SETTINGS: 'open-settings'
 };

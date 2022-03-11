@@ -1,10 +1,11 @@
 const {
 	ELECTRON_FLAGS,
 	SPLASH_PHYSICAL_PARAMETERS,
-	SPLASH_WEBPREFERENCES
+	SPLASH_WEBPREFERENCES,
+	MESSAGE_SPLASH_DONE
 } = require('../constants.js');
 const { setVibrancy } = require('electron-acrylic-window');
-const { BrowserWindow } = require('electron');
+const { BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { info } = require('electron-log');
 
@@ -46,7 +47,7 @@ module.exports = class {
 	 * @returns {Electron.BrowserWindow} splash BrowserWindow instance for the splash window
 	 * @description
 	 * Load the splash window with the splash.html file.  
-	 * Show it on dom-ready.
+	 * Show it on dom-ready and callback when everything is done.
 	 */
 	static load(splash) {
 		// Set the vibrancy of the splash window. Silly that you have to do it this way, but it works.
@@ -55,13 +56,21 @@ module.exports = class {
 		splash.loadFile(path.join(__dirname, '../html/splash.html'));
 
 		// Show the splash window when things have all loaded.
-		splash.webContents.once('dom-ready', () => {
-			info('`dom-ready` reached on Splash window');
-			splash.show();
-			splash.webContents.openDevTools({ mode: 'detach' });
-		});
+		return new Promise(resolve => {
+			splash.webContents.once('dom-ready', () => {
+				info('`dom-ready` reached on Splash window');
 
-		return splash;
+				splash.show();
+				splash.webContents.openDevTools({ mode: 'detach' });
+
+				// Resolve the promise when everything is done and dusted in the splash window.
+				ipcMain.on(MESSAGE_SPLASH_DONE, () => {
+					info(`${ MESSAGE_SPLASH_DONE } received`);
+
+					resolve(splash);
+				});
+			});
+		});
 	}
 
 	/**
