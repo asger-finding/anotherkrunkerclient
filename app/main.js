@@ -32,15 +32,12 @@ class Initializer {
 	 */
 	async init() {
 		info('INITIALIZING SPLASH WINDOW');
-		let splashLoadTime = Date.now();
 
+		const splashLoadTime = Date.now();
 		this.splashWindow = SplashUtils.createSplashWindow();
 		await SplashUtils.load(this.splashWindow);
 
-		splashLoadTime = Date.now() - splashLoadTime;
-
-		info(`SPLASH WINDOW LOADED IN ${ splashLoadTime } ms`);
-
+		info(`Splash window done after ${ Date.now() - splashLoadTime } ms`);
 		info('INITIALIZING GAME WINDOW');
 	}
 

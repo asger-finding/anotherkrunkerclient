@@ -33,7 +33,7 @@ module.exports = class {
 				releaseVersion: response.data.tag_name,
 				releaseUrl: response.data.html_url
 			}))
-			.catch(() => ({ releaseVersion: 'v0.0.0' }), warn('No latest GitHub release was found.\nCheck that constants.js is configured correctly.'));
+			.catch(() => ({ releaseVersion: 'v0.0.0' }), warn('No latest GitHub release was found. Check that constants.js is configured correctly.'));
 
 		return newest;
 	}
@@ -45,7 +45,7 @@ module.exports = class {
 	 */
 	static get clientInfoElement() {
 		this._clientInfoElement = this._clientInfoElement
-			|| document.getElementById('client-info');
+		|| document.getElementById('client-info');
 
 		return this._clientInfoElement;
 	}
@@ -57,7 +57,7 @@ module.exports = class {
 	 */
 	static get clientVersionElement() {
 		this._clientVersionElement = this._clientVersionElement
-			|| this.clientInfoElement.getElementsByClassName('version-holder')[0];
+		|| this.clientInfoElement.getElementsByClassName('version-holder')[0];
 
 		return this._clientVersionElement;
 	}
@@ -69,7 +69,7 @@ module.exports = class {
 	 */
 	static get clientUpdateElement() {
 		this._clientUpdateElement = this._clientUpdateElement
-			|| this.clientInfoElement.getElementsByClassName('update-holder')[0];
+		|| this.clientInfoElement.getElementsByClassName('update-holder')[0];
 
 		return this._clientUpdateElement;
 	}
