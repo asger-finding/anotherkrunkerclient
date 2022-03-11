@@ -24,6 +24,8 @@
         }
 
         body {
+            overflow: hidden;
+
             font-family: 'Tahoma', 'Lucida Grande', 'Arial', sans-serif;
 
             margin: 0;
@@ -32,9 +34,9 @@
             user-select: none;
             animation: fade-in 1.5s ease-in-out;
 
-            color: var(--text-color);
+            color: var(--theme-color);
 
-            --text-color: rgb(239, 239, 239);
+            --theme-color: rgb(239, 239, 239);
             --margin: 10px;
         }
 
@@ -51,15 +53,25 @@
 
             transform: translate(-50%, -50%);
 
-            filter: drop-shadow(0 0 1.6em rgba(0, 0, 0, .7));
+            filter: drop-shadow(0 0 24px rgba(0, 0, 0, 0.5));
         }
 
         #clientVersion {
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+            border-top:rgb(255, 255, 255, 0.14) solid 1px;
+
+            width: 100%;
+            min-height: 1.2em;
+
+            background-color:rgba(0, 0, 0, 0.13);
+
             font-size: 1.2em;
 
             position: absolute;
-            bottom: var(--margin);
-            left: var(--margin);
+            bottom: 0;
+            left: 0;
+            padding: var(--margin);
+            padding-top: calc(var(--margin) - 2px);
         }
     </style>
 </head>

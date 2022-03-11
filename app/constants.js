@@ -5,22 +5,21 @@ module.exports = {
 	CLIENT_VERSION: pkg.version,
 	CLIENT_REPO: 'asger-finding/anotherkrunkerclient',
 	ELECTRON_FLAGS: [
-
-		/* Unlock the frame rate */
+		// Unlock the frame rate
 		[ 'disable-frame-rate-limit', null ],
 		[ 'disable-gpu-vsync', null ],
 		[ 'max-gum-fps', '9999' ],
 
-		/* Set the WebGL angle type */
+		// Set the WebGL angle type
 		[ 'use-angle', 'default' ],
 
-		/* Enable WebGL */
+		// Enable WebGL
 		[ 'enable-webgl2-compute-context', null ],
 
-		/* Ensure that GPU-accelerated 2D canvas is used */
+		// Ensure that GPU-accelerated 2D canvas is used
 		[ 'disable-accelerated-2d-canvas', 'false' ],
 
-		/* Require user interaction for audio autoplay */
+		// Require user interaction for audio autoplay
 		[ 'autoplay-policy', 'user-required' ]
 	],
 	SPLASH_PHYSICAL_PARAMETERS: {
@@ -36,7 +35,6 @@ module.exports = {
 		visualEffectState: 'active'
 	},
 	SPLASH_WEBPREFERENCES: {
-
 		// Allow the preload script to add window features
 		contextIsolation: false,
 

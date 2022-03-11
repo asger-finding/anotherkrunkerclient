@@ -1,6 +1,6 @@
 require('v8-compile-cache');
 
-const { SplashUtils } = require('./utils.js');
+const SplashUtils = require('./utils/SplashUtils.js');
 const { app } = require('electron');
 
 class Initiator {

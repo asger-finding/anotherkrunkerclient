@@ -9,7 +9,8 @@
 		"max-classes-per-file": "off",
 		"sort-keys": "off",
 		"array-bracket-spacing": [ "error", "always", { "singleValue": false } ],
-		"no-trailing-spaces": [ "error", { "ignoreComments": true } ]
+		"no-trailing-spaces": [ "error", { "ignoreComments": true } ],
+		"lines-around-comment": [ "warn", { "allowArrayStart": true } ]
 	},
 	"env": {
 		"browser": true,
