@@ -1,9 +1,11 @@
 const pkg = require('../package.json');
 
 module.exports = {
+	CLIENT_NAME: pkg.productName,
 	CLIENT_AUTHOR: pkg.author,
 	CLIENT_VERSION: pkg.version,
 	CLIENT_REPO: 'asger-finding/anotherkrunkerclient',
+	CLIENT_LICENSE_SHORTLINK: 'https://yerl.org/UujT7',
 	ELECTRON_FLAGS: [
 		// Unlock the frame rate
 		[ 'disable-frame-rate-limit', null ],

@@ -1,11 +1,16 @@
 {
   "name": "anotherkrunkerclient",
+  "productName": "anotherkrunkerclient",
   "version": "0.1.0",
   "description": "Another damn Krunker client",
   "author": "Asger Finding",
   "license": "GPLV3",
   "main": "app/main.js",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asger-finding/anotherkrunkerclient.git"
+},
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
