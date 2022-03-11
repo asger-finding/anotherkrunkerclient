@@ -6,6 +6,7 @@ const {
 const { setVibrancy } = require('electron-acrylic-window');
 const { BrowserWindow } = require('electron');
 const path = require('path');
+const { info } = require('electron-log');
 
 module.exports = class {
 
@@ -17,6 +18,8 @@ module.exports = class {
 	 * Return the flags.
 	 */
 	static setFlags(app) {
+		info('Setting Electron flags');
+
 		for (const [ flag, value ] of ELECTRON_FLAGS) app.commandLine.appendSwitch(flag, value);
 		return ELECTRON_FLAGS;
 	}
@@ -27,6 +30,8 @@ module.exports = class {
 	 * Create a new BrowserWindow instance for the splash window.
 	 */
 	static createSplashWindow() {
+		info('Creating new Splash window instance');
+
 		return new BrowserWindow({
 			...SPLASH_PHYSICAL_PARAMETERS,
 			webPreferences: {
@@ -41,7 +46,7 @@ module.exports = class {
 	 * @returns {Electron.BrowserWindow} splash BrowserWindow instance for the splash window
 	 * @description
 	 * Load the splash window with the splash.html file.  
-	 * Show it on dom-ready.  
+	 * Show it on ready-to-show.  
 	 */
 	static load(splash) {
 		// Set the vibrancy of the splash window. Silly that you have to do it this way, but it works.
@@ -49,8 +54,9 @@ module.exports = class {
 		splash.removeMenu();
 		splash.loadFile(path.join(__dirname, '../html/splash.html'));
 
-		// Show the splash window when the DOM is fully loaded.
-		splash.webContents.once('dom-ready', () => {
+		// Show the splash window when things have all loaded.
+		splash.webContents.once('ready-to-show', () => {
+			info('`ready-to-show` reached on Splash window');
 			splash.show();
 			splash.webContents.openDevTools({ mode: 'detach' });
 		});

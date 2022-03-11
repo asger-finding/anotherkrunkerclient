@@ -3,6 +3,7 @@ const {
 	CLIENT_VERSION
 } = require('../constants.js');
 const { get } = require('axios');
+const { info, warn } = require('electron-log');
 
 module.exports = class {
 
@@ -25,12 +26,14 @@ module.exports = class {
 	 * If none is found, return v0.0.0 to resolve with semver.
 	 */
 	static async getLatestGitHubRelease() {
+		info('Getting latest GitHub release...');
+
 		const newest = await get(`https://api.github.com/repos/${ CLIENT_REPO }/releases/latest`)
 			.then(response => ({
 				releaseVersion: response.data.tag_name,
 				releaseUrl: response.data.html_url
 			}))
-			.catch(() => ({ releaseVersion: 'v0.0.0' }));
+			.catch(() => ({ releaseVersion: 'v0.0.0' }), warn('No latest GitHub release was found.\nCheck that constants.js is configured correctly.'));
 
 		return newest;
 	}
@@ -41,7 +44,10 @@ module.exports = class {
 	 * Getter for the client info element on the splash window.
 	 */
 	static get clientInfoElement() {
-		return document.getElementById('client-info');
+		this._clientInfoElement = this._clientInfoElement
+			|| document.getElementById('client-info');
+
+		return this._clientInfoElement;
 	}
 
 	/**
@@ -50,7 +56,10 @@ module.exports = class {
 	 * Getter for the version element on the splash window.
 	 */
 	static get clientVersionElement() {
-		return this.clientInfoElement.getElementsByClassName('version-holder')[0];
+		this._clientVersionElement = this._clientVersionElement
+			|| this.clientInfoElement.getElementsByClassName('version-holder')[0];
+
+		return this._clientVersionElement;
 	}
 
 	/**
@@ -59,7 +68,10 @@ module.exports = class {
 	 * Getter for the version update on the splash window.
 	 */
 	static get clientUpdateElement() {
-		return this.clientInfoElement.getElementsByClassName('update-holder')[0];
+		this._clientUpdateElement = this._clientUpdateElement
+			|| this.clientInfoElement.getElementsByClassName('update-holder')[0];
+
+		return this._clientUpdateElement;
 	}
 
 };
