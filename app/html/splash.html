@@ -2,83 +2,15 @@
 <html>
 
 <head>
-    <style>
-
-        /**
-         * text color: rgb(239, 239, 239)
-         * logo drop shadow: 0, 0, 1.6em rgba(0, 0, 0, 0.7)
-         * logo fill: rgb(255, 255, 255)
-         * body margins: 10px
-         * body padding: 0
-         */
-
-         /* https://csscomb.herokuapp.com/online */
-        @keyframes fade-in {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        body {
-            overflow: hidden;
-
-            font-family: 'Tahoma', 'Lucida Grande', 'Arial', sans-serif;
-
-            margin: 0;
-            padding: 0;
-
-            user-select: none;
-            animation: fade-in 1.5s ease-in-out;
-
-            color: var(--theme-color);
-
-            --theme-color: rgb(239, 239, 239);
-            --margin: 10px;
-        }
-
-        a[href] {
-            color: #58a6ff;
-        }
-
-        #clientLogo {
-            position: absolute;
-            top: calc(50% - 1.2em);
-            left: 50%;
-
-            width: 65%;
-
-            transform: translate(-50%, -50%);
-
-            filter: drop-shadow(0 0 24px rgba(0, 0, 0, 0.5));
-        }
-
-        #clientVersion {
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-            border-top:rgb(255, 255, 255, 0.14) solid 1px;
-
-            width: 100%;
-            min-height: 1.2em;
-
-            background-color:rgba(0, 0, 0, 0.13);
-
-            font-size: 1.2em;
-
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            padding: var(--margin);
-            padding-top: calc(var(--margin) - 2px);
-        }
-    </style>
+    <link rel="stylesheet" href="../styles/splash.css">
 </head>
 
 <body>
-    <img id="clientLogo" src="../assets/akc.svg">
-    <div id='clientVersion'>An error may have occurred</div> <!-- Static fallback message -->
+    <img id="client-logo" src="../assets/akc.svg">
+    <div id='client-info'>
+        <span class="version-holder">An error may have occurred</span>
+        <span class="update-holder"></span>
+    </div>
 </body>
 
 </html>

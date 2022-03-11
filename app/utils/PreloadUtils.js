@@ -33,12 +33,30 @@ module.exports = class {
 	}
 
 	/**
+	 * @returns {HTMLDivElement} clientInfoElement The client info element on the splash window
+	 * @description
+	 * Getter for the client info element on the splash window.
+	 */
+	static get clientInfoElement() {
+		return document.getElementById('client-info');
+	}
+
+	/**
 	 * @returns {HTMLDivElement} clientVersionElement The version element on the splash window
 	 * @description
 	 * Getter for the version element on the splash window.
 	 */
 	static get clientVersionElement() {
-		return document.getElementById('clientVersion');
+		return this.clientInfoElement.getElementsByClassName('version-holder')[0];
+	}
+
+	/**
+	 * @returns {HTMLDivElement} clientUpdateElement The version update on the splash window
+	 * @description
+	 * Getter for the version update on the splash window.
+	 */
+	static get clientUpdateElement() {
+		return this.clientInfoElement.getElementsByClassName('update-holder')[0];
 	}
 
 };

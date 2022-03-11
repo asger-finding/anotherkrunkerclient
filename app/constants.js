@@ -39,9 +39,6 @@ module.exports = {
 		contextIsolation: false,
 
 		// Make things play right
-		nodeIntegration: true,
-
-		// Disable developer tools in splash window
-		devTools: false
+		nodeIntegration: true
 	}
 };

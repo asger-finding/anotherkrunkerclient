@@ -48,6 +48,7 @@ module.exports = class {
 		// Show the splash window when the DOM is fully loaded.
 		splash.webContents.once('dom-ready', () => {
 			splash.show();
+			splash.webContents.openDevTools({ mode: 'detach' });
 		});
 
 		return splash;
@@ -61,7 +62,7 @@ module.exports = class {
 	 */
 	static setVersionElementAsClientVersion() {
 		const version = this.getClientVersion();
-		const versionElement = document.getElementById('clientVersion');
+		const versionElement = document.getElementById('client-info');
 
 		if (versionElement instanceof HTMLElement) versionElement.innerText = `v${ version }`;
 

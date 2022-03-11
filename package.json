@@ -29,6 +29,9 @@
     "electron": "^9.4.4",
     "electron-builder": "^22.14.13",
     "eslint": "^8.10.0",
-    "eslint-config-raven": "^1.0.3"
+    "eslint-config-raven": "^1.0.3",
+    "stylelint": "^14.5.3",
+    "stylelint-config-idiomatic-order": "^8.1.0",
+    "stylelint-config-standard": "^25.0.0"
   }
 }
