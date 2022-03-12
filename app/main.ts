@@ -14,9 +14,9 @@ This is free software, and you are welcome to redistribute it under certain
 conditions; read ${ CLIENT_LICENSE_SHORTLINK } for more details.\n`);
 
 class Initializer {
+
 	private splashWindow: Electron.BrowserWindow | undefined;
-	private flags: string[][];
-	
+
 	/**
 	 * @description
 	 * Set the Electron flags before initializing the windows.
@@ -24,7 +24,7 @@ class Initializer {
 	public constructor() {
 		info('Constructing initializer class');
 
-		this.flags = SplashUtils.setFlags(app);
+		SplashUtils.setFlags(app);
 	}
 
 	/**

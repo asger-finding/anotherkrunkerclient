@@ -50,7 +50,7 @@ a[href] {
     width: 100%;
     min-height: 1.2em;
     padding: var(--margin);
-    padding-top: calc(var(--margin) - 2px);
+    padding-top: calc(var(--margin) - 3px);
     border-top: rgb(255 255 255 / 14%) solid 1px;
     background-color: rgb(0 0 0 / 13%);
     box-shadow: 0 0 8px rgb(0 0 0 / 10%);

@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async() => {
 		const { releaseVersion, releaseUrl }: GitHubReleaseData = await SplashPreloadUtils.getLatestGitHubRelease();
 
 		if (versionGreater(releaseVersion, clientVersion)) {
-			info(`New version of the client is available!`);
+			info('New version of the client is available!');
 
 			clientUpdateElement.innerText += `new ${ versionDifference(clientVersion, releaseVersion) } release available: `;
 			clientUpdateElement.append(Object.assign(document.createElement('a'), {
