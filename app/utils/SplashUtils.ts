@@ -24,7 +24,7 @@ module.exports = class {
 		info('Setting Electron flags');
 
 		for (const [ flag, value ] of ELECTRON_FLAGS) app.commandLine.appendSwitch(flag, value);
-		return ELECTRON_FLAGS;
+		return <string[][]>ELECTRON_FLAGS;
 	}
 
 	/**

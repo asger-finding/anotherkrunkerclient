@@ -1,4 +1,4 @@
-import Electron = require('electron');
+import { GitHubReleaseData } from '../akc.d';
 
 const {
 	CLIENT_REPO,
@@ -16,7 +16,7 @@ module.exports = class {
 	 * Get the current version of the client from the package.
 	 */
 	public static getClientVersion() {
-		const version = CLIENT_VERSION;
+		const version: string = CLIENT_VERSION;
 		return version;
 	}
 
@@ -30,12 +30,12 @@ module.exports = class {
 	public static async getLatestGitHubRelease() {
 		info('Getting latest GitHub release...');
 
-		const newest = await get(`https://api.github.com/repos/${ CLIENT_REPO }/releases/latest`)
+		const newest: GitHubReleaseData = await get(`https://api.github.com/repos/${ CLIENT_REPO }/releases/latest`)
 			.then((response: { data: { tag_name: string; html_url: string; } }) => ({
 				releaseVersion: response.data.tag_name,
 				releaseUrl: response.data.html_url
 			}))
-			.catch(() => ({ releaseVersion: 'v0.0.0' }), warn('No latest GitHub release was found. Check that constants.js is configured correctly.'));
+			.catch(() => <GitHubReleaseData>{ releaseVersion: 'v0.0.0', releaseUrl: null }, warn('No latest GitHub release was found. Check that constants.js is configured correctly.'));
 
 		return newest;
 	}
@@ -46,7 +46,7 @@ module.exports = class {
 	 * Getter for the client info element on the splash window.
 	 */
 	public static get clientInfoElement() {
-		return document.getElementById('client-info');
+		return <HTMLDivElement> document.getElementById('client-info');
 	}
 
 	/**
@@ -55,7 +55,7 @@ module.exports = class {
 	 * Getter for the version element on the splash window.
 	 */
 	public static get clientVersionElement() {
-		return this.clientInfoElement.getElementsByClassName('version-holder')[0];
+		return <HTMLDivElement> this.clientInfoElement.getElementsByClassName('version-holder')[0];
 	}
 
 	/**
@@ -64,7 +64,7 @@ module.exports = class {
 	 * Getter for the version update on the splash window.
 	 */
 	public static get clientUpdateElement() {
-		return this.clientInfoElement.getElementsByClassName('update-holder')[0];
+		return <HTMLDivElement> this.clientInfoElement.getElementsByClassName('update-holder')[0];
 	}
 
 };

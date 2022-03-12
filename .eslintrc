@@ -18,11 +18,12 @@
 		"@typescript-eslint/indent": [ "error", "tab" ],
 		"@typescript-eslint/comma-dangle": [ "error", "never" ],
 		"@typescript-eslint/space-before-function-paren": [ "error", "never" ],
-		"indent": [ "error", "tab" ],
+		"@typescript-eslint/no-var-requires": "off",
 		"no-tabs": "off",
 		"linebreak-style": "off",
 		"max-classes-per-file": "off",
 		"sort-keys": "off",
+		"indent": [ "error", "tab" ],
 		"array-bracket-spacing": ["error", "always", {
 			"singleValue": false
 		}],

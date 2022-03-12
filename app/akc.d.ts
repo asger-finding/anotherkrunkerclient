@@ -2,8 +2,8 @@ export {};
 
 declare global {
 	export interface Window {
-		openSettings: Function;
-		exitClient: Function;
+		openSettings: () => null;
+		exitClient: () => null;
 	}
 }
 

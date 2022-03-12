@@ -1,6 +1,4 @@
-import Electron = require('electron');
 import 'module-alias/register';
-
 import { GitHubReleaseData } from '../akc.d';
 
 const { MESSAGE_SPLASH_DONE, SPLASH_DONE_WAIT, MESSAGE_EXIT_CLIENT, MESSAGE_OPEN_SETTINGS } = require('@constants');
@@ -41,8 +39,10 @@ document.addEventListener('DOMContentLoaded', async() => {
 });
 
 window.openSettings = function() {
-	return ipcRenderer.send(MESSAGE_EXIT_CLIENT);
+	ipcRenderer.send(MESSAGE_EXIT_CLIENT);
+	return null;
 };
 window.exitClient = function() {
-	return ipcRenderer.send(MESSAGE_OPEN_SETTINGS);
+	ipcRenderer.send(MESSAGE_OPEN_SETTINGS);
+	return null;
 };
