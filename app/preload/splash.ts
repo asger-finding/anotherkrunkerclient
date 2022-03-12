@@ -1,4 +1,9 @@
-const { MESSAGE_SPLASH_DONE, SPLASH_DONE_WAIT, MESSAGE_EXIT_CLIENT, MESSAGE_OPEN_SETTINGS } = require('../constants.js');
+import Electron = require('electron');
+import 'module-alias/register';
+
+import { GitHubReleaseData } from '../akc.d';
+
+const { MESSAGE_SPLASH_DONE, SPLASH_DONE_WAIT, MESSAGE_EXIT_CLIENT, MESSAGE_OPEN_SETTINGS } = require('@constants');
 const { ipcRenderer, shell } = require('electron');
 const { gt: versionGreater, diff: versionDifference } = require('semver');
 const SplashPreloadUtils = require('../utils/SplashPreloadUtils.js');
@@ -12,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async() => {
 	if (clientVersionElement && clientUpdateElement) {
 		clientVersionElement.innerText = clientVersion;
 
-		const { releaseVersion, releaseUrl } = await SplashPreloadUtils.getLatestGitHubRelease();
+		const { releaseVersion, releaseUrl }: GitHubReleaseData = await SplashPreloadUtils.getLatestGitHubRelease();
 
 		if (versionGreater(releaseVersion, clientVersion)) {
 			info(`New version of the client is available!`);
@@ -36,8 +41,8 @@ document.addEventListener('DOMContentLoaded', async() => {
 });
 
 window.openSettings = function() {
-	ipcRenderer.send(MESSAGE_EXIT_CLIENT);
+	return ipcRenderer.send(MESSAGE_EXIT_CLIENT);
 };
 window.exitClient = function() {
-	ipcRenderer.send(MESSAGE_OPEN_SETTINGS);
+	return ipcRenderer.send(MESSAGE_OPEN_SETTINGS);
 };

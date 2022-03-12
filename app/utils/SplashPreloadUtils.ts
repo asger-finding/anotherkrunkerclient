@@ -1,7 +1,9 @@
+import Electron = require('electron');
+
 const {
 	CLIENT_REPO,
 	CLIENT_VERSION
-} = require('../constants.js');
+} = require('@constants');
 const { get } = require('axios');
 const { info, warn } = require('electron-log');
 
@@ -13,7 +15,7 @@ module.exports = class {
 	 * @description
 	 * Get the current version of the client from the package.
 	 */
-	static getClientVersion() {
+	public static getClientVersion() {
 		const version = CLIENT_VERSION;
 		return version;
 	}
@@ -25,11 +27,11 @@ module.exports = class {
 	 * Get the latest release from GitHub.  
 	 * If none is found, return v0.0.0 to resolve with semver.
 	 */
-	static async getLatestGitHubRelease() {
+	public static async getLatestGitHubRelease() {
 		info('Getting latest GitHub release...');
 
 		const newest = await get(`https://api.github.com/repos/${ CLIENT_REPO }/releases/latest`)
-			.then(response => ({
+			.then((response: { data: { tag_name: string; html_url: string; } }) => ({
 				releaseVersion: response.data.tag_name,
 				releaseUrl: response.data.html_url
 			}))
@@ -43,11 +45,8 @@ module.exports = class {
 	 * @description
 	 * Getter for the client info element on the splash window.
 	 */
-	static get clientInfoElement() {
-		this._clientInfoElement = this._clientInfoElement
-		|| document.getElementById('client-info');
-
-		return this._clientInfoElement;
+	public static get clientInfoElement() {
+		return document.getElementById('client-info');
 	}
 
 	/**
@@ -55,11 +54,8 @@ module.exports = class {
 	 * @description
 	 * Getter for the version element on the splash window.
 	 */
-	static get clientVersionElement() {
-		this._clientVersionElement = this._clientVersionElement
-		|| this.clientInfoElement.getElementsByClassName('version-holder')[0];
-
-		return this._clientVersionElement;
+	public static get clientVersionElement() {
+		return this.clientInfoElement.getElementsByClassName('version-holder')[0];
 	}
 
 	/**
@@ -67,11 +63,8 @@ module.exports = class {
 	 * @description
 	 * Getter for the version update on the splash window.
 	 */
-	static get clientUpdateElement() {
-		this._clientUpdateElement = this._clientUpdateElement
-		|| this.clientInfoElement.getElementsByClassName('update-holder')[0];
-
-		return this._clientUpdateElement;
+	public static get clientUpdateElement() {
+		return this.clientInfoElement.getElementsByClassName('update-holder')[0];
 	}
 
 };

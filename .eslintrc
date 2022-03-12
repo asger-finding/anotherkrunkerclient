@@ -4,6 +4,10 @@
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
+	"ignorePatterns": [
+		"node_modules/",
+		"build/"
+	],
 	"rules": {
 		"linebreak-style": "off",
 		"max-classes-per-file": "off",

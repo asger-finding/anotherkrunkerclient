@@ -1,9 +1,11 @@
+import Electron = require('electron');
+
 const {
 	ELECTRON_FLAGS,
 	SPLASH_PHYSICAL_PARAMETERS,
 	SPLASH_WEBPREFERENCES,
 	MESSAGE_SPLASH_DONE
-} = require('../constants.js');
+} = require('@constants');
 const { setVibrancy } = require('electron-acrylic-window');
 const { BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
@@ -18,7 +20,7 @@ module.exports = class {
 	 * Get the Electron flags from the constants.js file and set them in the electron app.  
 	 * Return the flags.
 	 */
-	static setFlags(app) {
+	public static setFlags(app: Electron.App) {
 		info('Setting Electron flags');
 
 		for (const [ flag, value ] of ELECTRON_FLAGS) app.commandLine.appendSwitch(flag, value);
@@ -30,7 +32,7 @@ module.exports = class {
 	 * @description
 	 * Create a new BrowserWindow instance for the splash window.
 	 */
-	static createSplashWindow() {
+	public static createSplashWindow() {
 		info('Creating new Splash window instance');
 
 		return new BrowserWindow({
@@ -49,7 +51,7 @@ module.exports = class {
 	 * Load the splash window with the splash.html file.  
 	 * Show it on dom-ready and callback when everything is done.
 	 */
-	static load(splash) {
+	public static load(splash: Electron.BrowserWindow) {
 		// Set the vibrancy of the splash window. Silly that you have to do it this way, but it works.
 		setVibrancy(splash, 'dark');
 		splash.removeMenu();
@@ -71,21 +73,6 @@ module.exports = class {
 				});
 			});
 		});
-	}
-
-	/**
-	 * @returns {HTMLDivElement} versionElement The splash version element in DOM
-	 * @description
-	 * Get the client version and the version element.  
-	 * Set the innerText of version element to the client version.
-	 */
-	static setVersionElementAsClientVersion() {
-		const version = this.getClientVersion();
-		const versionElement = document.getElementById('client-info');
-
-		if (versionElement instanceof HTMLElement) versionElement.innerText = `v${ version }`;
-
-		return versionElement;
 	}
 
 };

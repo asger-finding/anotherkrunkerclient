@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "outDir": "./build",
+        "baseUrl": "./app"
+    },
+    "include": [
+        "./app/**/*"
+    ]
+}

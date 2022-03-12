@@ -1,3 +1,5 @@
+import Electron = require('electron');
+import 'module-alias/register';
 require('v8-compile-cache');
 
 const { CLIENT_NAME, CLIENT_AUTHOR, CLIENT_LICENSE_SHORTLINK } = require('./constants');
@@ -12,17 +14,17 @@ This is free software, and you are welcome to redistribute it under certain
 conditions; read ${ CLIENT_LICENSE_SHORTLINK } for more details.\n`);
 
 class Initializer {
-
+	private splashWindow: Electron.BrowserWindow | undefined;
+	private flags: string[][];
+	
 	/**
-	 * @param  {Electron.App} _app
 	 * @description
 	 * Set the Electron flags before initializing the windows.
 	 */
-	constructor(_app) {
+	public constructor() {
 		info('Constructing initializer class');
 
-		this.app = _app;
-		this.flags = SplashUtils.setFlags(this.app);
+		this.flags = SplashUtils.setFlags(app);
 	}
 
 	/**
@@ -30,7 +32,7 @@ class Initializer {
 	 * @description
 	 * Initialize the app and create the splash window.
 	 */
-	async init() {
+	public async init() {
 		info('INITIALIZING SPLASH WINDOW');
 
 		const splashLoadTime = Date.now();
@@ -43,7 +45,7 @@ class Initializer {
 
 }
 
-const client = new Initializer(app);
-client.app.on('ready', () => {
+const client = new Initializer();
+app.on('ready', () => {
 	client.init();
 });
