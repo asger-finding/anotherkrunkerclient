@@ -22,8 +22,10 @@ body {
     padding: 0;
     margin: 0;
     animation: fade-in 1.5s ease-in-out;
+    background-color: rgb(34 35 37 / 70%);
     color: var(--theme-color);
     font-family: Tahoma, "Lucida Grande", Arial, sans-serif;
+    pointer-events: none;
     user-select: none;
 
     --theme-color: rgb(239 239 239);
@@ -39,7 +41,9 @@ a[href] {
     top: calc(50% - 1.2em);
     left: 50%;
     width: 63%;
-    filter: drop-shadow(0 0 24px rgb(0 0 0 / 50%));
+    filter:
+        drop-shadow(2px 2px 6px rgb(0 0 0 / 50%))
+        drop-shadow(0 0 24px rgb(0 0 0 / 50%));
     transform: translate(-50%, -50%);
 }
 
@@ -52,8 +56,8 @@ a[href] {
     padding: var(--margin);
     padding-top: calc(var(--margin) - 3px);
     border-top: rgb(255 255 255 / 14%) solid 1px;
-    background-color: rgb(0 0 0 / 13%);
-    box-shadow: 0 0 8px rgb(0 0 0 / 10%);
+    background-color: rgb(0 0 0 / 18%);
+    box-shadow: 0 0 10px rgb(0 0 0 / 25%);
     font-size: 1.2em;
 }
 

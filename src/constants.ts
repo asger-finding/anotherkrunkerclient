@@ -32,9 +32,7 @@ module.exports = {
 		fullscreenable: false,
 		movable: false,
 		center: true,
-		frame: false,
-		vibrancy: 'dark',
-		visualEffectState: 'active'
+		frame: false
 	},
 	SPLASH_WEBPREFERENCES: {
 		// Allow the preload script to add window features

@@ -3,7 +3,7 @@ import 'module-alias/register';
 require('v8-compile-cache');
 
 const { CLIENT_NAME, CLIENT_AUTHOR, CLIENT_LICENSE_PERMALINK } = require('./constants');
-const SplashUtils = require('./utils/SplashUtils.js');
+const SplashUtils = require('./utils/SplashUtils');
 const { app } = require('electron');
 const { info } = require('electron-log');
 

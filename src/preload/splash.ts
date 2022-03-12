@@ -4,7 +4,7 @@ import { GitHubReleaseData } from '../akc';
 const { MESSAGE_SPLASH_DONE, SPLASH_DONE_WAIT, MESSAGE_EXIT_CLIENT, MESSAGE_OPEN_SETTINGS } = require('@constants');
 const { ipcRenderer, shell } = require('electron');
 const { gt: versionGreater, diff: versionDifference } = require('semver');
-const SplashPreloadUtils = require('../utils/SplashPreloadUtils.js');
+const SplashPreloadUtils = require('../utils/SplashPreloadUtils');
 const { info } = require('electron-log');
 
 document.addEventListener('DOMContentLoaded', async() => {

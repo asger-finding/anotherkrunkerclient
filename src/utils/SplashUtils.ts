@@ -39,7 +39,7 @@ module.exports = class {
 			...SPLASH_PHYSICAL_PARAMETERS,
 			webPreferences: {
 				...SPLASH_WEBPREFERENCES,
-				preload: path.join(__dirname, '../preload/splash.js')
+				preload: path.join(__dirname, '../preload/splash')
 			}
 		});
 	}
@@ -53,7 +53,10 @@ module.exports = class {
 	 */
 	public static load(splash: Electron.BrowserWindow) : Promise<Electron.BrowserWindow> {
 		// Set the vibrancy of the splash window (again)
-		setVibrancy(splash, 'dark');
+		setVibrancy(splash, {
+			theme: 'dark',
+			effect: 'blur'
+		});
 		splash.removeMenu();
 		splash.loadFile(path.join(__dirname, '../html/splash.html'));
 
