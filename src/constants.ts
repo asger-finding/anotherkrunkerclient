@@ -5,7 +5,7 @@ module.exports = {
 	CLIENT_AUTHOR: pkg.author,
 	CLIENT_VERSION: pkg.version,
 	CLIENT_REPO: 'asger-finding/anotherkrunkerclient',
-	CLIENT_LICENSE_SHORTLINK: 'https://yerl.org/UujT7',
+	CLIENT_LICENSE_PERMALINK: 'https://yerl.org/YIDx5',
 	ELECTRON_FLAGS: [
 		// Unlock the frame rate
 		[ 'disable-frame-rate-limit', null ],

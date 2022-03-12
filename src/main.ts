@@ -2,7 +2,7 @@ import Electron = require('electron');
 import 'module-alias/register';
 require('v8-compile-cache');
 
-const { CLIENT_NAME, CLIENT_AUTHOR, CLIENT_LICENSE_SHORTLINK } = require('./constants');
+const { CLIENT_NAME, CLIENT_AUTHOR, CLIENT_LICENSE_PERMALINK } = require('./constants');
 const SplashUtils = require('./utils/SplashUtils.js');
 const { app } = require('electron');
 const { info } = require('electron-log');
@@ -11,7 +11,7 @@ const { info } = require('electron-log');
 console.log(`${ CLIENT_NAME }  Copyright (C) 2022  ${ CLIENT_AUTHOR }
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under certain
-conditions; read ${ CLIENT_LICENSE_SHORTLINK } for more details.\n`);
+conditions; read ${ CLIENT_LICENSE_PERMALINK } for more details.\n`);
 
 class Initializer {
 
