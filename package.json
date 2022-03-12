@@ -12,14 +12,14 @@
   },
   "scripts": {
     "start": "yarn compile && electron ./build/main.js",
-    "compile": "tsc && copyfiles -u 1 -e app/**/*.ts -e app/**/*.ts app/**/* build/",
+    "compile": "tsc && copyfiles -u 1 -e src/**/*.ts -e src/**/*.ts src/**/* build/",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "lint": "yarn eslint . --ext .ts,.js",
-    "lintcss": "yarn stylelint app/**/*.css"
+    "lintcss": "yarn stylelint src/**/*.css"
   },
   "_moduleAliases": {
-    "@constants": "./app/constants.ts"
+    "@constants": "./src/constants.ts"
   },
   "dependencies": {
     "axios": "^0.26.1",

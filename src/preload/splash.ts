@@ -1,5 +1,5 @@
 import 'module-alias/register';
-import { GitHubReleaseData } from '../akc.d';
+import { GitHubReleaseData } from '../akc';
 
 const { MESSAGE_SPLASH_DONE, SPLASH_DONE_WAIT, MESSAGE_EXIT_CLIENT, MESSAGE_OPEN_SETTINGS } = require('@constants');
 const { ipcRenderer, shell } = require('electron');
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async() => {
 
 		const { releaseVersion, releaseUrl }: GitHubReleaseData = await SplashPreloadUtils.getLatestGitHubRelease();
 
-		if (versionGreater(releaseVersion, clientVersion)) {
+		if (typeof releaseUrl === 'string' && versionGreater(releaseVersion, clientVersion)) {
 			info('New version of the client is available!');
 
 			clientUpdateElement.innerText += `new ${ versionDifference(clientVersion, releaseVersion) } release available: `;

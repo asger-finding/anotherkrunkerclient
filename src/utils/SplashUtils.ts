@@ -15,16 +15,16 @@ module.exports = class {
 
 	/**
 	 * @param  {Electron.App} app
-	 * @returns {string[][]} Constants.ELECTRON_FLAGS The constants.js array of flags
+	 * @returns {Array<Array<string>>} Constants.ELECTRON_FLAGS The constants.js array of flags
 	 * @description
 	 * Get the Electron flags from the constants.js file and set them in the electron app.  
 	 * Return the flags.
 	 */
-	public static setFlags(app: Electron.App) {
+	public static setFlags(app: Electron.App) : Array<Array<string>> {
 		info('Setting Electron flags');
 
 		for (const [ flag, value ] of ELECTRON_FLAGS) app.commandLine.appendSwitch(flag, value);
-		return <string[][]>ELECTRON_FLAGS;
+		return <Array<Array<string>>>ELECTRON_FLAGS;
 	}
 
 	/**
@@ -32,7 +32,7 @@ module.exports = class {
 	 * @description
 	 * Create a new BrowserWindow instance for the splash window.
 	 */
-	public static createSplashWindow() {
+	public static createSplashWindow() : Electron.BrowserWindow {
 		info('Creating new Splash window instance');
 
 		return new BrowserWindow({
@@ -46,13 +46,13 @@ module.exports = class {
 
 	/**
 	 * @param  {Electron.BrowserWindow} splash BrowserWindow instance for the splash window
-	 * @returns {Electron.BrowserWindow} splash BrowserWindow instance for the splash window
+	 * @returns {Promise<Electron.BrowserWindow>} splash Promised BrowserWindow instance for the splash window
 	 * @description
 	 * Load the splash window with the splash.html file.  
 	 * Show it on dom-ready and callback when everything is done.
 	 */
-	public static load(splash: Electron.BrowserWindow) {
-		// Set the vibrancy of the splash window. Silly that you have to do it this way, but it works.
+	public static load(splash: Electron.BrowserWindow) : Promise<Electron.BrowserWindow> {
+		// Set the vibrancy of the splash window (again)
 		setVibrancy(splash, 'dark');
 		splash.removeMenu();
 		splash.loadFile(path.join(__dirname, '../html/splash.html'));

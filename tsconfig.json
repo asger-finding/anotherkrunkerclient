@@ -2,11 +2,15 @@
     "compilerOptions": {
         "target": "esnext",
         "module": "commonjs",
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
         "noImplicitAny": true,
         "outDir": "./build",
-        "baseUrl": "./app"
+        "baseUrl": "./src"
     },
     "include": [
-        "./app/**/*"
+        "./src"
     ]
 }

@@ -28,11 +28,11 @@ class Initializer {
 	}
 
 	/**
-	 * @returns {Boolean} success Whether the app was successfully initialized
+	 * @returns {Promise<boolean>} success Whether the app was successfully initialized
 	 * @description
 	 * Initialize the app and create the splash window.
 	 */
-	public async init() {
+	public async init() : Promise<boolean> {
 		info('INITIALIZING SPLASH WINDOW');
 
 		const splashLoadTime = Date.now();
@@ -41,11 +41,13 @@ class Initializer {
 
 		info(`Splash window done after ${ Date.now() - splashLoadTime } ms`);
 		info('INITIALIZING GAME WINDOW');
+
+		return true;
 	}
 
 }
 
 const client = new Initializer();
-app.on('ready', () => {
-	client.init();
+app.on('ready', async() => {
+	await client.init();
 });

@@ -1,4 +1,4 @@
-import { GitHubReleaseData } from '../akc.d';
+import { GitHubReleaseData } from '../akc';
 
 const {
 	CLIENT_REPO,
@@ -15,22 +15,22 @@ module.exports = class {
 	 * @description
 	 * Get the current version of the client from the package.
 	 */
-	public static getClientVersion() {
+	public static getClientVersion() : string {
 		const version: string = CLIENT_VERSION;
 		return version;
 	}
 
 	/**
 	 * @returns {string} releaseVersion The latest version of the client from GitHub
-	 * @returns {string} releaseUrl The release URL from GitHub
+	 * @returns {Promise<GitHubReleaseData>} GitHubReleaseData Promise for the latest version and url of the client.
 	 * @description
 	 * Get the latest release from GitHub.  
 	 * If none is found, return v0.0.0 to resolve with semver.
 	 */
-	public static async getLatestGitHubRelease() {
+	public static async getLatestGitHubRelease() : Promise<GitHubReleaseData> {
 		info('Getting latest GitHub release...');
 
-		const newest: GitHubReleaseData = await get(`https://api.github.com/repos/${ CLIENT_REPO }/releases/latest`)
+		const newest = await get(`https://api.github.com/repos/${ CLIENT_REPO }/releases/latest`)
 			.then((response: { data: { tag_name: string; html_url: string; } }) => ({
 				releaseVersion: response.data.tag_name,
 				releaseUrl: response.data.html_url
@@ -45,7 +45,7 @@ module.exports = class {
 	 * @description
 	 * Getter for the client info element on the splash window.
 	 */
-	public static get clientInfoElement() {
+	public static get clientInfoElement(): HTMLDivElement {
 		return <HTMLDivElement> document.getElementById('client-info');
 	}
 
@@ -54,7 +54,7 @@ module.exports = class {
 	 * @description
 	 * Getter for the version element on the splash window.
 	 */
-	public static get clientVersionElement() {
+	public static get clientVersionElement(): HTMLDivElement {
 		return <HTMLDivElement> this.clientInfoElement.getElementsByClassName('version-holder')[0];
 	}
 
@@ -63,7 +63,7 @@ module.exports = class {
 	 * @description
 	 * Getter for the version update on the splash window.
 	 */
-	public static get clientUpdateElement() {
+	public static get clientUpdateElement(): HTMLDivElement {
 		return <HTMLDivElement> this.clientInfoElement.getElementsByClassName('update-holder')[0];
 	}
 
