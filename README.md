@@ -3,3 +3,5 @@
 </p>
 
 # anotherkrunkerclient
+
+The be-all and end-all Krunker client. All good features from other clients crammed into one neat, fast package.
