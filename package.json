@@ -6,6 +6,7 @@
   "author": "Asger Finding",
   "license": "GPLV3",
   "private": true,
+  "main": "build/main.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/asger-finding/anotherkrunkerclient.git"
@@ -14,7 +15,7 @@
     "start": "yarn compile && electron ./build/main.js",
     "compile": "tsc && copyfiles -u 1 -e src/**/*.ts -e src/**/*.ts src/**/* build/",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder",
+    "dist": "yarn compile && electron-builder",
     "lint": "yarn eslint . --ext .ts,.js",
     "lintcss": "yarn stylelint src/**/*.css"
   },
@@ -36,7 +37,7 @@
     "@typescript-eslint/eslint-plugin": "^5.14.0",
     "@typescript-eslint/parser": "^5.14.0",
     "copyfiles": "^2.4.1",
-    "electron": "9",
+    "electron": "^9.4.3",
     "electron-builder": "^22.14.13",
     "eslint": "^8.10.0",
     "eslint-config-airbnb-typescript": "^16.1.1",
