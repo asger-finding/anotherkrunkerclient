@@ -63,7 +63,7 @@ module.exports = class {
 		// Show the splash window when things have all loaded.
 		return new Promise(resolve => {
 			splash.webContents.once('dom-ready', () => {
-				info('`dom-ready` reached on Splash window');
+				info('dom-ready reached on Splash window');
 
 				splash.show();
 				splash.webContents.openDevTools({ mode: 'detach' });

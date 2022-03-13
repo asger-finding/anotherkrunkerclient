@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async() => {
 	}
 
 	// Invoke success callback
-	info(`Invoking ${ MESSAGE_SPLASH_DONE } in ${ SPLASH_DONE_WAIT } ms`);
+	info(`Invoking ${ MESSAGE_SPLASH_DONE } after ${ SPLASH_DONE_WAIT } ms`);
 	setTimeout(() => ipcRenderer.send(MESSAGE_SPLASH_DONE), SPLASH_DONE_WAIT);
 });
 
@@ -42,6 +42,7 @@ window.openSettings = function() {
 	ipcRenderer.send(MESSAGE_EXIT_CLIENT);
 	return null;
 };
+
 window.exitClient = function() {
 	ipcRenderer.send(MESSAGE_OPEN_SETTINGS);
 	return null;

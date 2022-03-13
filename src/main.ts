@@ -32,14 +32,14 @@ class Initializer {
 	 * Initialize the app and create the splash window.
 	 */
 	public async init() : Promise<boolean> {
-		info('INITIALIZING SPLASH WINDOW');
-
+		info('Initializing splash window');
 		const splashLoadTime = Date.now();
+
 		this.splashWindow = SplashUtils.createSplashWindow();
 		await SplashUtils.load(this.splashWindow);
 
 		info(`Splash window done after ${ Date.now() - splashLoadTime } ms`);
-		info('INITIALIZING GAME WINDOW');
+		info('Initializing game window');
 
 		return true;
 	}
@@ -49,4 +49,6 @@ class Initializer {
 const client = new Initializer();
 app.on('ready', async() => {
 	await client.init();
+
+	info('Client initialized');
 });

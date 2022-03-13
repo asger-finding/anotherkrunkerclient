@@ -36,7 +36,8 @@ module.exports = {
 	},
 	SPLASH_WEBPREFERENCES: {
 		contextIsolation: false,
-		v8CacheOption: 'bypassHeatCheck'
+		v8CacheOption: 'bypassHeatCheck',
+		enableRemoteModule: true
 	},
 	SPLASH_DONE_WAIT: 2000,
 	MESSAGE_SPLASH_DONE: 'splash-done',
