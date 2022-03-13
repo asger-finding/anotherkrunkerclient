@@ -4,4 +4,10 @@
 
 <h1 align="center">anotherkrunkerclient</h1>
 
-The be-all and end-all Krunker client. All good features from other clients crammed into one neat, fast package.
+The be-all and end-all Krunker client.  
+All good features from other clients crammed into one neat, fast package.
+
+## Supported operating systems
+
+* Windows 10
+* Windows 11
