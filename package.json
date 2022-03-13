@@ -13,7 +13,7 @@
   },
   "scripts": {
     "start": "yarn compile && electron ./build/main.js",
-    "compile": "tsc && copyfiles -u 1 -e src/**/*.ts -e src/**/*.ts src/**/* build/",
+    "compile": "del-cli build/ && tsc && copyfiles -u 1 -e src/**/*.ts -e src/**/*.ts src/**/* build/",
     "pack": "electron-builder --dir",
     "dist": "yarn compile && electron-builder",
     "lint": "yarn eslint . --ext .ts,.js",
@@ -37,6 +37,7 @@
     "@typescript-eslint/eslint-plugin": "^5.14.0",
     "@typescript-eslint/parser": "^5.14.0",
     "copyfiles": "^2.4.1",
+    "del-cli": "^4.0.1",
     "electron": "^9.4.3",
     "electron-builder": "^22.14.13",
     "eslint": "^8.10.0",
