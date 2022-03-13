@@ -1,6 +1,5 @@
 import Electron = require('electron');
 import 'module-alias/register';
-require('v8-compile-cache');
 
 const { CLIENT_NAME, CLIENT_AUTHOR, CLIENT_LICENSE_PERMALINK } = require('./constants');
 const SplashUtils = require('./utils/SplashUtils');

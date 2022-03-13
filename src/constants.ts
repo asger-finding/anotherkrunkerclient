@@ -35,8 +35,8 @@ module.exports = {
 		frame: false
 	},
 	SPLASH_WEBPREFERENCES: {
-		// Allow the preload script to add window features
-		contextIsolation: false
+		contextIsolation: false,
+		v8CacheOption: 'bypassHeatCheck'
 	},
 	SPLASH_DONE_WAIT: 2000,
 	MESSAGE_SPLASH_DONE: 'splash-done',
