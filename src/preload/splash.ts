@@ -1,4 +1,4 @@
-import 'module-alias/register';
+require('../aliases.js');
 import { GitHubReleaseData } from '../akc';
 
 const { MESSAGE_SPLASH_DONE, SPLASH_DONE_WAIT, MESSAGE_EXIT_CLIENT, MESSAGE_OPEN_SETTINGS } = require('@constants');

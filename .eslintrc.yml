@@ -8,9 +8,9 @@ ignorePatterns:
   - node_modules/
   - build/
 extends:
+  - raven
   - plugin:@typescript-eslint/recommended
   - airbnb-typescript/base
-  - rave
 parserOptions:
   project: ./tsconfig.json
   sourceType: module
@@ -23,10 +23,10 @@ rules:
   linebreak-style: 0
   max-classe-per-file: 0
   sort-keys: 0
-  indent: [ error, 0 ]
+  
   array-bracket-spacing: [ error, always, { singleValue: false } ]
   no-trailing-spaces: [ error, { ignoreComments: true } ]
-  lines-around-comments: [ warn, { allowArrayStart: true } ]
+  lines-around-comment: [ warn, { allowArrayStart: true } ]
 env:
   browser: true
   node: true

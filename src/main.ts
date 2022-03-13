@@ -1,7 +1,7 @@
+require('./aliases.js');
 import Electron = require('electron');
-import 'module-alias/register';
 
-const { CLIENT_NAME, CLIENT_AUTHOR, CLIENT_LICENSE_PERMALINK } = require('./constants');
+const { CLIENT_NAME, CLIENT_AUTHOR, CLIENT_LICENSE_PERMALINK } = require('@constants');
 const SplashUtils = require('./utils/SplashUtils');
 const { app } = require('electron');
 const { info } = require('electron-log');

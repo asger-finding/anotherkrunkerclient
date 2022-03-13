@@ -2,15 +2,20 @@
     "compilerOptions": {
         "target": "esnext",
         "module": "commonjs",
+        "resolveJsonModule": true,
         "allowSyntheticDefaultImports": true,
         "strict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitAny": true,
-        "outDir": "./build",
-        "baseUrl": "./src"
+        "sourceMap": false,
+        "outDir": "dist",
+        "baseUrl": ".",
+        "paths": {
+            "*": [ "node_modules/*" ]
+        },
     },
     "include": [
-        "./src"
+        "src/**/*"
     ]
 }
