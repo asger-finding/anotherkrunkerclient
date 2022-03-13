@@ -11,3 +11,6 @@ All good features from other clients crammed into one neat, fast package.
 
 * Windows 10
 * Windows 11
+
+Note: Use node v14.xx, or electron-acrylic-window won't compile with electron-builder. This is an oversight on the their end, and is being adressed in an issue [here](https://github.com/Seo-Rii/electron-acrylic-window/issues/85).  
+See also: [iojs 2.3.0 name 'openssl_fips' is not defined"](https://github.com/nodejs/node-gyp/issues/652)
