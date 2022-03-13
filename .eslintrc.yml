@@ -1,0 +1,42 @@
+parser: '@typescript-eslint/parser'
+settings:
+  import/core-modules: [ electron ]
+plugins:
+  - '@typescript-eslint'
+  - import
+ignorePatterns:
+  - node_modules/
+  - build/
+extends:
+  - plugin:@typescript-eslint/recommended
+  - airbnb-typescript/base
+  - rave
+parserOptions:
+  project: ./tsconfig.json
+  sourceType: module
+rules:
+  '@typescript-eslint/indent': [ error, tab ]
+  '@typescript-eslint/comma-dangle': [ error, never ]
+  '@typescript-eslint/space-before-function-paren': [ error, never ]
+  '@typescript-eslint/no-var-requires': 0
+  no-tabs: 0
+  linebreak-style: 0
+  max-classe-per-file: 0
+  sort-keys: 0
+  indent: [ error, 0 ]
+  array-bracket-spacing:
+    - error
+    - always
+    -
+        singleValue: false
+  no-trailing-spaces:
+    - error
+    -
+      ignoreComments: true
+  lines-around-comment:
+    - warn
+    -
+      allowArrayStart: true
+env:
+  browser: true
+  node: true
