@@ -24,19 +24,9 @@ rules:
   max-classe-per-file: 0
   sort-keys: 0
   indent: [ error, 0 ]
-  array-bracket-spacing:
-    - error
-    - always
-    -
-        singleValue: false
-  no-trailing-spaces:
-    - error
-    -
-      ignoreComments: true
-  lines-around-comment:
-    - warn
-    -
-      allowArrayStart: true
+  array-bracket-spacing: [ error, always, { singleValue: false } ]
+  no-trailing-spaces: [ error, { ignoreComments: true } ]
+  lines-around-comments: [ warn, { allowArrayStart: true } ]
 env:
   browser: true
   node: true
