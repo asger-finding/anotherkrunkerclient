@@ -7,6 +7,12 @@
 The be-all and end-all Krunker client.  
 All good features from other clients crammed into one neat, fast package.
 
+## Things to do
+
+- [ ] All features in the issue
+- [ ] Terser minification
+- [ ] Sass instead of CSS
+
 ## Supported operating systems
 
 * Windows 10

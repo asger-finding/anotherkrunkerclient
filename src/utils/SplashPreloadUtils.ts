@@ -50,21 +50,21 @@ module.exports = class {
 	}
 
 	/**
-	 * @returns {HTMLDivElement} clientVersionElement The version element on the splash window
+	 * @returns {HTMLSpanElement} clientVersionElement The version element on the splash window
 	 * @description
 	 * Getter for the version element on the splash window.
 	 */
-	public static get clientVersionElement(): HTMLDivElement {
-		return <HTMLDivElement> this.clientInfoElement.getElementsByClassName('version-holder')[0];
+	public static get clientVersionElement(): HTMLSpanElement {
+		return <HTMLSpanElement> this.clientInfoElement.getElementsByClassName('version-holder')[0];
 	}
 
 	/**
-	 * @returns {HTMLDivElement} clientUpdateElement The version update on the splash window
+	 * @returns {HTMLSpanElement} clientUpdateElement The version update on the splash window
 	 * @description
 	 * Getter for the version update on the splash window.
 	 */
-	public static get clientUpdateElement(): HTMLDivElement {
-		return <HTMLDivElement> this.clientInfoElement.getElementsByClassName('update-holder')[0];
+	public static get clientUpdateElement(): HTMLSpanElement {
+		return <HTMLSpanElement> this.clientInfoElement.getElementsByClassName('update-holder')[0];
 	}
 
 };

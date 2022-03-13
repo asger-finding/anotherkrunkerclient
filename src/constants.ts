@@ -36,10 +36,12 @@ module.exports = {
 	},
 	SPLASH_WEBPREFERENCES: {
 		contextIsolation: false,
-		v8CacheOption: 'bypassHeatCheck',
 		enableRemoteModule: true
 	},
-	SPLASH_DONE_WAIT: 2000,
+	// How long the splash window should be visible before closing
+	SPLASH_LIFETIME: 4000,
+
+	// ipcRenderer messages
 	MESSAGE_SPLASH_DONE: 'splash-done',
 	MESSAGE_EXIT_CLIENT: 'exit-client',
 	MESSAGE_OPEN_SETTINGS: 'open-settings'
