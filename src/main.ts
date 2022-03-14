@@ -31,7 +31,7 @@ class Initializer {
 	 * @description
 	 * Initialize the app and create the splash window.
 	 */
-	public async init() : Promise<boolean> {
+	public async init(): Promise<boolean> {
 		info('Initializing splash window');
 		const splashLoadTime = Date.now();
 

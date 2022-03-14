@@ -15,7 +15,7 @@ module.exports = class {
 	 * @description
 	 * Get the current version of the client from the package.
 	 */
-	public static getClientVersion() : string {
+	public static getClientVersion(): string {
 		const version: string = CLIENT_VERSION;
 		return version;
 	}
@@ -27,7 +27,7 @@ module.exports = class {
 	 * Get the latest release from GitHub.  
 	 * If none is found, return v0.0.0 to resolve with semver.
 	 */
-	public static async getLatestGitHubRelease() : Promise<GitHubReleaseData> {
+	public static async getLatestGitHubRelease(): Promise<GitHubReleaseData> {
 		info('Getting latest GitHub release...');
 
 		const newest = await get(`https://api.github.com/repos/${ CLIENT_REPO }/releases/latest`)

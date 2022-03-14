@@ -20,7 +20,7 @@ module.exports = class {
 	 * Get the Electron flags from the constants.js file and set them in the electron app.  
 	 * Return the flags.
 	 */
-	public static setFlags(app: Electron.App) : Array<Array<string | null>> {
+	public static setFlags(app: Electron.App): Array<Array<string | null>> {
 		info('Setting Electron flags');
 
 		for (const [ flag, value ] of ELECTRON_FLAGS) app.commandLine.appendSwitch(flag, value);
@@ -32,7 +32,7 @@ module.exports = class {
 	 * @description
 	 * Create a new BrowserWindow instance for the splash window.
 	 */
-	public static createSplashWindow() : Electron.BrowserWindow {
+	public static createSplashWindow(): Electron.BrowserWindow {
 		info('Creating new Splash window instance');
 
 		return new BrowserWindow({
@@ -51,7 +51,7 @@ module.exports = class {
 	 * Load the splash window with the splash.html file.  
 	 * Show it on dom-ready and callback when everything is done.
 	 */
-	public static load(splash: Electron.BrowserWindow) : Promise<Electron.BrowserWindow> {
+	public static load(splash: Electron.BrowserWindow): Promise<Electron.BrowserWindow> {
 		// Set the vibrancy of the splash window (again)
 		setVibrancy(splash, {
 			theme: 'dark',
