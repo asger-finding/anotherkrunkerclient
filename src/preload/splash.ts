@@ -38,7 +38,7 @@ const transformSplash = (rel: ReleaseData) => {
 };
 
 const setupEventListeners = async() => {
-	const releaseData = await SplashPreloadUtils.setupEventListeners();
+	const releaseData: ReleaseData = await SplashPreloadUtils.getReleaseDataFromEventListener();
 
 	document.addEventListener('DOMContentLoaded', () => {
 		transformSplash(releaseData);

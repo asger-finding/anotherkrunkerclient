@@ -19,8 +19,8 @@ const path = require('path');
 module.exports = class {
 
 	/**
-	 * @param  {Electron.BrowserWindow} splash BrowserWindow instance for the splash window
-	 * @returns {Promise<Electron.BrowserWindow>} splash Promised BrowserWindow instance for the splash window
+	 * @param  {Electron.BrowserWindow} splash Electron.BrowserWindow instance for the splash window
+	 * @returns {Promise<Electron.BrowserWindow>} splash Electron.BrowserWindow instance for the splash window wrapped in a promise
 	 * @description
 	 * Load the splash window with the splash.html file.  
 	 * Show it on dom-ready and callback when everything is done.
@@ -74,7 +74,7 @@ module.exports = class {
 	/**
 	 * @returns {Electron.BrowserWindow} splash Return the new splash BrowserWindow instance
 	 * @description
-	 * Create a new BrowserWindow instance for the splash window.
+	 * Create a new Electron.BrowserWindow the splash window.
 	 */
 	public static createSplashWindow(): Electron.BrowserWindow {
 		info('Creating new Splash window instance');
@@ -124,6 +124,12 @@ module.exports = class {
 		return newest;
 	}
 
+	/**
+	 * @param {Electron.BrowserWindow} splash Electron.BrowserWindow instance for the splash window
+	 * @returns {Promise<void>}
+	 * @description
+	 * Emit the client release data to the splash window.
+	 */
 	private static async emitReleaseData(splash: Electron.BrowserWindow): Promise<void> {
 		splash.webContents.send(MESSAGE_RELEASES_DATA, await this.getReleaseData());
 	}

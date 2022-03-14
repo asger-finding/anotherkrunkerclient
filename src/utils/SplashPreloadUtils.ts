@@ -1,11 +1,17 @@
+import { ReleaseData } from '../akc';
+
 const { ipcRenderer } = require('electron');
 const { MESSAGE_RELEASES_DATA } = require('@constants');
 
 module.exports = class {
 
-	public static setupEventListeners() {
+	/**
+	 * 
+	 * @returns {Promise<>} clientUpdateElement The version update on the splash window
+	 */
+	public static getReleaseDataFromEventListener() {
 		return new Promise(resolve => {
-			ipcRenderer.on(MESSAGE_RELEASES_DATA, (_event, data) => {
+			ipcRenderer.on(MESSAGE_RELEASES_DATA, (_event, data: ReleaseData) => {
 				resolve(data);
 			});
 		});
