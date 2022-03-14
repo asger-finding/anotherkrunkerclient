@@ -36,14 +36,10 @@ module.exports = class {
 
 		// Show the splash window when things have all loaded.
 		return new Promise(resolve => {
-			splash.webContents.once('did-frame-finish-load', () => {
-				info('Emitting release data');
-
-				this.emitReleaseData(splash);
-			});
-			splash.webContents.once('dom-ready', () => {
+			splash.webContents.once('dom-ready', async() => {
 				info('dom-ready reached on Splash window');
 
+				await this.emitReleaseData(splash);
 				splash.show();
 				splash.webContents.openDevTools({ mode: 'detach' });
 
@@ -131,7 +127,7 @@ module.exports = class {
 	 * Emit the client release data to the splash window.
 	 */
 	private static async emitReleaseData(splash: Electron.BrowserWindow): Promise<void> {
-		splash.webContents.send(MESSAGE_RELEASES_DATA, await this.getReleaseData());
+		await splash.webContents.send(MESSAGE_RELEASES_DATA, await this.getReleaseData());
 	}
 
 };
