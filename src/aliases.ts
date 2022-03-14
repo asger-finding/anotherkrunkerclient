@@ -7,5 +7,5 @@ interface Aliases {
 
 const aliases: Aliases = { '@constants': path.resolve(__dirname, './constants') };
 
-// iterate over aliases and register them
+// Iterate over aliases and register them
 for (const alias in aliases) moduleAlias.addAlias(alias, aliases[alias]);

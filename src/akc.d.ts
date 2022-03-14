@@ -10,5 +10,5 @@ declare global {
 export interface ReleaseData {
 	clientVersion: string;
 	releaseVersion: string,
-	releaseUrl: string | null
+	releaseUrl: string;
 }

@@ -18,7 +18,7 @@ class Initializer {
 
 	/**
 	 * @description
-	 * Set the Electron flags before initializing the windows.
+	 * Set the Electron flags before initializing the app.
 	 */
 	public constructor() {
 		info('Constructing initializer class');
@@ -27,7 +27,7 @@ class Initializer {
 	}
 
 	/**
-	 * @returns {Promise<boolean>} success Whether the app was successfully initialized
+	 * @returns {Promise<boolean>} Successful initialization
 	 * @description
 	 * Initialize the app and create the splash window.
 	 */

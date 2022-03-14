@@ -23,7 +23,7 @@ const transformSplash = (rel: ReleaseData) => {
 		clientUpdateElement.append(Object.assign(document.createElement('a'), {
 			href: '#',
 			innerText: rel.releaseVersion,
-			onclick: () => shell.openExternal(String(rel.releaseUrl))
+			onclick: () => shell.openExternal(rel.releaseUrl)
 		}));
 	} else {
 		info('Client is up to date');
