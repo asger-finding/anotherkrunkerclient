@@ -20,11 +20,11 @@ module.exports = class {
 	 * Get the Electron flags from the constants.js file and set them in the electron app.  
 	 * Return the flags.
 	 */
-	public static setFlags(app: Electron.App) : Array<Array<string>> {
+	public static setFlags(app: Electron.App) : Array<Array<string | null>> {
 		info('Setting Electron flags');
 
 		for (const [ flag, value ] of ELECTRON_FLAGS) app.commandLine.appendSwitch(flag, value);
-		return <Array<Array<string>>>ELECTRON_FLAGS;
+		return <Array<Array<string | null>>>ELECTRON_FLAGS;
 	}
 
 	/**
