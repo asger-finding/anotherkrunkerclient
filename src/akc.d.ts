@@ -7,7 +7,8 @@ declare global {
 	}
 }
 
-export interface GitHubReleaseData {
+export interface ReleaseData {
+	clientVersion: string;
 	releaseVersion: string,
 	releaseUrl: string | null
 }

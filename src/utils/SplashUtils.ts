@@ -1,17 +1,61 @@
+import { ReleaseData } from '../akc';
 import Electron = require('electron');
 
 const {
+	CLIENT_REPO,
+	CLIENT_VERSION,
 	ELECTRON_FLAGS,
 	SPLASH_PHYSICAL_PARAMETERS,
 	SPLASH_WEBPREFERENCES,
-	MESSAGE_SPLASH_DONE
+	MESSAGE_SPLASH_DONE,
+	MESSAGE_RELEASES_DATA
 } = require('@constants');
 const { setVibrancy } = require('electron-acrylic-window');
 const { BrowserWindow, ipcMain } = require('electron');
+const { info, warn } = require('electron-log');
+const { get } = require('axios');
 const path = require('path');
-const { info } = require('electron-log');
 
 module.exports = class {
+
+	/**
+	 * @param  {Electron.BrowserWindow} splash BrowserWindow instance for the splash window
+	 * @returns {Promise<Electron.BrowserWindow>} splash Promised BrowserWindow instance for the splash window
+	 * @description
+	 * Load the splash window with the splash.html file.  
+	 * Show it on dom-ready and callback when everything is done.
+	 */
+	public static async load(splash: Electron.BrowserWindow): Promise<Electron.BrowserWindow> {
+		// Set the vibrancy of the splash window (again)
+		setVibrancy(splash, {
+			theme: 'dark',
+			effect: 'blur'
+		});
+		splash.removeMenu();
+		splash.loadFile(path.join(__dirname, '../html/splash.html'));
+
+		// Show the splash window when things have all loaded.
+		return new Promise(resolve => {
+			splash.webContents.once('did-frame-finish-load', () => {
+				info('Emitting release data');
+
+				this.emitReleaseData(splash);
+			});
+			splash.webContents.once('dom-ready', () => {
+				info('dom-ready reached on Splash window');
+
+				splash.show();
+				splash.webContents.openDevTools({ mode: 'detach' });
+
+				// Resolve the promise when everything is done and dusted in the splash window.
+				ipcMain.on(MESSAGE_SPLASH_DONE, () => {
+					info(`${ MESSAGE_SPLASH_DONE } received`);
+
+					resolve(splash);
+				});
+			});
+		});
+	}
 
 	/**
 	 * @param  {Electron.App} app
@@ -45,37 +89,43 @@ module.exports = class {
 	}
 
 	/**
-	 * @param  {Electron.BrowserWindow} splash BrowserWindow instance for the splash window
-	 * @returns {Promise<Electron.BrowserWindow>} splash Promised BrowserWindow instance for the splash window
+	 * 
+	 * @returns {string} version The package.json version
 	 * @description
-	 * Load the splash window with the splash.html file.  
-	 * Show it on dom-ready and callback when everything is done.
+	 * Get the current version of the client from the package.
 	 */
-	public static load(splash: Electron.BrowserWindow): Promise<Electron.BrowserWindow> {
-		// Set the vibrancy of the splash window (again)
-		setVibrancy(splash, {
-			theme: 'dark',
-			effect: 'blur'
-		});
-		splash.removeMenu();
-		splash.loadFile(path.join(__dirname, '../html/splash.html'));
+	public static getClientVersion(): string {
+		const version: string = CLIENT_VERSION;
+		return version;
+	}
 
-		// Show the splash window when things have all loaded.
-		return new Promise(resolve => {
-			splash.webContents.once('dom-ready', () => {
-				info('dom-ready reached on Splash window');
+	/**
+	 * @returns {string} releaseVersion The latest version of the client from GitHub
+	 * @returns {Promise<ReleaseData>} ReleaseData Promise for the current version, latest version, and url of the client.
+	 * @description
+	 * Get the latest release from GitHub.  
+	 * If none is found, return v0.0.0 to resolve with semver.
+	 */
+	private static async getReleaseData(): Promise<ReleaseData> {
+		info('Getting latest GitHub release...');
 
-				splash.show();
-				splash.webContents.openDevTools({ mode: 'detach' });
+		const newest: ReleaseData = await get(`https://api.github.com/repos/${ CLIENT_REPO }/releases/latest`)
+			.then((response: { data: { tag_name: string; html_url: string; } }) => (<ReleaseData>{
+				clientVersion: this.getClientVersion(),
+				releaseVersion: response.data.tag_name,
+				releaseUrl: response.data.html_url
+			}))
+			.catch(() => <ReleaseData>{
+				clientVersion: this.getClientVersion(),
+				releaseVersion: 'v0.0.0',
+				releaseUrl: null
+			}, warn('No latest GitHub release was found.'));
 
-				// Resolve the promise when everything is done and dusted in the splash window.
-				ipcMain.on(MESSAGE_SPLASH_DONE, () => {
-					info(`${ MESSAGE_SPLASH_DONE } received`);
+		return newest;
+	}
 
-					resolve(splash);
-				});
-			});
-		});
+	private static async emitReleaseData(splash: Electron.BrowserWindow): Promise<void> {
+		splash.webContents.send(MESSAGE_RELEASES_DATA, await this.getReleaseData());
 	}
 
 };

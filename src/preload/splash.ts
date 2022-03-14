@@ -1,32 +1,29 @@
+import { ReleaseData } from '../akc';
 require('../aliases.js');
-import { GitHubReleaseData } from '../akc';
 
-const { MESSAGE_SPLASH_DONE, SPLASH_LIFETIME, MESSAGE_EXIT_CLIENT, MESSAGE_OPEN_SETTINGS } = require('@constants');
+const {
+	SPLASH_ALIVE_TIME,
+	MESSAGE_SPLASH_DONE,
+	MESSAGE_EXIT_CLIENT,
+	MESSAGE_OPEN_SETTINGS
+} = require('@constants');
 const { ipcRenderer, shell } = require('electron');
+const { info } = require('electron-log');
 const { gt: versionGreater, diff: versionDifference } = require('semver');
 const SplashPreloadUtils = require('../utils/SplashPreloadUtils');
-const { info } = require('electron-log');
 
-document.addEventListener('DOMContentLoaded', async() => {
-	const start = Date.now();
-
-	// Get the version of the client from package.json and set it as innerText on the splash window.
+const transformSplash = (rel: ReleaseData) => {
 	const { clientVersionElement, clientUpdateElement } = SplashPreloadUtils;
-	const clientVersion = `v${ await SplashPreloadUtils.getClientVersion() }`;
+	if (clientVersionElement instanceof HTMLSpanElement) clientVersionElement.innerText = rel.clientVersion;
 
-	if (clientVersionElement instanceof HTMLSpanElement) clientVersionElement.innerText = clientVersion;
+	if (clientUpdateElement instanceof HTMLSpanElement && versionGreater(rel.releaseVersion, rel.clientVersion)) {
+		info(`Client update available: ${ rel.releaseVersion }`);
 
-	const { releaseVersion, releaseUrl }: GitHubReleaseData = await SplashPreloadUtils.getLatestGitHubRelease();
-
-	// See if an update is available.
-	if (clientUpdateElement instanceof HTMLSpanElement && versionGreater(releaseVersion, clientVersion)) {
-		info('New version of the client is available!');
-
-		clientUpdateElement.innerText += `new ${ versionDifference(clientVersion, releaseVersion) } release available: `;
+		clientUpdateElement.innerText += `new ${ versionDifference(rel.clientVersion, rel.releaseVersion) } release available: `;
 		clientUpdateElement.append(Object.assign(document.createElement('a'), {
 			href: '#',
-			innerText: releaseVersion,
-			onclick: () => shell.openExternal(String(releaseUrl))
+			innerText: rel.releaseVersion,
+			onclick: () => shell.openExternal(String(rel.releaseUrl))
 		}));
 	} else {
 		info('Client is up to date');
@@ -34,13 +31,21 @@ document.addEventListener('DOMContentLoaded', async() => {
 		clientUpdateElement.innerText += 'up to date';
 	}
 
-	// Invoke callback to indicate that the splash window is done.
-	const doneTime = Date.now() - start;
 	setTimeout(() => {
 		info(`Invoking ${ MESSAGE_SPLASH_DONE }`);
 		ipcRenderer.send(MESSAGE_SPLASH_DONE);
-	}, doneTime > SPLASH_LIFETIME ? 1 : SPLASH_LIFETIME - doneTime);
-});
+	}, SPLASH_ALIVE_TIME);
+};
+
+const setupEventListeners = async() => {
+	const releaseData = await SplashPreloadUtils.setupEventListeners();
+
+	document.addEventListener('DOMContentLoaded', () => {
+		transformSplash(releaseData);
+	});
+	if (document.readyState === 'complete') document.dispatchEvent(new Event('DOMContentLoaded'));
+};
+setupEventListeners();
 
 window.openSettings = function() {
 	ipcRenderer.send(MESSAGE_EXIT_CLIENT);

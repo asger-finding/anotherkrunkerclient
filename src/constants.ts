@@ -38,11 +38,12 @@ module.exports = {
 		contextIsolation: false,
 		enableRemoteModule: true
 	},
-	// How long the splash window should be visible before closing
-	SPLASH_LIFETIME: 4000,
+	// How long the splash window should be visible before entering the game
+	SPLASH_ALIVE_TIME: 4000,
 
 	// ipcRenderer messages
 	MESSAGE_SPLASH_DONE: 'splash-done',
 	MESSAGE_EXIT_CLIENT: 'exit-client',
-	MESSAGE_OPEN_SETTINGS: 'open-settings'
+	MESSAGE_OPEN_SETTINGS: 'open-settings',
+	MESSAGE_RELEASES_DATA: 'releases-data'
 };

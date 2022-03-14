@@ -2,9 +2,9 @@ require('./aliases.js');
 import Electron = require('electron');
 
 const { CLIENT_NAME, CLIENT_AUTHOR, CLIENT_LICENSE_PERMALINK } = require('@constants');
-const SplashUtils = require('./utils/SplashUtils');
 const { app } = require('electron');
 const { info } = require('electron-log');
+const SplashUtils = require('./utils/SplashUtils');
 
 // eslint-disable-next-line no-console
 console.log(`${ CLIENT_NAME }  Copyright (C) 2022  ${ CLIENT_AUTHOR }
