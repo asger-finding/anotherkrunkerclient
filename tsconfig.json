@@ -8,6 +8,7 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitAny": true,
+        "removeComments": true,
         "sourceMap": false,
         "outDir": "dist",
         "baseUrl": ".",
