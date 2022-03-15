@@ -1,16 +1,17 @@
 import { ReleaseData } from '../akc';
-require('../aliases.js');
+require('../aliases');
 
 const {
+	CLIENT_NAME,
 	SPLASH_ALIVE_TIME,
 	MESSAGE_SPLASH_DONE,
 	MESSAGE_EXIT_CLIENT,
 	MESSAGE_OPEN_SETTINGS
 } = require('@constants');
-const { ipcRenderer, shell } = require('electron');
+const { ipcRenderer, contextBridge, shell } = require('electron');
 const { info } = require('electron-log');
 const { gt: versionGreater, diff: versionDifference } = require('semver');
-const SplashPreloadUtils = require('../utils/SplashPreloadUtils');
+const SplashPreloadUtils = require('@splash-pre-utils');
 
 const transformSplash = (rel: ReleaseData) => {
 	const { clientVersionElement, clientUpdateElement } = SplashPreloadUtils;
@@ -47,12 +48,13 @@ const setupEventListeners = async() => {
 };
 setupEventListeners();
 
-window.openSettings = function() {
-	ipcRenderer.send(MESSAGE_EXIT_CLIENT);
-	return null;
-};
-
-window.exitClient = function() {
-	ipcRenderer.send(MESSAGE_OPEN_SETTINGS);
-	return null;
-};
+contextBridge.exposeInMainWorld(CLIENT_NAME, {
+	exitClient: () => {
+		ipcRenderer.send(MESSAGE_EXIT_CLIENT);
+		return null;
+	},
+	openSettings: () => {
+		ipcRenderer.send(MESSAGE_OPEN_SETTINGS);
+		return null;
+	}
+});

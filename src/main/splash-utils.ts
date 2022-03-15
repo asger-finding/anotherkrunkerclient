@@ -33,7 +33,7 @@ module.exports = class {
 			effect: 'blur'
 		});
 		splashWindow.removeMenu();
-		splashWindow.loadFile(path.join(__dirname, '../html/splash.html'));
+		splashWindow.loadFile(path.join(__dirname, '../renderer/html/splash.html'));
 
 		// Show the splash window when things have all loaded.
 		return new Promise(resolve => {
@@ -80,7 +80,7 @@ module.exports = class {
 			...SPLASH_PHYSICAL_PARAMETERS,
 			webPreferences: {
 				...SPLASH_WEBPREFERENCES,
-				preload: path.join(__dirname, '../preload/splash')
+				preload: path.join(__dirname, '../preload/splash-pre')
 			}
 		});
 	}

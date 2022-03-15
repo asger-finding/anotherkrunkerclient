@@ -1,4 +1,4 @@
-const pkg = require('../package.json');
+const pkg = require('../../package.json');
 
 module.exports = {
 	CLIENT_NAME: pkg.productName,
@@ -35,7 +35,7 @@ module.exports = {
 		frame: false
 	},
 	SPLASH_WEBPREFERENCES: {
-		contextIsolation: false,
+		contextIsolation: true,
 		enableRemoteModule: true
 	},
 	// How long the splash window should be visible before entering the game

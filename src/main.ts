@@ -1,10 +1,15 @@
-require('./aliases.js');
+require('./aliases');
 import Electron = require('electron');
 
-const { CLIENT_NAME, CLIENT_AUTHOR, CLIENT_LICENSE_PERMALINK } = require('@constants');
+const {
+	CLIENT_NAME,
+	CLIENT_AUTHOR,
+	CLIENT_LICENSE_PERMALINK
+} = require('@constants');
 const { app } = require('electron');
 const { info } = require('electron-log');
-const SplashUtils = require('./utils/SplashUtils');
+const SplashUtils = require('@splash-utils');
+const EventHandler = require('@event-handler');
 
 // eslint-disable-next-line no-console
 console.log(`${ CLIENT_NAME }  Copyright (C) 2022  ${ CLIENT_AUTHOR }
@@ -12,18 +17,19 @@ This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under certain
 conditions; read ${ CLIENT_LICENSE_PERMALINK } for more details.\n`);
 
-class Initializer {
+class Application {
 
 	private splashWindow: Electron.BrowserWindow | undefined;
 
 	/**
 	 * @description
-	 * Set the Electron flags before initializing the app.
+	 * Set flags, event listeners before the app is ready.
 	 */
 	public constructor() {
 		info('Constructing initializer class');
 
 		SplashUtils.setFlags(app);
+		EventHandler.registerEventListeners();
 	}
 
 	/**
@@ -46,7 +52,7 @@ class Initializer {
 
 }
 
-const client = new Initializer();
+const client = new Application();
 app.on('ready', async() => {
 	await client.init();
 

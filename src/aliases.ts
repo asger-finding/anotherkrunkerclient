@@ -1,11 +1,17 @@
-const moduleAlias = require('module-alias');
-const path = require('path');
+const { addAliases } = require('module-alias');
+const { resolve } = require('path');
 
-interface Aliases {
-	[key: string]: string;
-}
+addAliases({
+	// config
+	'@constants': resolve(__dirname, './config/constants'),
 
-const aliases: Aliases = { '@constants': path.resolve(__dirname, './constants') };
+	// preload
+	'@splash-pre': resolve(__dirname, './preload/splash-pre'),
+	'@splash-pre-utils': resolve(__dirname, './preload/splash-pre-utils'),
 
-// Iterate over aliases and register them
-for (const alias in aliases) moduleAlias.addAlias(alias, aliases[alias]);
+	// the deep vast emptiness of the renderer
+
+	// main
+	'@splash-utils': resolve(__dirname, './main/splash-utils'),
+	'@event-handler': resolve(__dirname, './main/event-handler')
+});
