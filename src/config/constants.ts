@@ -22,7 +22,35 @@ module.exports = {
 		[ 'disable-accelerated-2d-canvas', 'false' ],
 
 		// Require user interaction for audio autoplay
-		[ 'autoplay-policy', 'user-required' ]
+		[ 'autoplay-policy', 'user-required' ],
+
+		// Performance optimization flags
+		[ 'enable-highres-timer', null ],
+		[ 'enable-gpu-rasterization', null ],
+		[ 'enable-zero-copy', null ],
+		[ 'enable-webgl', null ],
+		[ 'enable-javascript-harmony', null ],
+		[ 'enable-future-v8-vm-features', null ],
+		[ 'enable-quic', null ],
+		[ 'enable-webgl2-compute-context', null ],
+		[ 'disable-metrics', null ],
+		[ 'disable-metrics-repo', null ],
+		[ 'disable-logging', null ],
+		[ 'disable-component-update', null ],
+		[ 'disable-low-end-device-mode', null ],
+		[ 'disable-dev-shm-usage', null ],
+		[ 'disable-canvas-aa', null ],
+		[ 'disable-2d-canvas-clip-aa', null ],
+		[ 'disable-hang-monitor', null ],
+		[ 'disable-breakpad', null ],
+		[ 'disable-bundled-ppapi-flash', null ],
+		[ 'ignore-gpu-blocklist', null ],
+		[ 'canvas-oop-rasterization', null ],
+		[ 'max-active-webgl-contexts', 100 ],
+		[ 'high-dpi-support', 1 ],
+		[ 'renderer-process-limit', 100 ],
+		[ 'webrtc-max-cpu-consumption-percentage=100', null ],
+		[ 'no-zygote', null ]
 	],
 	SPLASH_PHYSICAL_PARAMETERS: {
 		width: 640,
