@@ -60,3 +60,8 @@ app.on('ready', async() => {
 
 	info('Client initialized');
 });
+
+app.on('window-all-closed', () => {
+	if (process.platform !== 'darwin') return app.quit();
+	return null;
+});
