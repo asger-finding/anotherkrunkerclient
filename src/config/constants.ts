@@ -24,7 +24,7 @@ module.exports = {
 		// Require user interaction for audio autoplay
 		[ 'autoplay-policy', 'user-required' ],
 
-		// Performance optimization flags
+		// Performance optimization flags TODO: client setting for these
 		[ 'enable-highres-timer', null ],
 		[ 'enable-gpu-rasterization', null ],
 		[ 'enable-zero-copy', null ],
