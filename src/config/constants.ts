@@ -1,4 +1,5 @@
 const pkg = require('../../package.json');
+const path = require('path');
 
 module.exports = {
 	CLIENT_NAME: pkg.productName,
@@ -60,7 +61,8 @@ module.exports = {
 		fullscreenable: false,
 		movable: false,
 		center: true,
-		frame: false
+		frame: false,
+		icon: path.join(__dirname, '../renderer/assets/icon.ico')
 	},
 	SPLASH_WEBPREFERENCES: {
 		contextIsolation: true,

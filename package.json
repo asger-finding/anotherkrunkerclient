@@ -6,31 +6,38 @@
   "author": "Asger Finding",
   "license": "GPLV3",
   "private": true,
-  "main": "dist/main.js",
+  "main": "build/main.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/asger-finding/anotherkrunkerclient.git"
   },
   "scripts": {
-    "start": "yarn del ./dist && yarn build && yarn copy && electron ./dist/main.js",
-    "deploy": "yarn del ./dist ./build && yarn build && yarn copy && electron-builder --win && yarn postinstall",
+    "start": "yarn del ./build && yarn build && yarn copy && electron ./build/main.js",
+    "deploy": "yarn del ./build ./dist && yarn build && yarn copy && electron-builder --win && yarn postinstall",
 
     "build": "tsc",
-    "copy": "copyfiles -u 1 -e ./src/**/*.ts ./src/**/* ./dist/",
-    "postinstall": "electron-builder install-app-deps",
+    "copy": "copyfiles -u 1 -e ./src/**/*.ts ./src/**/* ./build/",
+    "postinstall": "electron-builder install-app-deps && yarn del ./build",
 
     "lint": "yarn eslint . --ext .ts,.js",
     "lintcss": "yarn stylelint src/**/*.css"
   },
   "build": {
-    "generateUpdatesFilesForAllChannels": true,
+    "appId": "com.akc",
+    "productName": "anotherkrunkerclient",
+    "publish": "github",
+    "asar": true,
+    "compression": "normal",
+    "copyright": "Copyright © 2022 Asger Finding",
     "files": [
-      "dist/**/*",
+      "build/**/*",
       "package.json"
     ],
     "directories": {
-      "output": "build"
+      "output": "dist"
     },
+    "forceCodeSigning": false,
+    "artifactName": "anotherkrunkerclient-${os}-${arch}.${ext}",
     "win": {
       "target": [
         {
@@ -39,9 +46,15 @@
             "x64",
             "ia32"
           ]
-        },
-        "zip"
-      ]
+        }
+      ],
+      "icon": "media/icon.ico"
+    },
+    "nsis": {
+      "artifactName": "anotherkrunkerclient-Windows-${arch}.exe",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": true
     }
   },
   "dependencies": {
