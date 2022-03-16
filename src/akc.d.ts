@@ -7,6 +7,12 @@ declare global {
 	}
 }
 
+export interface EventListener {
+	id: number;
+	message: string;
+	callback: () => unknown;
+}
+
 export interface ReleaseData {
 	clientVersion: string;
 	releaseVersion: string,

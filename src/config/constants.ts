@@ -64,6 +64,7 @@ module.exports = {
 	},
 	SPLASH_WEBPREFERENCES: {
 		contextIsolation: true,
+		worldSafeExecuteJavaScript: true,
 		enableRemoteModule: true
 	},
 	// How long the splash window should be visible before entering the game

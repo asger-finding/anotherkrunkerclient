@@ -1,6 +1,11 @@
 import { ReleaseData } from '../akc';
 import Electron = require('electron');
 
+const { setVibrancy } = require('electron-acrylic-window');
+const { BrowserWindow, ipcMain } = require('electron');
+const { info, warn } = require('electron-log');
+const { get } = require('axios');
+const path = require('path');
 const {
 	CLIENT_REPO,
 	CLIENT_VERSION,
@@ -10,11 +15,6 @@ const {
 	MESSAGE_SPLASH_DONE,
 	MESSAGE_RELEASES_DATA
 } = require('@constants');
-const { setVibrancy } = require('electron-acrylic-window');
-const { BrowserWindow, ipcMain } = require('electron');
-const { info, warn } = require('electron-log');
-const { get } = require('axios');
-const path = require('path');
 
 module.exports = class {
 

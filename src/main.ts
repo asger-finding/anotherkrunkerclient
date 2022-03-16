@@ -1,13 +1,13 @@
 require('./aliases');
 import Electron = require('electron');
 
+const { app } = require('electron');
+const { info } = require('electron-log');
 const {
 	CLIENT_NAME,
 	CLIENT_AUTHOR,
 	CLIENT_LICENSE_PERMALINK
 } = require('@constants');
-const { app } = require('electron');
-const { info } = require('electron-log');
 const SplashUtils = require('@splash-utils');
 const EventHandler = require('@event-handler');
 
@@ -21,6 +21,8 @@ class Application {
 
 	private splashWindow: Electron.BrowserWindow | undefined;
 
+	private eventHandler = new EventHandler();
+
 	/**
 	 * @description
 	 * Set flags, event listeners before the app is ready.
@@ -29,7 +31,7 @@ class Application {
 		info('Constructing initializer class');
 
 		SplashUtils.setFlags(app);
-		EventHandler.registerEventListeners();
+		this.eventHandler.registerEventListeners();
 	}
 
 	/**

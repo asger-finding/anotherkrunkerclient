@@ -1,6 +1,9 @@
 import { ReleaseData } from '../akc';
 require('../aliases');
 
+const { ipcRenderer, contextBridge, shell } = require('electron');
+const { gt: versionGreater, diff: versionDifference } = require('semver');
+const { info } = require('electron-log');
 const {
 	CLIENT_NAME,
 	SPLASH_ALIVE_TIME,
@@ -8,9 +11,6 @@ const {
 	MESSAGE_EXIT_CLIENT,
 	MESSAGE_OPEN_SETTINGS
 } = require('@constants');
-const { ipcRenderer, contextBridge, shell } = require('electron');
-const { info } = require('electron-log');
-const { gt: versionGreater, diff: versionDifference } = require('semver');
 const SplashPreloadUtils = require('@splash-pre-utils');
 
 const transformSplash = (rel: ReleaseData) => {
