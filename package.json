@@ -23,12 +23,11 @@
     "lintcss": "yarn stylelint src/**/*.css"
   },
   "build": {
-    "appId": "com.akc",
-    "productName": "anotherkrunkerclient",
+    "appId": "com.electron.akc",
+    "copyright": "Copyright © 2022 Asger Finding",
     "publish": "github",
     "asar": true,
-    "compression": "normal",
-    "copyright": "Copyright © 2022 Asger Finding",
+    "compression": "maximum",
     "files": [
       "build/**/*",
       "package.json"
