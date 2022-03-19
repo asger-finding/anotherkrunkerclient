@@ -10,6 +10,7 @@
         "noImplicitAny": true,
         "removeComments": true,
         "sourceMap": false,
+        "strictPropertyInitialization": false,
         "outDir": "build",
         "baseUrl": ".",
         "paths": {

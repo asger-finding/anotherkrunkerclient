@@ -6,9 +6,8 @@ const { BrowserWindow, ipcMain } = require('electron');
 const { info, warn } = require('electron-log');
 const { get } = require('axios');
 const path = require('path');
-// isDev should not be in constants, as it only works in the main process and will throw an error in the renderer process
-const isDev = require('electron-is-dev');
 const {
+	IS_DEVELOPMENT,
 	CLIENT_REPO,
 	CLIENT_VERSION,
 	ELECTRON_FLAGS,
@@ -21,36 +20,36 @@ const {
 module.exports = class {
 
 	/**
-	 * @param  {Electron.BrowserWindow} splashWindow
-	 * @returns {Promise<Electron.BrowserWindow>} splashWindow promise
+	 * @param  {Electron.BrowserWindow} window
+	 * @returns {Promise<Electron.BrowserWindow>} window promise
 	 * @description
 	 * Load the splash window with the splash.html file.  
 	 * Get the client release data and emit it to the splash window.  
 	 * Show the window on dom-ready and callback.
 	 */
-	public static async load(splashWindow: Electron.BrowserWindow): Promise<Electron.BrowserWindow> {
+	public static async load(window: Electron.BrowserWindow): Promise<Electron.BrowserWindow> {
 		// Set the vibrancy of the splash window
-		setVibrancy(splashWindow, {
+		setVibrancy(window, {
 			theme: 'dark',
 			effect: 'blur'
 		});
-		splashWindow.removeMenu();
-		splashWindow.loadFile(path.join(__dirname, '../renderer/html/splash.html'));
+		window.removeMenu();
+		window.loadFile(path.join(__dirname, '../renderer/html/splash.html'));
 
 		// Show the splash window when things have all loaded.
 		return new Promise(resolve => {
-			splashWindow.webContents.once('dom-ready', async() => {
+			window.webContents.once('dom-ready', async() => {
 				info('dom-ready reached on Splash window');
 
-				await this.emitReleaseData(splashWindow);
-				splashWindow.show();
-				if (isDev) splashWindow.webContents.openDevTools({ mode: 'detach' });
+				await this.emitReleaseData(window);
+				window.show();
+				if (IS_DEVELOPMENT) window.webContents.openDevTools({ mode: 'detach' });
 
 				// Resolve the promise when everything is done and dusted in the splash window.
 				ipcMain.on(MESSAGE_SPLASH_DONE, () => {
 					info(`${ MESSAGE_SPLASH_DONE } received`);
 
-					resolve(splashWindow);
+					resolve(window);
 				});
 			});
 		});
@@ -66,16 +65,16 @@ module.exports = class {
 	public static setFlags(app: Electron.App): Array<Array<string | null>> {
 		info('Setting Electron flags');
 
-		for (const [ flag, value ] of ELECTRON_FLAGS) app.commandLine.appendSwitch(flag, value);
+		for (const [ flag, value ] of ELECTRON_FLAGS) app.commandLine.appendSwitch(flag, typeof value === 'undefined' ? null : value);
 		return <Array<Array<string | null>>>ELECTRON_FLAGS;
 	}
 
 	/**
-	 * @returns {Electron.BrowserWindow} splashWindow
+	 * @returns {Electron.BrowserWindow}
 	 * @description
 	 * Create new Electron.BrowserWindow for the splash window.
 	 */
-	public static createSplashWindow(): Electron.BrowserWindow {
+	public static createWindow(): Electron.BrowserWindow {
 		info('Creating new Splash window instance');
 
 		return new BrowserWindow({
@@ -85,6 +84,18 @@ module.exports = class {
 				preload: path.join(__dirname, '../preload/splash-pre')
 			}
 		});
+	}
+
+	/**
+	 * @description
+	 * Destroy the splash window.
+	 */
+	public static destroyWindow(window: Electron.BrowserWindow): void {
+		info('Destroying Splash window instance');
+		info(window.webContents.isDevToolsOpened());
+		if (window.webContents.isDevToolsOpened()) window.webContents.closeDevTools();
+
+		return window.destroy();
 	}
 
 	/**
@@ -126,13 +137,13 @@ module.exports = class {
 	}
 
 	/**
-	 * @param {Electron.BrowserWindow} splashWindow
+	 * @param {Electron.BrowserWindow} window
 	 * @returns {Promise<void>}
 	 * @description
 	 * Emit the client release data to the splash window event listener.
 	 */
-	private static async emitReleaseData(splashWindow: Electron.BrowserWindow): Promise<void> {
-		await splashWindow.webContents.send(MESSAGE_RELEASES_DATA, await this.getReleaseData());
+	private static async emitReleaseData(window: Electron.BrowserWindow): Promise<void> {
+		await window.webContents.send(MESSAGE_RELEASES_DATA, await this.getReleaseData());
 	}
 
 };

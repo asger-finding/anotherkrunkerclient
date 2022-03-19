@@ -13,7 +13,7 @@ const {
 } = require('@constants');
 const SplashPreloadUtils = require('@splash-pre-utils');
 
-const transformSplash = (rel: ReleaseData) => {
+function transformSplash(rel: ReleaseData) {
 	const { clientVersionElement, clientUpdateElement } = SplashPreloadUtils;
 	if (clientVersionElement instanceof HTMLSpanElement) clientVersionElement.innerText = rel.clientVersion;
 
@@ -36,24 +36,24 @@ const transformSplash = (rel: ReleaseData) => {
 		info(`Invoking ${ MESSAGE_SPLASH_DONE }`);
 		ipcRenderer.send(MESSAGE_SPLASH_DONE);
 	}, SPLASH_ALIVE_TIME);
-};
+}
 
-const setupEventListeners = async() => {
+async function setupEventListeners() {
 	const releaseData: ReleaseData = await SplashPreloadUtils.getReleaseDataFromEventListener();
 
 	document.addEventListener('DOMContentLoaded', () => {
 		transformSplash(releaseData);
 	});
 	if (document.readyState === 'complete') document.dispatchEvent(new Event('DOMContentLoaded'));
-};
+}
 setupEventListeners();
 
 contextBridge.exposeInMainWorld(CLIENT_NAME, {
-	exitClient: () => {
+	exitClient() {
 		ipcRenderer.send(MESSAGE_EXIT_CLIENT);
 		return null;
 	},
-	openSettings: () => {
+	openSettings() {
 		ipcRenderer.send(MESSAGE_OPEN_SETTINGS);
 		return null;
 	}

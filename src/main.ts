@@ -9,6 +9,7 @@ const {
 	CLIENT_LICENSE_PERMALINK
 } = require('@constants');
 const SplashUtils = require('@splash-utils');
+const GameUtils = require('@game-utils');
 const EventHandler = require('@event-handler');
 
 // eslint-disable-next-line no-console
@@ -19,7 +20,9 @@ conditions; read ${ CLIENT_LICENSE_PERMALINK } for more details.\n`);
 
 class Application {
 
-	private splashWindow: Electron.BrowserWindow | undefined;
+	private splashWindow: Electron.BrowserWindow | null;
+
+	private gameWindow: Electron.BrowserWindow;
 
 	private eventHandler = new EventHandler();
 
@@ -43,11 +46,19 @@ class Application {
 		info('Initializing splash window');
 		const splashLoadTime = Date.now();
 
-		this.splashWindow = SplashUtils.createSplashWindow();
+		this.splashWindow = SplashUtils.createWindow();
 		await SplashUtils.load(this.splashWindow);
 
 		info(`Splash window done after ${ Date.now() - splashLoadTime } ms`);
 		info('Initializing game window');
+
+		this.gameWindow = GameUtils.createGameWindow();
+		await GameUtils.load(this.gameWindow, this.splashWindow);
+
+		this.gameWindow.once('ready-to-show', () => {
+			SplashUtils.destroyWindow(this.splashWindow);
+			this.splashWindow = null;
+		});
 
 		return true;
 	}

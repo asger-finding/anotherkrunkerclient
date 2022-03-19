@@ -7,20 +7,16 @@ module.exports = {
 	CLIENT_VERSION: pkg.version,
 	CLIENT_REPO: 'asger-finding/anotherkrunkerclient',
 	CLIENT_LICENSE_PERMALINK: 'https://yerl.org/JwGdZ',
+	// eslint-disable-next-line global-require
+	IS_DEVELOPMENT: process.type === 'main' ? require('electron-is-dev') : 'unknown',
 	ELECTRON_FLAGS: [
 		// Unlock the frame rate
 		['disable-frame-rate-limit'],
 		['disable-gpu-vsync'],
 		[ 'max-gum-fps', '9999' ],
 
-		// Set the WebGL angle type
-		[ 'use-angle', 'default' ],
-
 		// Enable WebGL
 		['enable-webgl2-compute-context'],
-
-		// Ensure that GPU-accelerated 2D canvas is used
-		[ 'disable-accelerated-2d-canvas', 'false' ],
 
 		// Don't require user gesture for autoplay
 		[ 'autoplay-policy', 'no-user-gesture-required' ],
@@ -70,10 +66,28 @@ module.exports = {
 		enableRemoteModule: true
 	},
 	// How long the splash window should be visible before entering the game
-	SPLASH_ALIVE_TIME: 4000,
+	SPLASH_ALIVE_TIME: 1500,
+
+	GAME_PHYSICAL_PARAMETERS: {
+		width: 1280,
+		height: 720,
+		show: false,
+		resizable: true,
+		fullscreenable: true,
+		fullscreen: true,
+		movable: true,
+		icon: path.join(__dirname, '../renderer/assets/icon.ico')
+	},
+	GAME_WEBPREFERENCES: {
+		nodeIntegration: false,
+		contextIsolation: true,
+		worldSafeExecuteJavaScript: true,
+		enableRemoteModule: false
+	},
 
 	// ipcRenderer messages
 	MESSAGE_SPLASH_DONE: 'splash-done',
+	MESSAGE_GAME_DONE: 'game-done',
 	MESSAGE_EXIT_CLIENT: 'exit-client',
 	MESSAGE_OPEN_SETTINGS: 'open-settings',
 	MESSAGE_RELEASES_DATA: 'releases-data'
