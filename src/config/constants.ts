@@ -9,49 +9,49 @@ module.exports = {
 	CLIENT_LICENSE_PERMALINK: 'https://yerl.org/JwGdZ',
 	ELECTRON_FLAGS: [
 		// Unlock the frame rate
-		[ 'disable-frame-rate-limit', null ],
-		[ 'disable-gpu-vsync', null ],
+		['disable-frame-rate-limit'],
+		['disable-gpu-vsync'],
 		[ 'max-gum-fps', '9999' ],
 
 		// Set the WebGL angle type
 		[ 'use-angle', 'default' ],
 
 		// Enable WebGL
-		[ 'enable-webgl2-compute-context', null ],
+		['enable-webgl2-compute-context'],
 
 		// Ensure that GPU-accelerated 2D canvas is used
 		[ 'disable-accelerated-2d-canvas', 'false' ],
 
-		// Require user interaction for audio autoplay
-		[ 'autoplay-policy', 'user-required' ],
+		// Don't require user gesture for autoplay
+		[ 'autoplay-policy', 'no-user-gesture-required' ],
 
 		// Performance optimization flags TODO: client setting for these
-		[ 'enable-highres-timer', null ],
-		[ 'enable-gpu-rasterization', null ],
-		[ 'enable-zero-copy', null ],
-		[ 'enable-webgl', null ],
-		[ 'enable-javascript-harmony', null ],
-		[ 'enable-future-v8-vm-features', null ],
-		[ 'enable-quic', null ],
-		[ 'enable-webgl2-compute-context', null ],
-		[ 'disable-metrics', null ],
-		[ 'disable-metrics-repo', null ],
-		[ 'disable-logging', null ],
-		[ 'disable-component-update', null ],
-		[ 'disable-low-end-device-mode', null ],
-		[ 'disable-dev-shm-usage', null ],
-		[ 'disable-canvas-aa', null ],
-		[ 'disable-2d-canvas-clip-aa', null ],
-		[ 'disable-hang-monitor', null ],
-		[ 'disable-breakpad', null ],
-		[ 'disable-bundled-ppapi-flash', null ],
-		[ 'ignore-gpu-blocklist', null ],
-		[ 'canvas-oop-rasterization', null ],
+		['enable-highres-timer'],
+		['enable-gpu-rasterization'],
+		['enable-zero-copy'],
+		['enable-webgl'],
+		['enable-javascript-harmony'],
+		['enable-future-v8-vm-features'],
+		['enable-quic'],
+		['enable-webgl2-compute-context'],
+		['disable-metrics'],
+		['disable-metrics-repo'],
+		['disable-logging'],
+		['disable-component-update'],
+		['disable-low-end-device-mode'],
+		['disable-dev-shm-usage'],
+		['disable-canvas-aa'],
+		['disable-2d-canvas-clip-aa'],
+		['disable-hang-monitor'],
+		['disable-breakpad'],
+		['disable-bundled-ppapi-flash'],
+		['ignore-gpu-blocklist'],
+		['canvas-oop-rasterization'],
 		[ 'max-active-webgl-contexts', 100 ],
 		[ 'high-dpi-support', 1 ],
 		[ 'renderer-process-limit', 100 ],
-		[ 'webrtc-max-cpu-consumption-percentage=100', null ],
-		[ 'no-zygote', null ]
+		['webrtc-max-cpu-consumption-percentage=100'],
+		['no-zygote']
 	],
 	SPLASH_PHYSICAL_PARAMETERS: {
 		width: 640,

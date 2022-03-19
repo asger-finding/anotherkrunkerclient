@@ -14,11 +14,9 @@
   "scripts": {
     "start": "yarn del ./build && yarn build && yarn copy && electron ./build/main.js",
     "deploy": "yarn del ./build ./dist && yarn build && yarn copy && electron-builder --win && yarn postinstall",
-
     "build": "tsc",
     "copy": "copyfiles -u 1 -e ./src/**/*.ts ./src/**/* ./build/",
     "postinstall": "electron-builder install-app-deps && yarn del ./build",
-
     "lint": "yarn eslint . --ext .ts,.js",
     "lintcss": "yarn stylelint src/**/*.css"
   },
@@ -51,6 +49,7 @@
     },
     "nsis": {
       "artifactName": "anotherkrunkerclient-Windows-${arch}.exe",
+      "installerSidebar": "media/installerSidebar.bmp",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "deleteAppDataOnUninstall": true
@@ -59,6 +58,7 @@
   "dependencies": {
     "axios": "^0.26.1",
     "electron-acrylic-window": "^0.5.11",
+    "electron-is-dev": "^2.0.0",
     "electron-log": "^4.4.6",
     "electron-prompt": "^1.7.0",
     "electron-store": "^8.0.1",

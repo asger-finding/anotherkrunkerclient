@@ -6,6 +6,8 @@ const { BrowserWindow, ipcMain } = require('electron');
 const { info, warn } = require('electron-log');
 const { get } = require('axios');
 const path = require('path');
+// isDev should not be in constants, as it only works in the main process and will throw an error in the renderer process
+const isDev = require('electron-is-dev');
 const {
 	CLIENT_REPO,
 	CLIENT_VERSION,
@@ -42,7 +44,7 @@ module.exports = class {
 
 				await this.emitReleaseData(splashWindow);
 				splashWindow.show();
-				splashWindow.webContents.openDevTools({ mode: 'detach' });
+				if (isDev) splashWindow.webContents.openDevTools({ mode: 'detach' });
 
 				// Resolve the promise when everything is done and dusted in the splash window.
 				ipcMain.on(MESSAGE_SPLASH_DONE, () => {
