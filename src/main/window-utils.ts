@@ -4,7 +4,7 @@ const { register } = require('electron-localshortcut');
 const {
 	preferences,
 	getDefaultConstructorOptions,
-	getURL,
+	getURLData,
 	TABS,
 	TARGET_GAME_URL,
 	QUICKJOIN_URL_QUERY_PARAM
@@ -41,7 +41,7 @@ module.exports = class {
 		register(window, 'F5', () => webContents.reload());
 		register(window, 'F12', () => webContents.openDevTools());
 
-		const url = getURL(window);
+		const url = getURLData(window.webContents.getURL());
 		if (url.tab === TABS.GAME) {
 			info('Registering shortcuts for the game tab');
 
@@ -66,11 +66,12 @@ module.exports = class {
 		info(`Creating a window instance${ windowURL ? ` with URL: ${ windowURL }` : '' }`);
 
 		const window = new BrowserWindow(parameters);
-		const windowData = getURL(windowURL);
+		const windowData = getURLData(windowURL);
 
 		if (windowURL) window.loadURL(windowURL);
 		if (preferences.get(`window.${ windowData.tab }.maximized`)) window.maximize();
 		window.removeMenu();
+		window.setTitle(`${ app.getName() } — ${ windowData.tab }`);
 
 		// If the window is a Krunker tab, set the window scaling preferences.
 		if (windowData.isInTabs) {
@@ -91,7 +92,7 @@ module.exports = class {
 			evt.preventDefault();
 
 			if (windowData.isKrunker) {
-				const newWindowData = getURL(newWindowURL);
+				const newWindowData = getURLData(newWindowURL);
 
 				if (frameName === '_self') window.webContents.loadURL(newWindowURL);
 				else this.createWindow(getDefaultConstructorOptions(newWindowData.tab), newWindowURL);

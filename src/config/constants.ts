@@ -105,8 +105,8 @@ module.exports = {
 
 	get GAME_CONSTRUCTOR_OPTIONS(): Electron.BrowserWindowConstructorOptions {
 		const defaultOptions = this.getDefaultConstructorOptions(this.TABS.GAME);
-		defaultOptions.show = false;
 		defaultOptions.webPreferences.preload = path.join(__dirname, '../preload/game-pre');
+		defaultOptions.show = false;
 
 		return defaultOptions;
 	},
@@ -133,7 +133,7 @@ module.exports = {
 	 * @description
 	 * Returns the current Krunker tab (if any), whether we're on Krunker, what Krunker tab we're on, and whether quickJoin is enabled
 	 */
-	getURL(baseURL: string): { url: string, tab: string | null, isInTabs: boolean, isKrunker: boolean, quickJoin: boolean } {
+	getURLData(baseURL: string): { url: string, tab: string | null, isInTabs: boolean, isKrunker: boolean, quickJoin: boolean } {
 		try {
 			const url = new URL(baseURL);
 
