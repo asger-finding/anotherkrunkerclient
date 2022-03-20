@@ -7,11 +7,15 @@ module.exports = {
 	CLIENT_VERSION: pkg.version,
 	CLIENT_REPO: 'asger-finding/anotherkrunkerclient',
 	CLIENT_LICENSE_PERMALINK: 'https://yerl.org/JwGdZ',
+
 	TARGET_GAME_DOMAIN: 'krunker.io',
 	TARGET_GAME_URL: 'https://krunker.io/',
 	QUICKJOIN_URL_QUERY_PARAM: 'quickjoin',
+
+	// (doesn't work as global require)
 	// eslint-disable-next-line global-require
-	IS_DEVELOPMENT: process.type === 'main' ? require('electron-is-dev') : 'unknown',
+	IS_DEVELOPMENT: process.type === 'browser' ? require('electron-is-dev') : false,
+
 	ELECTRON_FLAGS: [
 		// Unlock the frame rate
 		['disable-frame-rate-limit'],
@@ -105,9 +109,10 @@ module.exports = {
 
 	getURL(window: Electron.BrowserWindow) {
 		const url = new URL(window.webContents.getURL());
+
+		const { 1: tab } = String(url.pathname.split('/'));
 		const isKrunker = url.hostname.endsWith(module.exports.TARGET_GAME_DOMAIN);
 		const quickJoin = url.searchParams.get(module.exports.QUICKJOIN_URL_QUERY_PARAM) === 'true';
-		const { 1: tab } = (String(url.pathname.split('/')));
 
 		return {
 			tab: isKrunker ? (tab || module.exports.TABS.GAME) : null,
