@@ -38,7 +38,7 @@ module.exports = class {
 		register(window, 'F5', () => webContents.reload());
 		register(window, 'F12', () => webContents.openDevTools());
 
-		const url = getURL(webContents);
+		const url = getURL(window);
 		if (url.tab === TABS.GAME) {
 			info('Registering shortcuts for the game tab');
 
