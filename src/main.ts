@@ -7,6 +7,7 @@ const {
 	CLIENT_NAME,
 	CLIENT_AUTHOR,
 	CLIENT_LICENSE_PERMALINK,
+	TARGET_GAME_URL,
 	SPLASH_CONSTRUCTOR_OPTIONS,
 	GAME_CONSTRUCTOR_OPTIONS
 } = require('@constants');
@@ -55,7 +56,7 @@ class Application {
 		info(`Splash window done after ${ Date.now() - splashLoadTime } ms`);
 		info('Initializing game window');
 
-		this.gameWindow = WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS);
+		this.gameWindow = WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
 		await GameUtils.load(this.gameWindow, this.splashWindow);
 
 		return true;

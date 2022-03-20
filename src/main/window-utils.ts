@@ -2,6 +2,7 @@ const { BrowserWindow, shell, app } = require('electron');
 const { info } = require('electron-log');
 const { register } = require('electron-localshortcut');
 const {
+	preferences,
 	getDefaultConstructorOptions,
 	getURL,
 	TABS,
@@ -54,20 +55,38 @@ module.exports = class {
 		info(`Creating a window instance${ windowURL ? ` with URL: ${ windowURL }` : '' }`);
 
 		const window = new BrowserWindow(parameters);
-		if (windowURL) window.loadURL(windowURL);
+		const windowData = getURL(windowURL);
 
+		if (windowURL) window.loadURL(windowURL);
+		if (preferences.get(`window.${ windowData.tab }.maximized`)) window.maximize();
 		window.removeMenu();
+
+		if (windowData.isInTabs) {
+			window.once('close', () => {
+				info(`Closing window instance${ window.webContents.getURL() ? ` with URL: ${ window.webContents.getURL() }` : '' }`);
+
+				const windowPref = {
+					...window.getBounds(),
+					fullscreen: window.isFullScreen(),
+					maximized: window.isMaximized()
+				};
+				for (const key in windowPref) preferences.set(`window.${ windowData.tab }.${ key }`, windowPref[key as keyof typeof windowPref]);
+			});
+		}
+
 		window.webContents.on('new-window', (evt, newWindowURL, frameName) => {
 			evt.preventDefault();
 
-			const url = getURL(window);
-			if (url.isKrunker) {
+			if (windowData.isKrunker) {
+				const newWindowData = getURL(newWindowURL);
+
 				if (frameName === '_self') window.webContents.loadURL(newWindowURL);
-				else this.createWindow(getDefaultConstructorOptions(url.tab), newWindowURL);
+				else this.createWindow(getDefaultConstructorOptions(newWindowData.tab), newWindowURL);
 			} else {
 				shell.openExternal(newWindowURL);
 			}
 		});
+
 		window.once('ready-to-show', () => { if (typeof parameters.show === 'undefined' ? true : parameters.show) window.show(); });
 		window.webContents.once('did-finish-load', () => this.registerShortcuts(window));
 

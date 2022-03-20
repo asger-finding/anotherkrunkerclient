@@ -1,9 +1,10 @@
 const pkg = require('../../package.json');
 const path = require('path');
 const Store = require('electron-store');
-const preferences = new Store();
 
 module.exports = {
+	preferences: new Store(),
+
 	CLIENT_NAME: pkg.productName,
 	CLIENT_AUTHOR: pkg.author,
 	CLIENT_VERSION: pkg.version,
@@ -63,9 +64,12 @@ module.exports = {
 	SPLASH_ALIVE_TIME: 1500,
 
 	getDefaultConstructorOptions(name: string): Electron.BrowserWindowConstructorOptions {
+		const existsInTabs = Object.values(module.exports.TABS).includes(name);
+
 		return {
-			width: name ? preferences.get(`window.width.${ name }`, 1280) : 1280,
-			height: name ? preferences.get(`window.height.${ name }`, 720) : 720,
+			width: existsInTabs ? module.exports.preferences.get(`window.${ name }.width`, 1280) : 1280,
+			height: existsInTabs ? module.exports.preferences.get(`window.${ name }.height`, 720) : 720,
+			fullscreen: existsInTabs ? module.exports.preferences.get(`window.${ name }.fullscreen`, false) : false,
 			movable: true,
 			resizable: true,
 			fullscreenable: true,
@@ -128,18 +132,31 @@ module.exports = {
 	 * @description
 	 * Returns the current Krunker tab (if any), whether we're on Krunker, and whether quickJoin is enabled
 	 */
-	getURL(window: Electron.BrowserWindow): { url: string, tab: string, isKrunker: boolean, quickJoin: boolean } {
-		const url = new URL(window.webContents.getURL());
+	getURL(baseURL: string): { url: string, tab: string | null, isInTabs: boolean, isKrunker: boolean, quickJoin: boolean } {
+		try {
+			const url = new URL(baseURL);
 
-		const { 1: tab } = String(url.pathname.split('/'));
-		const isKrunker = url.hostname.endsWith(module.exports.TARGET_GAME_DOMAIN);
-		const quickJoin = url.searchParams.get(module.exports.QUICKJOIN_URL_QUERY_PARAM) === 'true';
+			const isKrunker = url.hostname.endsWith(module.exports.TARGET_GAME_DOMAIN);
+			const tab = isKrunker ? (String(url.pathname.split('/')[1]).replace('.html', '') || module.exports.TABS.GAME) : null;
+			const isInTabs = Object.values(module.exports.TABS).includes(tab);
+			const quickJoin = url.searchParams.get(module.exports.QUICKJOIN_URL_QUERY_PARAM) === 'true';
 
-		return {
-			url: window.webContents.getURL(),
-			tab: isKrunker ? (tab || module.exports.TABS.GAME) : null,
-			isKrunker,
-			quickJoin
-		};
+			return {
+				url: baseURL,
+				tab,
+				isInTabs,
+				isKrunker,
+				quickJoin
+			};
+		} catch (err) {
+			// fallback to default
+			return {
+				url: baseURL,
+				tab: null,
+				isInTabs: false,
+				isKrunker: false,
+				quickJoin: false
+			};
+		}
 	}
 };

@@ -18,8 +18,6 @@ module.exports = class {
 	 * Show the window on ready-to-show and callback.
 	 */
 	public static load(window: Electron.BrowserWindow, precursor: Electron.BrowserWindow | undefined): Promise<Electron.BrowserWindow> {
-		window.loadURL('https://krunker.io');
-
 		// Show the game window when things have all loaded.
 		return new Promise(resolve => {
 			window.once('ready-to-show', () => {
