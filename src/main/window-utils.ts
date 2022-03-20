@@ -1,7 +1,8 @@
-const { app } = require('electron');
+const { BrowserWindow, shell, app } = require('electron');
 const { info } = require('electron-log');
 const { register } = require('electron-localshortcut');
 const {
+	getDefaultConstructorOptions,
 	getURL,
 	TABS,
 	TARGET_GAME_URL,
@@ -45,6 +46,30 @@ module.exports = class {
 			register(window, 'F6', () => window.loadURL(TARGET_GAME_URL));
 			register(window, 'F4', () => window.loadURL(`${ TARGET_GAME_URL }?${ QUICKJOIN_URL_QUERY_PARAM }`));
 		}
+
+		return window;
+	}
+
+	public static createWindow(parameters: Electron.BrowserWindowConstructorOptions, windowURL: string | undefined): Electron.BrowserWindow {
+		info(`Creating a window instance${ windowURL ? ` with URL: ${ windowURL }` : '' }`);
+
+		const window = new BrowserWindow(parameters);
+		if (windowURL) window.loadURL(windowURL);
+
+		window.removeMenu();
+		window.webContents.on('new-window', (evt, newWindowURL, frameName) => {
+			evt.preventDefault();
+
+			const url = getURL(window);
+			if (url.isKrunker) {
+				if (frameName === '_self') window.webContents.loadURL(newWindowURL);
+				else this.createWindow(getDefaultConstructorOptions(url.tab), newWindowURL);
+			} else {
+				shell.openExternal(newWindowURL);
+			}
+		});
+		window.once('ready-to-show', () => { if (typeof parameters.show === 'undefined' ? true : parameters.show) window.show(); });
+		window.webContents.once('did-finish-load', () => this.registerShortcuts(window));
 
 		return window;
 	}

@@ -1,5 +1,7 @@
 const pkg = require('../../package.json');
 const path = require('path');
+const Store = require('electron-store');
+const preferences = new Store();
 
 module.exports = {
 	CLIENT_NAME: pkg.productName,
@@ -56,40 +58,52 @@ module.exports = {
 		['webrtc-max-cpu-consumption-percentage=100'],
 		['no-zygote']
 	],
-	SPLASH_PHYSICAL_PARAMETERS: {
-		width: 640,
-		height: 320,
-		show: false,
-		frame: false,
-		movable: false,
-		center: true,
-		resizable: false,
-		fullscreenable: false,
-		icon: path.join(__dirname, '../renderer/assets/icon.ico')
-	},
-	SPLASH_WEBPREFERENCES: {
-		contextIsolation: true,
-		worldSafeExecuteJavaScript: true,
-		enableRemoteModule: true
-	},
+
 	// How long the splash window should be visible before entering the game
 	SPLASH_ALIVE_TIME: 1500,
 
-	GAME_PHYSICAL_PARAMETERS: {
-		width: 1280,
-		height: 720,
-		show: false,
-		movable: true,
-		resizable: true,
-		darkTheme: true,
-		fullscreenable: true,
-		icon: path.join(__dirname, '../renderer/assets/icon.ico')
+	getDefaultConstructorOptions(name: string): Electron.BrowserWindowConstructorOptions {
+		return {
+			width: name ? preferences.get(`window.width.${ name }`, 1280) : 1280,
+			height: name ? preferences.get(`window.height.${ name }`, 720) : 720,
+			movable: true,
+			resizable: true,
+			fullscreenable: true,
+			backgroundColor: '#1c1c1c',
+			icon: path.join(__dirname, '../renderer/assets/icon.ico'),
+			webPreferences: {
+				contextIsolation: true,
+				worldSafeExecuteJavaScript: true,
+				enableRemoteModule: true
+			}
+		};
 	},
-	GAME_WEBPREFERENCES: {
-		nodeIntegration: false,
-		contextIsolation: true,
-		enableRemoteModule: false,
-		worldSafeExecuteJavaScript: true
+
+	get SPLASH_CONSTRUCTOR_OPTIONS(): Electron.BrowserWindowConstructorOptions {
+		return {
+			width: 640,
+			height: 320,
+			show: false,
+			frame: false,
+			movable: false,
+			center: true,
+			resizable: false,
+			fullscreenable: false,
+			icon: path.join(__dirname, '../renderer/assets/icon.ico'),
+			webPreferences: {
+				contextIsolation: true,
+				worldSafeExecuteJavaScript: true,
+				enableRemoteModule: true,
+				preload: path.join(__dirname, '../preload/splash-pre')
+			}
+		};
+	},
+
+	get GAME_CONSTRUCTOR_OPTIONS(): Electron.BrowserWindowConstructorOptions {
+		const defaultOptions = this.getDefaultConstructorOptions(this.TABS.GAME);
+		defaultOptions.webPreferences.preload = path.join(__dirname, '../preload/game-pre');
+
+		return defaultOptions;
 	},
 
 	TABS: {
@@ -114,7 +128,7 @@ module.exports = {
 	 * @description
 	 * Returns the current Krunker tab (if any), whether we're on Krunker, and whether quickJoin is enabled
 	 */
-	getURL(window: Electron.BrowserWindow) {
+	getURL(window: Electron.BrowserWindow): { url: string, tab: string, isKrunker: boolean, quickJoin: boolean } {
 		const url = new URL(window.webContents.getURL());
 
 		const { 1: tab } = String(url.pathname.split('/'));
@@ -122,6 +136,7 @@ module.exports = {
 		const quickJoin = url.searchParams.get(module.exports.QUICKJOIN_URL_QUERY_PARAM) === 'true';
 
 		return {
+			url: window.webContents.getURL(),
 			tab: isKrunker ? (tab || module.exports.TABS.GAME) : null,
 			isKrunker,
 			quickJoin

@@ -6,8 +6,11 @@ const { info } = require('electron-log');
 const {
 	CLIENT_NAME,
 	CLIENT_AUTHOR,
-	CLIENT_LICENSE_PERMALINK
+	CLIENT_LICENSE_PERMALINK,
+	SPLASH_CONSTRUCTOR_OPTIONS,
+	GAME_CONSTRUCTOR_OPTIONS
 } = require('@constants');
+const WindowUtils = require('@window-utils');
 const SplashUtils = require('@splash-utils');
 const GameUtils = require('@game-utils');
 const EventHandler = require('@event-handler');
@@ -46,13 +49,13 @@ class Application {
 		info('Initializing splash window');
 		const splashLoadTime = Date.now();
 
-		this.splashWindow = SplashUtils.createWindow();
+		this.splashWindow = WindowUtils.createWindow(SPLASH_CONSTRUCTOR_OPTIONS);
 		await SplashUtils.load(this.splashWindow);
 
 		info(`Splash window done after ${ Date.now() - splashLoadTime } ms`);
 		info('Initializing game window');
 
-		this.gameWindow = GameUtils.createGameWindow();
+		this.gameWindow = WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS);
 		await GameUtils.load(this.gameWindow, this.splashWindow);
 
 		return true;

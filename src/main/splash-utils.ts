@@ -2,7 +2,7 @@ import { ReleaseData } from '../akc';
 import Electron = require('electron');
 
 const { setVibrancy } = require('electron-acrylic-window');
-const { BrowserWindow, ipcMain } = require('electron');
+const { ipcMain } = require('electron');
 const { info, warn } = require('electron-log');
 const { get } = require('axios');
 const path = require('path');
@@ -11,8 +11,6 @@ const {
 	CLIENT_REPO,
 	CLIENT_VERSION,
 	ELECTRON_FLAGS,
-	SPLASH_PHYSICAL_PARAMETERS,
-	SPLASH_WEBPREFERENCES,
 	MESSAGE_SPLASH_DONE,
 	MESSAGE_RELEASES_DATA
 } = require('@constants');
@@ -25,7 +23,7 @@ module.exports = class {
 	 * @description
 	 * Load the splash window with the splash.html file.  
 	 * Get the client release data and emit it to the splash window.  
-	 * Show the window on dom-ready and callback.
+	 * Show the window on ready-to-show and callback.
 	 */
 	public static load(window: Electron.BrowserWindow): Promise<Electron.BrowserWindow> {
 		// Set the vibrancy of the splash window
@@ -33,13 +31,12 @@ module.exports = class {
 			theme: 'dark',
 			effect: 'blur'
 		});
-		window.removeMenu();
 		window.loadFile(path.join(__dirname, '../renderer/html/splash.html'));
 
 		// Show the splash window when things have all loaded.
 		return new Promise(resolve => {
-			window.webContents.once('dom-ready', async() => {
-				info('dom-ready reached on Splash window');
+			window.webContents.once('did-finish-load', async() => {
+				info('ready-to-show reached on Splash window');
 
 				await this.emitReleaseData(window);
 				window.show();
@@ -67,23 +64,6 @@ module.exports = class {
 
 		for (const [ flag, value ] of ELECTRON_FLAGS) app.commandLine.appendSwitch(flag, typeof value === 'undefined' ? null : value);
 		return <Array<Array<string | null>>>ELECTRON_FLAGS;
-	}
-
-	/**
-	 * @returns {Electron.BrowserWindow}
-	 * @description
-	 * Create new Electron.BrowserWindow for the splash window.
-	 */
-	public static createWindow(): Electron.BrowserWindow {
-		info('Creating new Splash window instance');
-
-		return new BrowserWindow({
-			...SPLASH_PHYSICAL_PARAMETERS,
-			webPreferences: {
-				...SPLASH_WEBPREFERENCES,
-				preload: path.join(__dirname, '../preload/splash-pre')
-			}
-		});
 	}
 
 	/**
