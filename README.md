@@ -42,5 +42,4 @@ Always use camelCase and PascalCase in variables. Use kebab-case for file names 
 &nbsp;  
 
 [![Latest version](https://img.shields.io/github/v/release/asger-finding/anotherkrunkerclient?style=for-the-badge&display_name=tag&labelColor=202225&color=006699&label=Latest%20Release)](https://github.com/asger-finding/anotherkrunkerclient/releases/latest)
-[![Total downloads](https://img.shields.io/github/downloads/asger-finding/anotherkrunkerclient/total?style=for-the-badge&display_name=tag&labelColor=202225&color=006699)](https://github.com/asger-finding/anotherkrunkerclient/releases)
 [![Discord server](https://img.shields.io/discord/GUILD_ID_HERE.svg?style=for-the-badge&label=&logo=discord&logoColor=ffffff&color=202225&labelColor=006699)](https://discord.gg/INVITE_LINK)
