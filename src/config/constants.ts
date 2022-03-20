@@ -105,6 +105,7 @@ module.exports = {
 
 	get GAME_CONSTRUCTOR_OPTIONS(): Electron.BrowserWindowConstructorOptions {
 		const defaultOptions = this.getDefaultConstructorOptions(this.TABS.GAME);
+		defaultOptions.show = false;
 		defaultOptions.webPreferences.preload = path.join(__dirname, '../preload/game-pre');
 
 		return defaultOptions;
@@ -119,7 +120,7 @@ module.exports = {
 		EDITOR: 'editor'
 	},
 
-	// ipcRenderer messages
+	// ipc messages
 	MESSAGE_SPLASH_DONE: 'splash-done',
 	MESSAGE_GAME_DONE: 'game-done',
 	MESSAGE_EXIT_CLIENT: 'exit-client',
@@ -127,10 +128,10 @@ module.exports = {
 	MESSAGE_RELEASES_DATA: 'releases-data',
 
 	/**
-	 * @param  {Electron.BrowserWindow} window
+	 * @param  {string} baseURL The URL to analyze
 	 * @returns {Object.<string, boolean>}
 	 * @description
-	 * Returns the current Krunker tab (if any), whether we're on Krunker, and whether quickJoin is enabled
+	 * Returns the current Krunker tab (if any), whether we're on Krunker, what Krunker tab we're on, and whether quickJoin is enabled
 	 */
 	getURL(baseURL: string): { url: string, tab: string | null, isInTabs: boolean, isKrunker: boolean, quickJoin: boolean } {
 		try {

@@ -13,6 +13,7 @@ const {
 module.exports = class {
 
 	/**
+	 * @param {Electron.BrowserWindow} window The window to destroy
 	 * @description
 	 * Destroy the splash window.
 	 */
@@ -51,6 +52,16 @@ module.exports = class {
 		return window;
 	}
 
+	/**
+	 * @param  {Electron.BrowserWindowConstructorOptions} parameters
+	 * @param  {(string|undefined)} windowURL
+	 * @returns {Electron.BrowserWindow} Newly generated window instance
+	 * @description
+	 * Create a new window instance, load given URL (if any)  
+	 * Register shortcuts for the window. If show is true in parameters, show the window.  
+	 * If the window is a Krunker tab, set the window scaling preferences.  
+	 * Return the window
+	 */
 	public static createWindow(parameters: Electron.BrowserWindowConstructorOptions, windowURL: string | undefined): Electron.BrowserWindow {
 		info(`Creating a window instance${ windowURL ? ` with URL: ${ windowURL }` : '' }`);
 
@@ -61,6 +72,7 @@ module.exports = class {
 		if (preferences.get(`window.${ windowData.tab }.maximized`)) window.maximize();
 		window.removeMenu();
 
+		// If the window is a Krunker tab, set the window scaling preferences.
 		if (windowData.isInTabs) {
 			window.once('close', () => {
 				info(`Closing window instance${ window.webContents.getURL() ? ` with URL: ${ window.webContents.getURL() }` : '' }`);
@@ -74,6 +86,7 @@ module.exports = class {
 			});
 		}
 
+		// When Krunker URLs are opened, open them in the default electron window. If the URL is external, open it in the default browser.
 		window.webContents.on('new-window', (evt, newWindowURL, frameName) => {
 			evt.preventDefault();
 
@@ -87,7 +100,10 @@ module.exports = class {
 			}
 		});
 
+		// If parameters have an explicit show true value, show the window.
 		window.once('ready-to-show', () => { if (typeof parameters.show === 'undefined' ? true : parameters.show) window.show(); });
+
+		// Register shortcuts for the window.
 		window.webContents.once('did-finish-load', () => this.registerShortcuts(window));
 
 		return window;
