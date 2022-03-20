@@ -60,11 +60,11 @@ module.exports = {
 		width: 640,
 		height: 320,
 		show: false,
-		resizable: false,
-		fullscreenable: false,
+		frame: false,
 		movable: false,
 		center: true,
-		frame: false,
+		resizable: false,
+		fullscreenable: false,
 		icon: path.join(__dirname, '../renderer/assets/icon.ico')
 	},
 	SPLASH_WEBPREFERENCES: {
@@ -79,16 +79,17 @@ module.exports = {
 		width: 1280,
 		height: 720,
 		show: false,
-		resizable: true,
-		fullscreenable: true,
 		movable: true,
+		resizable: true,
+		darkTheme: true,
+		fullscreenable: true,
 		icon: path.join(__dirname, '../renderer/assets/icon.ico')
 	},
 	GAME_WEBPREFERENCES: {
 		nodeIntegration: false,
 		contextIsolation: true,
-		worldSafeExecuteJavaScript: true,
-		enableRemoteModule: false
+		enableRemoteModule: false,
+		worldSafeExecuteJavaScript: true
 	},
 
 	TABS: {
@@ -107,6 +108,12 @@ module.exports = {
 	MESSAGE_OPEN_SETTINGS: 'open-settings',
 	MESSAGE_RELEASES_DATA: 'releases-data',
 
+	/**
+	 * @param  {Electron.BrowserWindow} window
+	 * @returns {Object.<string, boolean>}
+	 * @description
+	 * Returns the current Krunker tab (if any), whether we're on Krunker, and whether quickJoin is enabled
+	 */
 	getURL(window: Electron.BrowserWindow) {
 		const url = new URL(window.webContents.getURL());
 
