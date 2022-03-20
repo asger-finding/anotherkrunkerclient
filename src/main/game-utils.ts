@@ -20,24 +20,25 @@ module.exports = class {
 	 * Load the game window with the krunker.io URL
 	 * Show the window on dom-ready and callback.
 	 */
-	public static async load(gameWindow: Electron.BrowserWindow, precursor: Electron.BrowserWindow | undefined): Promise<Electron.BrowserWindow> {
+	public static load(gameWindow: Electron.BrowserWindow, precursor: Electron.BrowserWindow | undefined): Promise<Electron.BrowserWindow> {
 		gameWindow.loadURL('https://krunker.io');
 		gameWindow.removeMenu();
 
 		// Show the game window when things have all loaded.
 		return new Promise(resolve => {
-			gameWindow.webContents.once('dom-ready', async() => {
+			gameWindow.webContents.once('dom-ready', () => {
 				info('dom-ready reached on Game window');
 
+				WindowUtils.registerShortcuts(gameWindow);
 				gameWindow.show();
-				if (IS_DEVELOPMENT) gameWindow.webContents.openDevTools({ mode: 'detach' });
+				if (IS_DEVELOPMENT) gameWindow.webContents.openDevTools();
 				if (precursor) WindowUtils.destroyWindow(precursor);
 
 				// Resolve the promise when everything is done and dusted in the game window.
-				ipcMain.on(MESSAGE_GAME_DONE, () => {
+				ipcMain.once(MESSAGE_GAME_DONE, () => {
 					info(`${ MESSAGE_GAME_DONE } received`);
 
-					resolve(gameWindow);
+					return resolve(gameWindow);
 				});
 			});
 		});

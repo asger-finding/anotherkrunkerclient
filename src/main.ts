@@ -55,23 +55,19 @@ class Application {
 		this.gameWindow = GameUtils.createGameWindow();
 		await GameUtils.load(this.gameWindow, this.splashWindow);
 
-		this.gameWindow.once('ready-to-show', () => {
-			SplashUtils.destroyWindow(this.splashWindow);
-			this.splashWindow = null;
-		});
-
 		return true;
 	}
 
 }
 
 const client = new Application();
-app.on('ready', async() => {
+app.once('ready', async() => {
 	await client.init();
 
 	info('Client initialized');
 });
 
+app.on('quit', () => app.quit());
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') return app.quit();
 	return null;

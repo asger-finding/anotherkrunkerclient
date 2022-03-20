@@ -16,16 +16,14 @@ module.exports = class {
 	 */
 	public registerEventListeners(): void {
 		// Close the client when anotherkrunkerclient.exitClient() is called from the renderer process
-		this.registerEventListener(MESSAGE_EXIT_CLIENT, () => {
-			app.quit();
-		});
+		this.registerEventListener(MESSAGE_EXIT_CLIENT, () => app.quit());
 	}
 
 	/**
 	 * 
-	 * @param message The message to listen for
-	 * @param callback The callback to run when the message is received
-	 * @returns The id of the event listener
+	 * @param {string} message The message to listen for
+	 * @param {function} callback The callback to run when the message is received
+	 * @returns {number} The id of the event listener
 	 * @description
 	 * Register an event listener for a message and set an id and callback for it.
 	 */
@@ -38,13 +36,14 @@ module.exports = class {
 	}
 
 	/**
-	 * @param message The message to remove listeners for
+	 * @param {string} message The message to remove the eventlisteners for
 	 * @description
 	 * Remove all event listeners for a message.
 	 */
-	public destroyAllEventListenersForMessage(message: string): void {
+	public destroyAllEventListenersForMessage(message: string): boolean {
 		ipcMain.removeAllListeners(message);
 		this.eventListeners.filter(eventListener => eventListener.message !== message);
+		return true;
 	}
 
 };

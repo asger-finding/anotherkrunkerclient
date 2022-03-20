@@ -27,7 +27,7 @@ module.exports = class {
 	 * Get the client release data and emit it to the splash window.  
 	 * Show the window on dom-ready and callback.
 	 */
-	public static async load(window: Electron.BrowserWindow): Promise<Electron.BrowserWindow> {
+	public static load(window: Electron.BrowserWindow): Promise<Electron.BrowserWindow> {
 		// Set the vibrancy of the splash window
 		setVibrancy(window, {
 			theme: 'dark',
@@ -46,10 +46,10 @@ module.exports = class {
 				if (IS_DEVELOPMENT) window.webContents.openDevTools({ mode: 'detach' });
 
 				// Resolve the promise when everything is done and dusted in the splash window.
-				ipcMain.on(MESSAGE_SPLASH_DONE, () => {
+				ipcMain.once(MESSAGE_SPLASH_DONE, () => {
 					info(`${ MESSAGE_SPLASH_DONE } received`);
 
-					resolve(window);
+					return resolve(window);
 				});
 			});
 		});
@@ -87,29 +87,6 @@ module.exports = class {
 	}
 
 	/**
-	 * @description
-	 * Destroy the splash window.
-	 */
-	public static destroyWindow(window: Electron.BrowserWindow): void {
-		info('Destroying Splash window instance');
-		info(window.webContents.isDevToolsOpened());
-		if (window.webContents.isDevToolsOpened()) window.webContents.closeDevTools();
-
-		return window.destroy();
-	}
-
-	/**
-	 * 
-	 * @returns {string} package version
-	 * @description
-	 * Get the current version of the client from the package.
-	 */
-	public static getClientVersion(): string {
-		const version: string = CLIENT_VERSION;
-		return version;
-	}
-
-	/**
 	 * @returns {Promise<ReleaseData>} ReleaseData promise for current client version, latest client version, and (optional) url to update
 	 * @description
 	 * Get the latest release from GitHub.  
@@ -120,14 +97,14 @@ module.exports = class {
 
 		const newest: ReleaseData = await get(`https://api.github.com/repos/${ CLIENT_REPO }/releases/latest`)
 			.then((response: { data: { tag_name: string, html_url: string } }) => (<ReleaseData>{
-				clientVersion: this.getClientVersion(),
+				clientVersion: CLIENT_VERSION,
 				releaseVersion: response.data.tag_name,
 				releaseUrl: response.data.html_url
 			}))
 			.catch((error: Error) => {
 				warn(`Error getting latest GitHub release: ${ error.message }`);
 				return <ReleaseData>{
-					clientVersion: this.getClientVersion(),
+					clientVersion: CLIENT_VERSION,
 					releaseVersion: '0.0.0',
 					releaseUrl: ''
 				};
@@ -143,7 +120,7 @@ module.exports = class {
 	 * Emit the client release data to the splash window event listener.
 	 */
 	private static async emitReleaseData(window: Electron.BrowserWindow): Promise<void> {
-		await window.webContents.send(MESSAGE_RELEASES_DATA, await this.getReleaseData());
+		return window.webContents.send(MESSAGE_RELEASES_DATA, await this.getReleaseData());
 	}
 
 };

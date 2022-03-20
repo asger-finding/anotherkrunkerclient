@@ -12,7 +12,7 @@ module.exports = class {
 	 */
 	public static getReleaseDataFromEventListener() {
 		return new Promise(resolve => {
-			ipcRenderer.on(MESSAGE_RELEASES_DATA, (_event, data: ReleaseData) => {
+			ipcRenderer.once(MESSAGE_RELEASES_DATA, (_event, data: ReleaseData) => {
 				resolve(data);
 			});
 		});

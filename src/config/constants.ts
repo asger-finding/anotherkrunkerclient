@@ -7,6 +7,9 @@ module.exports = {
 	CLIENT_VERSION: pkg.version,
 	CLIENT_REPO: 'asger-finding/anotherkrunkerclient',
 	CLIENT_LICENSE_PERMALINK: 'https://yerl.org/JwGdZ',
+	TARGET_GAME_DOMAIN: 'krunker.io',
+	TARGET_GAME_URL: 'https://krunker.io/',
+	QUICKJOIN_URL_QUERY_PARAM: 'quickjoin',
 	// eslint-disable-next-line global-require
 	IS_DEVELOPMENT: process.type === 'main' ? require('electron-is-dev') : 'unknown',
 	ELECTRON_FLAGS: [
@@ -74,7 +77,6 @@ module.exports = {
 		show: false,
 		resizable: true,
 		fullscreenable: true,
-		fullscreen: true,
 		movable: true,
 		icon: path.join(__dirname, '../renderer/assets/icon.ico')
 	},
@@ -85,10 +87,32 @@ module.exports = {
 		enableRemoteModule: false
 	},
 
+	TABS: {
+		GAME: 'game',
+		SOCIAL: 'social',
+		DOCS: 'docs',
+		COMP: 'comp',
+		VIEWER: 'viewer',
+		EDITOR: 'editor'
+	},
+
 	// ipcRenderer messages
 	MESSAGE_SPLASH_DONE: 'splash-done',
 	MESSAGE_GAME_DONE: 'game-done',
 	MESSAGE_EXIT_CLIENT: 'exit-client',
 	MESSAGE_OPEN_SETTINGS: 'open-settings',
-	MESSAGE_RELEASES_DATA: 'releases-data'
+	MESSAGE_RELEASES_DATA: 'releases-data',
+
+	getURL(window: Electron.BrowserWindow) {
+		const url = new URL(window.webContents.getURL());
+		const isKrunker = url.hostname.endsWith(module.exports.TARGET_GAME_DOMAIN);
+		const quickJoin = url.searchParams.get(module.exports.QUICKJOIN_URL_QUERY_PARAM) === 'true';
+		const { 1: tab } = (String(url.pathname.split('/')));
+
+		return {
+			tab: isKrunker ? (tab || module.exports.TABS.GAME) : null,
+			isKrunker,
+			quickJoin
+		};
+	}
 };
