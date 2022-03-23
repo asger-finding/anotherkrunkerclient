@@ -103,12 +103,14 @@ module.exports = {
 		};
 	},
 
+	// TODO: Unsafe! I can't find an alternative to this as you can't use multiple preload scripts with different webPreferences, and contextBridge.exposeInMainWorld only allows for objects. Enabling nodeIntegration will not work.
 	get GAME_CONSTRUCTOR_OPTIONS(): Electron.BrowserWindowConstructorOptions {
-		const defaultOptions = this.getDefaultConstructorOptions(this.TABS.GAME);
-		defaultOptions.webPreferences.preload = path.join(__dirname, '../preload/game-pre');
-		defaultOptions.show = false;
+		const options = this.getDefaultConstructorOptions(this.TABS.GAME);
+		options.webPreferences.preload = path.join(__dirname, '../preload/game-pre');
+		options.webPreferences.contextIsolation = false;
+		options.show = false;
 
-		return defaultOptions;
+		return options;
 	},
 
 	TABS: {

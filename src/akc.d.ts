@@ -2,6 +2,7 @@ export {};
 
 declare global {
 	export interface Window {
+		OffCliV: boolean;
 		openSettings: () => null;
 		exitClient: () => null;
 	}

@@ -1,7 +1,7 @@
 require('./aliases');
 import Electron = require('electron');
 
-const { app } = require('electron');
+const { app, protocol } = require('electron');
 const { info } = require('electron-log');
 const {
 	CLIENT_NAME,
@@ -63,6 +63,11 @@ class Application {
 	}
 
 }
+
+protocol.registerSchemesAsPrivileged([{
+	scheme: CLIENT_NAME,
+	privileges: { secure: true, corsEnabled: true }
+}]);
 
 const client = new Application();
 app.once('ready', async() => {
