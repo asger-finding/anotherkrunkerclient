@@ -1,6 +1,15 @@
+interface SettingsGenerator {
+	createCheckbox(onclick: (this: GlobalEventHandlers, evt: Event) => unknown, inputNodeAttributes: Partial<HTMLInputElement>): HTMLLabelElement;
+	createSlider(oninput: (this: GlobalEventHandlers, evt: Event) => unknown, inputNodeAttributes: Partial<HTMLInputElement>): [ HTMLInputElement, HTMLDivElement ];
+	createSelect(onchange: (this: GlobalEventHandlers, evt: Event) => unknown, inputNodeAttributes: Partial<HTMLSelectElement>, options: { [key: string]: string }): HTMLSelectElement;
+	createColor(onchange: (this: GlobalEventHandlers, evt: Event) => unknown, inputNodeAttributes: Partial<HTMLInputElement>): HTMLInputElement;
+	createText(oninput: (this: GlobalEventHandlers, evt: Event) => unknown, inputNodeAttributes: Partial<HTMLInputElement>): HTMLInputElement;
+}
+
 declare global {
 	export interface Window {
 		OffCliV: boolean;
+		SettingsGenerator: SettingsGenerator;
 		clientAPI: {
 			clientName: string;
 
@@ -10,7 +19,7 @@ declare global {
 			setToStore(key: string, value: unknown): void;
 			storeHas(key: string): boolean;
 			onNotWhiteListed(key: string): void;
-		}
+		};
 		openSettings: () => null;
 		closeClient: () => null;
 	}

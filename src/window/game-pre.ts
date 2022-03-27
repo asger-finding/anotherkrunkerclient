@@ -3,6 +3,7 @@ import { KrunkerMap } from '../akc';
 
 (function() {
 	require('../aliases');
+	require('@game-settings');
 	require('@game-api');
 
 	const { ipcRenderer } = require('electron');
