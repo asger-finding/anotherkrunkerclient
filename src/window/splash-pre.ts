@@ -1,15 +1,12 @@
 import { ReleaseData } from '../akc';
 require('../aliases');
 
-const { ipcRenderer, contextBridge, shell } = require('electron');
+const { ipcRenderer, shell } = require('electron');
 const { gt: versionGreater, diff: versionDifference } = require('semver');
 const { info } = require('electron-log');
 const {
-	CLIENT_NAME,
 	SPLASH_ALIVE_TIME,
-	MESSAGE_SPLASH_DONE,
-	MESSAGE_EXIT_CLIENT,
-	MESSAGE_OPEN_SETTINGS
+	MESSAGE_SPLASH_DONE
 } = require('@constants');
 const SplashPreloadUtils = require('@splash-pre-utils');
 
@@ -47,14 +44,3 @@ async function setupEventListeners() {
 	if (document.readyState === 'complete') document.dispatchEvent(new Event('DOMContentLoaded'));
 }
 setupEventListeners();
-
-contextBridge.exposeInMainWorld(CLIENT_NAME, {
-	exitClient() {
-		ipcRenderer.send(MESSAGE_EXIT_CLIENT);
-		return null;
-	},
-	openSettings() {
-		ipcRenderer.send(MESSAGE_OPEN_SETTINGS);
-		return null;
-	}
-});

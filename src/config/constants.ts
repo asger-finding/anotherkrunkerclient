@@ -98,15 +98,21 @@ module.exports = {
 				contextIsolation: true,
 				worldSafeExecuteJavaScript: true,
 				enableRemoteModule: true,
-				preload: path.join(__dirname, '../preload/splash-pre')
+				preload: path.join(__dirname, '../window/splash-pre')
 			}
 		};
 	},
 
-	// TODO: Unsafe! I can't find an alternative to this as you can't use multiple preload scripts with different webPreferences, and contextBridge.exposeInMainWorld only allows for objects. Enabling nodeIntegration will not work.
+	/**
+	 * TODO:  Unsafe!
+	 * I can't find an alternative to setting contextIsolation to off and risking it.
+	 * Krunker hangs when enabling nodeIntegration, so using executeJavascript is not an option.
+	 * You cannot preload multiple scripts with different webPreferences.
+	 * contextBridge.exposeInMainWorld only allows for exposing objects.
+	 */
 	get GAME_CONSTRUCTOR_OPTIONS(): Electron.BrowserWindowConstructorOptions {
 		const options = this.getDefaultConstructorOptions(this.TABS.GAME);
-		options.webPreferences.preload = path.join(__dirname, '../preload/game-pre');
+		options.webPreferences.preload = path.join(__dirname, '../window/game-pre');
 		options.webPreferences.contextIsolation = false;
 		options.show = false;
 

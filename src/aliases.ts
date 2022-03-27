@@ -5,9 +5,9 @@ addAliases({
 	// config
 	'@constants': resolve(__dirname, './config/constants'),
 
-	// preload
-	'@splash-pre': resolve(__dirname, './preload/splash-pre'),
-	'@splash-pre-utils': resolve(__dirname, './preload/splash-pre-utils'),
+	// window
+	'@splash-pre-utils': resolve(__dirname, './window/splash-pre-utils'),
+	'@game-api': resolve(__dirname, './window/game-api'),
 
 	// the deep vast emptiness of the renderer
 

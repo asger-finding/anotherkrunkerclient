@@ -37,7 +37,7 @@ To lint the CSS, run `yarn lintcss`
 
 ### Notes for Developing
 
-Always use camelCase and PascalCase in variables. Use kebab-case for file names and put them in their appropiate folders (main, renderer, preload, config)
+Always use camelCase and PascalCase in variables. Use kebab-case for file names and put them in their appropiate folders (main, renderer, window, config)
 
 &nbsp;  
 

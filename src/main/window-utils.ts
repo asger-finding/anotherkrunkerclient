@@ -91,9 +91,8 @@ module.exports = class {
 		window.webContents.on('new-window', (evt, newWindowURL, frameName) => {
 			evt.preventDefault();
 
-			if (windowData.isKrunker) {
-				const newWindowData = getURLData(newWindowURL);
-
+			const newWindowData = getURLData(newWindowURL);
+			if (newWindowData.isKrunker) {
 				if (frameName === '_self') window.webContents.loadURL(newWindowURL);
 				else this.createWindow(getDefaultConstructorOptions(newWindowData.tab), newWindowURL);
 			} else {
