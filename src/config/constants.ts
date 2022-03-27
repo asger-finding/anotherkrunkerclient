@@ -78,7 +78,7 @@ module.exports = {
 			webPreferences: {
 				contextIsolation: true,
 				worldSafeExecuteJavaScript: true,
-				enableRemoteModule: true
+				enableRemoteModule: false
 			}
 		};
 	},
@@ -97,7 +97,7 @@ module.exports = {
 			webPreferences: {
 				contextIsolation: true,
 				worldSafeExecuteJavaScript: true,
-				enableRemoteModule: true,
+				enableRemoteModule: false,
 				preload: path.join(__dirname, '../window/splash-pre')
 			}
 		};
@@ -141,7 +141,7 @@ module.exports = {
 	 * @description
 	 * Returns the current Krunker tab (if any), whether we're on Krunker, what Krunker tab we're on, and whether quickJoin is enabled
 	 */
-	getURLData(baseURL: string): { url: string, tab: string | null, isInTabs: boolean, isKrunker: boolean, quickJoin: boolean } {
+	getURLData(baseURL: string): { url: string, tab: string | null, isInTabs: boolean, isKrunker: boolean, quickJoin: boolean, invalid: boolean } {
 		try {
 			const url = new URL(baseURL);
 
@@ -152,6 +152,7 @@ module.exports = {
 
 			return {
 				url: baseURL,
+				invalid: false,
 				tab,
 				isInTabs,
 				isKrunker,
@@ -161,6 +162,7 @@ module.exports = {
 			// fallback to default
 			return {
 				url: baseURL,
+				invalid: true,
 				tab: null,
 				isInTabs: false,
 				isKrunker: false,

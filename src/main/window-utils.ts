@@ -100,6 +100,14 @@ module.exports = class {
 			}
 		});
 
+		window.webContents.on('will-navigate', (evt, newWindowURL) => {
+			evt.preventDefault();
+
+			const newWindowData = getURLData(newWindowURL);
+			if (!newWindowData.isKrunker) shell.openExternal(newWindowURL);
+			else if (newWindowData.invalid) window.webContents.loadURL(newWindowURL);
+		});
+
 		// If parameters have an explicit show true value, show the window.
 		window.once('ready-to-show', () => { if (typeof parameters.show === 'undefined' ? true : parameters.show) window.show(); });
 
