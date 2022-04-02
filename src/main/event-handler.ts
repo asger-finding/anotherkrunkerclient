@@ -15,7 +15,7 @@ module.exports = class {
 	 * Set up event listeners between main and renderer processes.
 	 */
 	public registerEventListeners(): void {
-		// Close the client when anotherkrunkerclient.exitClient() is called from the renderer process
+		// Close the client when MESSAGE_EXIT_CLIENT is called from the renderer process
 		this.registerEventListener(MESSAGE_EXIT_CLIENT, () => app.quit());
 	}
 

@@ -7,10 +7,7 @@
   "license": "GPLV3",
   "private": true,
   "main": "build/main.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/asger-finding/anotherkrunkerclient.git"
-  },
+  "repository": "asger-finding/anotherkrunkerclient",
   "scripts": {
     "start": "yarn del ./build && yarn build && yarn copy && electron ./build/main.js",
     "deploy": "yarn del ./build ./dist && yarn build && yarn copy && electron-builder --win && yarn postinstall",

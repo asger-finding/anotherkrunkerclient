@@ -47,6 +47,8 @@ class Application {
 	 * Initialize the app and create the splash window.
 	 */
 	public async init(): Promise<boolean> {
+		app.setName(CLIENT_NAME);
+
 		info('Initializing splash window');
 		const splashLoadTime = Date.now();
 

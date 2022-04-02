@@ -8,7 +8,7 @@ module.exports = {
 	CLIENT_NAME: pkg.productName,
 	CLIENT_AUTHOR: pkg.author,
 	CLIENT_VERSION: pkg.version,
-	CLIENT_REPO: 'asger-finding/anotherkrunkerclient',
+	CLIENT_REPO: pkg.repository,
 	CLIENT_LICENSE_PERMALINK: 'https://yerl.org/JwGdZ',
 
 	TARGET_GAME_DOMAIN: 'krunker.io',

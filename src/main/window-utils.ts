@@ -71,7 +71,6 @@ module.exports = class {
 		if (windowURL) window.loadURL(windowURL);
 		if (preferences.get(`window.${ windowData.tab }.maximized`)) window.maximize();
 		window.removeMenu();
-		window.setTitle(`${ app.getName() } — ${ windowData.tab }`);
 
 		// If the window is a Krunker tab, set the window scaling preferences.
 		if (windowData.isInTabs) {
@@ -105,14 +104,18 @@ module.exports = class {
 
 			const newWindowData = getURLData(newWindowURL);
 			if (!newWindowData.isKrunker) shell.openExternal(newWindowURL);
-			else if (newWindowData.invalid) window.webContents.loadURL(newWindowURL);
+			else if (!newWindowData.invalid) window.webContents.loadURL(newWindowURL);
 		});
 
 		// If parameters have an explicit show true value, show the window.
 		window.once('ready-to-show', () => { if (typeof parameters.show === 'undefined' ? true : parameters.show) window.show(); });
 
 		// Register shortcuts for the window.
-		window.webContents.once('did-finish-load', () => this.registerShortcuts(window));
+		window.webContents.once('did-finish-load', () => {
+			if (windowData.tab) window.setTitle(`${ app.getName() } — ${ windowData.tab }`);
+
+			this.registerShortcuts(window);
+		});
 
 		return window;
 	}
