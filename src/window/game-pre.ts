@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-import { KrunkerMap } from '../akc';
+import { KrunkerMap } from '../client';
 
 (function() {
 	require('../aliases');

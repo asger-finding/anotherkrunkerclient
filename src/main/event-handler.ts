@@ -1,4 +1,4 @@
-import { EventListener } from '../akc';
+import { EventListener } from '../client';
 
 const { app, ipcMain } = require('electron');
 const {

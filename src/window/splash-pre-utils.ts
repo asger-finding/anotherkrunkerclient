@@ -1,4 +1,4 @@
-import { ReleaseData } from '../akc';
+import { ReleaseData } from '../client';
 
 const { ipcRenderer } = require('electron');
 const { MESSAGE_RELEASES_DATA } = require('@constants');

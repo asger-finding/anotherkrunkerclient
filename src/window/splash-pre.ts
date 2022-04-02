@@ -1,4 +1,4 @@
-import { ReleaseData } from '../akc';
+import { ReleaseData } from '../client';
 require('../aliases');
 
 const { ipcRenderer, shell } = require('electron');

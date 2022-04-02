@@ -1,4 +1,4 @@
-import { ReleaseData } from '../akc';
+import { ReleaseData } from '../client';
 import Electron = require('electron');
 
 const { setVibrancy } = require('electron-acrylic-window');
