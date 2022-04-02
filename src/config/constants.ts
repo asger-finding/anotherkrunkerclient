@@ -26,16 +26,15 @@ module.exports = {
 		[ 'max-gum-fps', '9999' ],
 
 		// Enable WebGL
-		['enable-webgl2-compute-context'],
+		['enable-webgl'],
 
 		// Don't require user gesture for autoplay
 		[ 'autoplay-policy', 'no-user-gesture-required' ],
 
-		// Performance optimization flags TODO: client setting for these
+		// Performance optimization flags. TODO: client setting for these
 		['enable-highres-timer'],
 		['enable-gpu-rasterization'],
 		['enable-zero-copy'],
-		['enable-webgl'],
 		['enable-javascript-harmony'],
 		['enable-future-v8-vm-features'],
 		['enable-quic'],
@@ -53,11 +52,14 @@ module.exports = {
 		['disable-bundled-ppapi-flash'],
 		['ignore-gpu-blocklist'],
 		['canvas-oop-rasterization'],
+		['no-zygote'],
+		['disable-background-timer-throttling'],
+		['disable-renderer-backgrounding'],
+		['disable-ipc-flooding-protection'],
+
 		[ 'max-active-webgl-contexts', 100 ],
-		[ 'high-dpi-support', 1 ],
 		[ 'renderer-process-limit', 100 ],
-		['webrtc-max-cpu-consumption-percentage=100'],
-		['no-zygote']
+		[ 'webrtc-max-cpu-consumption-percentage', 100 ]
 	],
 
 	// How long the splash window should be visible before entering the game
