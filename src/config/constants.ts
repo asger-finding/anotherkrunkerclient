@@ -11,7 +11,7 @@ module.exports = {
 	CLIENT_AUTHOR: pkg.author,
 	CLIENT_VERSION: pkg.version,
 	CLIENT_REPO: pkg.repository,
-	CLIENT_LICENSE_PERMALINK: 'https://yerl.org/JwGdZ',
+	CLIENT_LICENSE_PERMALINK: 'https://yerl.org/ZKZ8V',
 
 	TARGET_GAME_DOMAIN: 'krunker.io',
 	TARGET_GAME_URL: 'https://krunker.io/',
