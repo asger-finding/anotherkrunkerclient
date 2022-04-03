@@ -75,5 +75,3 @@ module.exports = class {
 	}
 
 };
-
-export {};
