@@ -13,8 +13,6 @@ All good features from other clients crammed into one neat, fast package.
 ## Things to do
 
 - Everything in the feature tracking [issue](https://github.com/asger-finding/anotherkrunkerclient/issues/1#issue-1167443624).
-- Terser minification
-- Sass instead of CSS
 
 ## Supported operating systems
 
