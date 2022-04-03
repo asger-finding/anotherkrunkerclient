@@ -22,22 +22,20 @@ All good features from other clients crammed into one neat, fast package.
 ## Contributing
 
 Note: Use node &lt; 17, or electron-acrylic-window won't compile with electron-builder. This is an oversight on the their end, and is being adressed in an issue [here](https://github.com/Seo-Rii/electron-acrylic-window/issues/85).  
+<!-- Let's just drop the electron-acylic-window, shouldn't we? -->
 
-### Getting Started
+### Getting started
 
 - Install [yarn](https://yarnpkg.com/) package manager
 - Run `yarn install` to install the dependencies
 - To start the app, run `yarn start`
 
-To compile the app, run `yarn deploy`  
-To lint the Typescript, run `yarn lint`  
-To lint the CSS, run `yarn lintcss`
+To lint, run `yarn lint`  
+To compile the app, run `yarn deploy`
 
-### Notes for Developing
+### Notes for developing
 
-Always use camelCase and PascalCase in variables. Use kebab-case for file names and put them in their appropiate folders (main, renderer, window, config)
-
-&nbsp;  
+Use ESLint and avoid having any warnings or errors unless strictly necessary! Use kebab-case for file names and put them in their appropiate folders (main, renderer, window, config)  
 
 [![Latest version](https://img.shields.io/github/v/release/asger-finding/anotherkrunkerclient?style=for-the-badge&display_name=tag&labelColor=202225&color=006699&label=Latest%20Release)](https://github.com/asger-finding/anotherkrunkerclient/releases/latest)
 [![Discord server](https://img.shields.io/discord/GUILD_ID_HERE.svg?style=for-the-badge&label=&logo=discord&logoColor=ffffff&color=202225&labelColor=006699)](https://discord.gg/INVITE_LINK)
