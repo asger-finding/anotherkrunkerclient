@@ -547,11 +547,6 @@ ansi-colors@^1.0.1:
   dependencies:
     ansi-wrap "^0.1.0"
 
-ansi-colors@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-4.1.1.tgz#cbb9ae256bf750af1eab344f229aa27fe94ba348"
-  integrity sha512-JoX0apGbHaUJBNl6yF+p6JAFYZ666/hhCGKN5t9QFjbJQKUU/g8MNbFDbvfrgKXvI1QpZplPOnwIo99lX/AAmA==
-
 ansi-gray@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/ansi-gray/-/ansi-gray-0.1.1.tgz#2962cf54ec9792c48510a3deb524436861ef7251"
@@ -1498,19 +1493,6 @@ copy-props@^2.0.1:
     each-props "^1.3.2"
     is-plain-object "^5.0.0"
 
-copyfiles@^2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/copyfiles/-/copyfiles-2.4.1.tgz#d2dcff60aaad1015f09d0b66e7f0f1c5cd3c5da5"
-  integrity sha512-fereAvAvxDrQDOXybk3Qu3dPbOoKoysFMWtkY3mv5BsL8//OSZVL5DCLYqgRfY5cWirgRzlC+WSrxp6Bo3eNZg==
-  dependencies:
-    glob "^7.0.5"
-    minimatch "^3.0.3"
-    mkdirp "^1.0.4"
-    noms "0.0.0"
-    through2 "^2.0.1"
-    untildify "^4.0.0"
-    yargs "^16.1.0"
-
 core-util-is@1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
@@ -2014,11 +1996,6 @@ electron-osx-sign@^0.5.0:
     isbinaryfile "^3.0.2"
     minimist "^1.2.0"
     plist "^3.0.1"
-
-electron-prompt@^1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/electron-prompt/-/electron-prompt-1.7.0.tgz#6f9dedb2dac1dd6bad2e6592ab81cb87c37f2a35"
-  integrity sha512-IfqJYEgcRO6NuyPROo8AtdkAiZ6N9I1lQEf4dJAkPuhV5YgOHdmLqZJf6OXumZJfzrjpzCM5jHeYOrhGdgbnEA==
 
 electron-publish@22.14.13:
   version "22.14.13"
@@ -2847,7 +2824,7 @@ glob-watcher@^5.0.3:
     normalize-path "^3.0.0"
     object.defaults "^1.1.0"
 
-glob@^7.0.5, glob@^7.1.1, glob@^7.1.3, glob@^7.1.4, glob@^7.1.6:
+glob@^7.1.1, glob@^7.1.3, glob@^7.1.4, glob@^7.1.6:
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.2.0.tgz#d15535af7732e02e948f4c41628bd910293f6023"
   integrity sha512-lmLf6gtyrPq8tTjSmrO94wBeQbFR3HbLHbuyD69wuyQkImp2hWqMGB47OX65FBkPffO641IP9jWa1z4ivqG26Q==
@@ -3010,14 +2987,6 @@ gulp-if@^3.0.0:
     ternary-stream "^3.0.0"
     through2 "^3.0.1"
 
-gulp-ignore@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/gulp-ignore/-/gulp-ignore-3.0.0.tgz#be9dfda29c6de4048b8348fe396ebe1d1a8711ce"
-  integrity sha512-hRQDJipaU5A84J7QacNGG+bnFU3QLESdjuJCRTAZ5VuKsz4LmvOrECFJeeCtqxP3RV0Pn6mawU0Q3CFZGpirSg==
-  dependencies:
-    gulp-match "^1.1.0"
-    through2 "^3.0.1"
-
 gulp-libsquoosh@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/gulp-libsquoosh/-/gulp-libsquoosh-1.1.2.tgz#ea6aa1c5503b8bd8b2e38e52a8a5b5657f2dfa3e"
@@ -3065,18 +3034,6 @@ gulp-swc@^1.2.3:
     plugin-error "^1.0.1"
     replace-ext "^2.0.0"
     vinyl-sourcemaps-apply "^0.2.1"
-
-gulp-typescript@^6.0.0-alpha.1:
-  version "6.0.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/gulp-typescript/-/gulp-typescript-6.0.0-alpha.1.tgz#fcb0dbbc79c34201f0945c6323c194a8f5455a04"
-  integrity sha512-KoT0TTfjfT7w3JItHkgFH1T/zK4oXWC+a8xxKfniRfVcA0Fa1bKrIhztYelYmb+95RB80OLMBreknYkdwzdi2Q==
-  dependencies:
-    ansi-colors "^4.1.1"
-    plugin-error "^1.0.1"
-    source-map "^0.7.3"
-    through2 "^3.0.1"
-    vinyl "^2.2.0"
-    vinyl-fs "^3.0.3"
 
 gulp@^4.0.2:
   version "4.0.2"
@@ -3316,7 +3273,7 @@ inflight@^1.0.4:
     once "^1.3.0"
     wrappy "1"
 
-inherits@2, inherits@^2.0.1, inherits@^2.0.3, inherits@^2.0.4, inherits@~2.0.1, inherits@~2.0.3:
+inherits@2, inherits@^2.0.1, inherits@^2.0.3, inherits@^2.0.4, inherits@~2.0.3:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
@@ -3675,11 +3632,6 @@ is-yarn-global@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/is-yarn-global/-/is-yarn-global-0.3.0.tgz#d502d3382590ea3004893746754c89139973e232"
   integrity sha512-VjSeb/lHmkoyd8ryPVIKvOCn4D1koMqY+vqyjjUfc3xyKtP4dYOxM44sZrnqQSzSds3xyOrUTLTC9LVCVgLngw==
-
-isarray@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/isarray/-/isarray-0.0.1.tgz#8a18acfca9a8f4177e09abfc6038939b05d1eedf"
-  integrity sha1-ihis/Kmo9Bd+Cav8YDiTmwXR7t8=
 
 isarray@1.0.0, isarray@~1.0.0:
   version "1.0.0"
@@ -4336,14 +4288,6 @@ node-releases@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.2.tgz#7139fe71e2f4f11b47d4d2986aaf8c48699e0c01"
   integrity sha512-XxYDdcQ6eKqp/YjI+tb2C5WM2LgjnZrfYg4vgQt49EK268b6gYCHsBLrK2qvJo4FmCtqmKezb0WZFK4fkrZNsg==
-
-noms@0.0.0:
-  version "0.0.0"
-  resolved "https://registry.yarnpkg.com/noms/-/noms-0.0.0.tgz#da8ebd9f3af9d6760919b27d9cdc8092a7332859"
-  integrity sha1-2o69nzr51nYJGbJ9nNyAkqczKFk=
-  dependencies:
-    inherits "^2.0.1"
-    readable-stream "~1.0.31"
 
 nopt@^5.0.0:
   version "5.0.0"
@@ -5157,16 +5101,6 @@ readable-stream@^2.0.0, readable-stream@^2.0.1, readable-stream@^2.0.2, readable
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
 
-readable-stream@~1.0.31:
-  version "1.0.34"
-  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.0.34.tgz#125820e34bc842d2f2aaafafe4c2916ee32c157c"
-  integrity sha1-Elgg40vIQtLyqq+v5MKRbuMsFXw=
-  dependencies:
-    core-util-is "~1.0.0"
-    inherits "~2.0.1"
-    isarray "0.0.1"
-    string_decoder "~0.10.x"
-
 readdirp@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/readdirp/-/readdirp-2.2.1.tgz#0e87622a3325aa33e892285caf8b4e846529a525"
@@ -5602,11 +5536,6 @@ source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.0, source-map@~0.6.1:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
 
-source-map@^0.7.3:
-  version "0.7.3"
-  resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.7.3.tgz#5302f8169031735226544092e64981f751750383"
-  integrity sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==
-
 sparkles@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/sparkles/-/sparkles-1.0.1.tgz#008db65edce6c50eec0c5e228e1945061dd0437c"
@@ -5730,11 +5659,6 @@ string_decoder@^1.1.1:
   integrity sha512-hkRX8U1WjJFd8LsDJ2yQ/wWWxaopEsABU1XfkM8A+j0+85JAGppt16cr1Whg6KIbb4okU6Mql6BOj+uup/wKeA==
   dependencies:
     safe-buffer "~5.2.0"
-
-string_decoder@~0.10.x:
-  version "0.10.31"
-  resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-0.10.31.tgz#62e203bc41766c6c28c9fc84301dab1c5310fa94"
-  integrity sha1-YuIDvEF2bGwoyfyEMB2rHFMQ+pQ=
 
 string_decoder@~1.1.1:
   version "1.1.1"
@@ -5877,7 +5801,7 @@ through2-filter@^3.0.0:
     through2 "~2.0.0"
     xtend "~4.0.0"
 
-through2@^2.0.0, through2@^2.0.1, through2@^2.0.3, through2@~2.0.0:
+through2@^2.0.0, through2@^2.0.3, through2@~2.0.0:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/through2/-/through2-2.0.5.tgz#01c1e39eb31d07cb7d03a96a70823260b23132cd"
   integrity sha512-/mrRod8xqpA+IHSLyGCQ2s8SPHiCDEeQJSep1jqLYeEUClOFG2Qsh+4FU6G9VeqpZnGW/Su8LQGc4YKni5rYSQ==
@@ -6174,11 +6098,6 @@ unset-value@^1.0.0:
     has-value "^0.3.1"
     isobject "^3.0.0"
 
-untildify@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/untildify/-/untildify-4.0.0.tgz#2bc947b953652487e4600949fb091e3ae8cd919b"
-  integrity sha512-KK8xQ1mkzZeg9inewmFVDNkg3l5LUhoq9kN6iWYB/CC9YMG8HA+c1Q8HwDe6dEX7kErrEVNVBO3fWsVq5iDgtw==
-
 upath@^1.1.1:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/upath/-/upath-1.2.0.tgz#8f66dbcd55a883acdae4408af8b035a5044c1894"
@@ -6282,7 +6201,7 @@ verror@^1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vinyl-fs@^3.0.0, vinyl-fs@^3.0.3:
+vinyl-fs@^3.0.0:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/vinyl-fs/-/vinyl-fs-3.0.3.tgz#c85849405f67428feabbbd5c5dbdd64f47d31bc7"
   integrity sha512-vIu34EkyNyJxmP0jscNzWBSygh7VWhqun6RmqVfXePrOwi9lhvRs//dOaGOTRUQr4tx7/zd26Tk5WeSVZitgng==
@@ -6325,7 +6244,7 @@ vinyl-sourcemaps-apply@^0.2.1:
   dependencies:
     source-map "^0.5.1"
 
-vinyl@^2.0.0, vinyl@^2.2.0:
+vinyl@^2.0.0:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/vinyl/-/vinyl-2.2.1.tgz#23cfb8bbab5ece3803aa2c0a1eb28af7cbba1974"
   integrity sha512-LII3bXRFBZLlezoG5FfZVcXflZgWP/4dCwKtxd5ky9+LOtM4CS3bIRQsmR1KMnMW07jpE8fqR2lcxPZ+8sJIcw==
@@ -6468,11 +6387,6 @@ yaml@^1.10.2:
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-1.10.2.tgz#2301c5ffbf12b467de8da2333a459e29e7920e4b"
   integrity sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==
 
-yargs-parser@^20.2.2:
-  version "20.2.9"
-  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-20.2.9.tgz#2eb7dc3b0289718fc295f362753845c41a0c94ee"
-  integrity sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==
-
 yargs-parser@^21.0.0:
   version "21.0.1"
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-21.0.1.tgz#0267f286c877a4f0f728fceb6f8a3e4cb95c6e35"
@@ -6485,19 +6399,6 @@ yargs-parser@^5.0.1:
   dependencies:
     camelcase "^3.0.0"
     object.assign "^4.1.0"
-
-yargs@^16.1.0:
-  version "16.2.0"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-16.2.0.tgz#1c82bf0f6b6a66eafce7ef30e376f49a12477f66"
-  integrity sha512-D1mvvtDG0L5ft/jGWkLpG1+m0eQxOfaBvTNELraWj22wSVUMWxZUvYgJYcKh6jGGIkJFhH4IZPQhR4TKpc8mBw==
-  dependencies:
-    cliui "^7.0.2"
-    escalade "^3.1.1"
-    get-caller-file "^2.0.5"
-    require-directory "^2.1.1"
-    string-width "^4.2.0"
-    y18n "^5.0.5"
-    yargs-parser "^20.2.2"
 
 yargs@^17.0.1:
   version "17.3.1"

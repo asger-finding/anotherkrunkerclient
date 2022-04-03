@@ -2,7 +2,6 @@ const { src, dest, series, parallel } = require('gulp');
 const yargs        = require('yargs');
 const del          = require('del');
 const gulpif       = require('gulp-if');
-const ts           = require('gulp-typescript');
 const swc          = require('gulp-swc');
 const postCSS      = require('gulp-postcss');
 const sass         = require('gulp-sass')(require('sass'));
@@ -31,20 +30,38 @@ const state = {
 		return this.current === this.PRODUCTION;
     }
 }
+
 const swcOptions = {
-    minify: true,
+    minify: state.prod,
     jsc: {
+        parser: {
+            syntax: 'typescript',
+            tsx: false,
+            decorators: true,
+            dynamicImport: true
+        },
         target: 'es2022',
+        loose: false,
         minify: {
-            mangle: true
+            mangle: state.prod,
+            compress: {
+                unused: true
+            }
         }
+    },
+    module: {
+        type: 'commonjs',
+        strict: true,
+        strictMode: true,
+        lazy: false,
+        noInterop: true,
+        ignoreDynamic: true
     }
 }
 
 function typescript() {
     return src(paths.files.typescript)
-        .pipe(ts.createProject('./tsconfig.json')())
-        .pipe(gulpif(state.prod, swc(swcOptions)))
+        .pipe(swc(swcOptions))
         .pipe(dest(paths.build));
 }
 
