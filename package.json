@@ -11,7 +11,7 @@
   "scripts": {
     "start": "gulp clean && gulp --state=development && electron ./build/main.js",
     "deploy": "gulp annihilation && gulp --state=production && electron-builder --win && yarn postinstall",
-    "postinstall": "electron-builder install-app-deps",
+    "postinstall": "electron-builder install-app-deps && gulp clean",
     "lint": "yarn eslint . --ext .ts,.js"
   },
   "build": {
@@ -82,8 +82,7 @@
     "gulp-swc": "^1.2.3",
     "postcss": "^8.4.12",
     "sass": "^1.49.11",
-    "ts-node": "^10.7.0",
-    "typescript": "^4.6.2",
+    "typescript": "^4.6.3",
     "yargs": "^17.4.0"
   }
 }

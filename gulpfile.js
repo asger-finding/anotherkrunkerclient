@@ -91,8 +91,7 @@ function images() {
 
 function clean() {
     // Before building, clean up the the target folder for all previous files.
-    if (state.prod) return annihilation();
-    else return del([ './build' ], { force: true });
+    return del([ './build' ], { force: true });
 }
 
 function annihilation() {
