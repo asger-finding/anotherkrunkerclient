@@ -5,7 +5,7 @@ const { setVibrancy } = require('electron-acrylic-window');
 const { ipcMain } = require('electron');
 const { info, warn } = require('electron-log');
 const { get } = require('axios');
-const path = require('path');
+const { join } = require('path');
 const {
 	IS_DEVELOPMENT,
 	CLIENT_REPO,
@@ -31,7 +31,7 @@ module.exports = class {
 			theme: 'dark',
 			effect: 'blur'
 		});
-		window.loadFile(path.join(__dirname, '../renderer/html/splash.html'));
+		window.loadFile(join(__dirname, '../renderer/html/splash.html'));
 
 		// Show the splash window when things have all loaded.
 		return new Promise(resolve => {
@@ -81,8 +81,8 @@ module.exports = class {
 				releaseVersion: response.data.tag_name,
 				releaseUrl: response.data.html_url
 			}))
-			.catch((error: Error) => {
-				warn(`Error getting latest GitHub release: ${ error.message }`);
+			.catch((err: Error) => {
+				warn(`Error getting latest GitHub release: ${ err.message }`);
 				return <ReleaseData>{
 					clientVersion: CLIENT_VERSION,
 					releaseVersion: '0.0.0',

@@ -16,5 +16,6 @@ addAliases({
 	'@splash-utils': resolve(__dirname, './main/splash-utils'),
 	'@game-utils': resolve(__dirname, './main/game-utils'),
 	'@window-utils': resolve(__dirname, './main/window-utils'),
-	'@event-handler': resolve(__dirname, './main/event-handler')
+	'@event-handler': resolve(__dirname, './main/event-handler'),
+	'@resource-swapper': resolve(__dirname, './main/resource-swapper')
 });

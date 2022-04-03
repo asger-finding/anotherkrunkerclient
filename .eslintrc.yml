@@ -30,6 +30,7 @@ rules:
   linebreak-style: 0
   max-classe-per-file: 0
   sort-keys: 0
+  prefer-named-capture-group: 0
   
   array-bracket-spacing: [ error, always, { singleValue: false } ]
   no-trailing-spaces: [ error, { ignoreComments: true } ]

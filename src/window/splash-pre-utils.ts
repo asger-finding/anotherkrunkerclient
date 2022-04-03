@@ -6,15 +6,13 @@ const { MESSAGE_RELEASES_DATA } = require('@constants');
 module.exports = class {
 
 	/**
-	 * @returns {Promise<>} clientUpdateElement The version update on the splash window
+	 * @returns {Promise<ReleaseData>} clientUpdateElement The version update on the splash window
 	 * @description
 	 * Get the client release data and emit it to the splash window event listener.
 	 */
 	public static getReleaseDataFromEventListener() {
 		return new Promise(resolve => {
-			ipcRenderer.once(MESSAGE_RELEASES_DATA, (_event, data: ReleaseData) => {
-				resolve(data);
-			});
+			ipcRenderer.once(MESSAGE_RELEASES_DATA, (_evt, data: ReleaseData) => resolve(data));
 		});
 	}
 

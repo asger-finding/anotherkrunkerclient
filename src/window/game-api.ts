@@ -1,5 +1,4 @@
 /* eslint-disable global-require */
-/* eslint-disable prefer-named-capture-group */
 (function() {
 	const { ipcRenderer } = require('electron');
 	const { preferences, CLIENT_NAME } = require('@constants');
@@ -19,7 +18,7 @@
 		},
 
 		recieve(channel, callback) {
-			if (whiteListedReceive.test(channel)) ipcRenderer.on(channel, (_event, ...args) => callback(args));
+			if (whiteListedReceive.test(channel)) ipcRenderer.on(channel, (_evt, ...args) => callback(args));
 			return this.onNotWhiteListed(`recieve(${channel})`);
 		},
 

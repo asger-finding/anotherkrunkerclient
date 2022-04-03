@@ -11,6 +11,7 @@ const {
 	SPLASH_CONSTRUCTOR_OPTIONS,
 	GAME_CONSTRUCTOR_OPTIONS
 } = require('@constants');
+const { join } = require('path');
 const WindowUtils = require('@window-utils');
 const SplashUtils = require('@splash-utils');
 const GameUtils = require('@game-utils');
@@ -44,10 +45,16 @@ class Application {
 	/**
 	 * @returns {Promise<boolean>} Successful initialization
 	 * @description
-	 * Initialize the app and create the splash window.
+	 * Initialize the app, register protocols.  
+	 * Create the splash window, followed by the game window.
 	 */
 	public async init(): Promise<boolean> {
 		app.setName(CLIENT_NAME);
+
+		// Register resource swapper file protocols. TODO: Dynamic protocol source.
+		const protocolRegex = new RegExp(`^${ CLIENT_NAME }:`, 'u');
+		const protocolSource = global.resourceswapProtocolSource;
+		protocol.registerFileProtocol(CLIENT_NAME, (request, callback) => callback(decodeURI(`${ protocolSource }${ request.url.replace(protocolRegex, '') }`)));
 
 		info('Initializing splash window');
 		const splashLoadTime = Date.now();
@@ -66,6 +73,8 @@ class Application {
 
 }
 
+// Register the protocol source for the resource swapper. TODO: User-specified protocol source in settings.
+global.resourceswapProtocolSource = join(app.getPath('documents'), `/${ CLIENT_NAME }`);
 protocol.registerSchemesAsPrivileged([{
 	scheme: CLIENT_NAME,
 	privileges: { secure: true, corsEnabled: true }

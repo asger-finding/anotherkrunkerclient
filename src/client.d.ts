@@ -7,6 +7,11 @@ interface SettingsGenerator {
 }
 
 declare global {
+	namespace NodeJS {
+		interface Global {
+			resourceswapProtocolSource: string;
+		}
+	}
 	export interface Window {
 		OffCliV: boolean;
 		SettingsGenerator: SettingsGenerator;
@@ -35,6 +40,15 @@ export interface ReleaseData {
 	clientVersion: string;
 	releaseVersion: string,
 	releaseUrl: string;
+}
+
+export interface WindowData {
+	url: string,
+	tab: string | null,
+	isInTabs: boolean,
+	isKrunker: boolean,
+	quickJoin: boolean,
+	invalid: boolean
 }
 
 /**

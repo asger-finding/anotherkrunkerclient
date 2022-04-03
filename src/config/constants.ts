@@ -1,5 +1,7 @@
+import { WindowData } from '../client';
+
 const pkg = require('../../package.json');
-const path = require('path');
+const { join } = require('path');
 const Store = require('electron-store');
 
 module.exports = {
@@ -76,7 +78,7 @@ module.exports = {
 			resizable: true,
 			fullscreenable: true,
 			backgroundColor: '#1c1c1c',
-			icon: path.join(__dirname, '../renderer/assets/icon.ico'),
+			icon: join(__dirname, '../renderer/assets/icon.ico'),
 			webPreferences: {
 				contextIsolation: true,
 				worldSafeExecuteJavaScript: true,
@@ -95,12 +97,12 @@ module.exports = {
 			center: true,
 			resizable: false,
 			fullscreenable: false,
-			icon: path.join(__dirname, '../renderer/assets/icon.ico'),
+			icon: join(__dirname, '../renderer/assets/icon.ico'),
 			webPreferences: {
 				contextIsolation: true,
 				worldSafeExecuteJavaScript: true,
 				enableRemoteModule: false,
-				preload: path.join(__dirname, '../window/splash-pre')
+				preload: join(__dirname, '../window/splash-pre')
 			}
 		};
 	},
@@ -114,7 +116,7 @@ module.exports = {
 	 */
 	get GAME_CONSTRUCTOR_OPTIONS(): Electron.BrowserWindowConstructorOptions {
 		const options = this.getDefaultConstructorOptions(this.TABS.GAME);
-		options.webPreferences.preload = path.join(__dirname, '../window/game-pre');
+		options.webPreferences.preload = join(__dirname, '../window/game-pre');
 		options.webPreferences.contextIsolation = false;
 		options.show = false;
 
@@ -143,7 +145,7 @@ module.exports = {
 	 * @description
 	 * Returns the current Krunker tab (if any), whether we're on Krunker, what Krunker tab we're on, and whether quickJoin is enabled
 	 */
-	getURLData(baseURL: string): { url: string, tab: string | null, isInTabs: boolean, isKrunker: boolean, quickJoin: boolean, invalid: boolean } {
+	getURLData(baseURL: string): WindowData {
 		try {
 			const url = new URL(baseURL);
 
