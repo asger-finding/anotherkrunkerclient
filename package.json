@@ -9,13 +9,10 @@
   "main": "build/main.js",
   "repository": "asger-finding/anotherkrunkerclient",
   "scripts": {
-    "start": "yarn del ./build && yarn build && yarn copy && electron ./build/main.js",
-    "deploy": "yarn del ./build ./dist && yarn build && yarn copy && electron-builder --win && yarn postinstall",
-    "build": "tsc",
-    "copy": "copyfiles -u 1 -e ./src/**/*.ts ./src/**/* ./build/",
-    "postinstall": "electron-builder install-app-deps && yarn del ./build",
-    "lint": "yarn eslint . --ext .ts,.js",
-    "lintcss": "yarn stylelint src/**/*.css"
+    "start": "gulp clean && gulp --state=development && electron ./build/main.js",
+    "deploy": "gulp annihilation && gulp --state=production && electron-builder --win && yarn postinstall",
+    "postinstall": "electron-builder install-app-deps",
+    "lint": "yarn eslint . --ext .ts,.js"
   },
   "build": {
     "appId": "com.electron.akc",
@@ -65,21 +62,32 @@
     "semver": "^7.3.5"
   },
   "devDependencies": {
+    "@swc/core": "^1.2.163",
     "@types/node": "12.12.21",
     "@typescript-eslint/eslint-plugin": "^5.14.0",
     "@typescript-eslint/parser": "^5.14.0",
     "copyfiles": "^2.4.1",
-    "del-cli": "^4.0.1",
+    "cssnano": "^5.1.7",
+    "del": "^6.0.0",
     "electron": "^9.4.3",
     "electron-builder": "^22.14.13",
     "eslint": "^8.10.0",
-    "eslint-config-airbnb-typescript": "^16.1.1",
+    "eslint-config-airbnb-typescript": "^16.2.0",
     "eslint-config-raven": "^1.0.3",
     "eslint-plugin-import": "^2.25.4",
-    "stylelint": "^14.5.3",
-    "stylelint-config-idiomatic-order": "^8.1.0",
-    "stylelint-config-standard": "^25.0.0",
+    "gulp": "^4.0.2",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-if": "^3.0.0",
+    "gulp-ignore": "^3.0.0",
+    "gulp-libsquoosh": "^1.1.2",
+    "gulp-postcss": "^9.0.1",
+    "gulp-sass": "^5.1.0",
+    "gulp-swc": "^1.2.3",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "postcss": "^8.4.12",
+    "sass": "^1.49.11",
     "ts-node": "^10.7.0",
-    "typescript": "^4.6.2"
+    "typescript": "^4.6.2",
+    "yargs": "^17.4.0"
   }
 }
