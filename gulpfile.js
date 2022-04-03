@@ -14,7 +14,7 @@ const origin = './src';
 const paths = {
     files: {
         typescript: `${ origin }/**/*.ts`,
-        css :       `${ origin }/**/*.@(css|scss)`,
+        css :       `${ origin }/**/*.@(css|sass)`,
         html:       `${ origin }/**/*.html`,
         images:     `${ origin }/**/*.@(png|jpg|jpeg|gif|svg|ico)`
     },
