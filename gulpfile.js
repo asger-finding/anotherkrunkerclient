@@ -3,9 +3,7 @@ const yargs        = require('yargs');
 const del          = require('del');
 const gulpif       = require('gulp-if');
 const swc          = require('gulp-swc');
-const postCSS      = require('gulp-postcss');
 const sass         = require('gulp-sass')(require('sass'));
-const cssnano      = require('cssnano');
 const squoosh      = require('gulp-libsquoosh');
 const htmlmin      = require('gulp-htmlmin');
 
@@ -66,14 +64,10 @@ function typescript() {
 }
 
 function css() {
-    const plugins = [
-        ... state.prod ? [
-            cssnano()
-        ] : []
-    ]
     return src(paths.files.css)
-        .pipe(sass())
-        .pipe(postCSS(plugins))
+        .pipe(sass({
+            ...(state.prod ? { outputStyle: 'compressed' } : {})
+        }))
         .pipe(dest(paths.build));
 }
 
