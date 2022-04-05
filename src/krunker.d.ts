@@ -1,384 +1,617 @@
 /**
- * --- Useful asset: https://api.sys32.dev/v3/source.pretty ---
- * ---               Last updated: 2022/03/25               ---
- *
- * ambInd: (number) - Ambient sound. Default: 1
- * ambIndC: (number) - Custom ambient sound. Default: 0
- * skyDome: (boolean) - 0-1, destructured to ['Solid', 'Gradient'] converted to a boolean with !!. The sky dome type. Default: 'map-dependent'
- * skyDomeCol0: (hexadecimal) - Color of the top of the sky dome. Only applicable with gradient skydome type. Default: '#74a4b9'
- * skyDomeCol1: (hexadecimal) - Color of the middle of the sky dome. Only applicable with gradient skydome type. Default: '#dce8ed'
- * skyDomeCol2: (hexadecimal) - Color of the bottom of the sky dome. Only applicable with gradient skydome type. Default: '#dce8ed'
- * skyDomeEmis: (hexadecimal) - Emissive color of the sky dome. Default: '#000000'
- * skyDomeEmisTex: (number) - Texture of the sky dome emissive. Default: 0
- * skyDomeTex: (number) - Whether to use default cloud texture or not? Default: 'map-dependent'
- * skyDomeTexA: (number) - Asset ID of the sky dome texture. Default: 0
- * skyDomeMovD: (number) - texture move axis? Default: 0
- * skyDomeMovT: (number) - The speed of the sky dome rotation. Default: 0
- * shadowR: (number) - The resolution of the shadow map. Default: 1024
- * shadowD: (number) - The distance of the shadow map. Default: 1200
- * ambient: (hexadecimal) - The ambinet color of the map. Default: '#97a0a8'
- * ambientI: (number) - The intensity of the ambient color. Default: 1
- * light: (hexadecimal) - The light color (also called lightC). Default: '#f2f8fc'
- * lightD: (number) - The distance of the light. Default: 500
- * lightI: (number) - The intensity of the light. Default: 1.3
- * sunAngX: (number) - The angle of the sun in the X axis. Default: 90
- * sunAngY: (number) - The angle of the sun in the Y axis. Default: 54
- * sky: (hexadecimal) - The color of the sky. Only applicable with solid skydome type. Default: '#dce8ed'
- * fog: (hexadecimal) - The fog color. Default: '#8d9aa0'
- * fogD: (number) - The distance of the fog. Default: 2000
- * correctLights: (boolean) - Physically Correct Lights (https://threejs.org/docs/#api/en/renderers/WebGLRenderer.physicallyCorrectLights). Default: 'map-dependent'
- * toneMapping: (number) - The tone mapping method OR whether to enable it. Default: 0 /  NoToneMapping
- * toneMappingExposure: (number) - The exposure of the tone mapping. Default: 1
- * outputEncoding: (number) - 0-1 destructured to ['LinearEncoding', 'sRGBEncoding']. The color encoding of the map. Default: 0 / THREE.LinearEncoding
- * gammaFactor: (number) - Deprecated in three.js? The gamma factor of the map. Default: 2
+ * A representation of hexadecimal as a string ('#...') or hex number (0x...)
+ * @typedef {(string | number)} Hexadecimal
  */
+type Hexadecimal = (string | number);
 
 /**
- * Skydome types:
- * skyDomeCol0,
- * skyDomeCol1,
- * skyDomeCol2,
- * skyDomeEmis,
- * skyDomeEmisTex,
- * skyDomeTex,
- * skyDomeMovD,
- * skyDomeMovT,
- * skyDomeTexA
+ * A representation of a minified boolean value as 0 or 1 or boolean
+ * @typedef {(0 | 1 | boolean)} SlimBoolean
  */
+type SlimBoolean = (0 | 1 | boolean);
 
-type Hexadecimal = string | number;
 export interface MapExport {
 
 	/**
-	 * The name of the map.
-	 * @default: 'map-dependent'
+	 * @type {string}
+	 * @default 'map-dependent'
+	 * @example 'Burg'
+	 * @description The name of the map.
 	 */
 	name: string;
 
 	/**
-	 * Unknown property. All public match maps, which have this property, have a value of 170.
-	 * @default: 'map-dependent'
+	 * @type {number}
+	 * @default 'map-dependent'
+	 * @description Unused property. All public match maps, which have this property, have a value of 170.
 	 */
 	shadScale: number;
 
+	/**
+	 * @type {Array<Hexadecimal>}
+	 * @description Array containing the map colors.  
+	 * Referenced in {@link MapExport.objects.ci} and {@link MapExport.objects.ei}
+	 */
 	colors: Array<Hexadecimal>;
+
+	/**
+	 * @type {Array<number>}
+	 * @example
+	 * map.xyz = [ 1, 2, 3, 6, 7, 8 ];
+	 * // foo.si = 0;  ->  foo has dimensions [ 1, 2, 3 ];
+	 * // bar.si = 1;  ->  bar has dimensions [ 6, 7, 8 ];
+	 * @description Array relating to {@link MapExport.objects} containing the 3 axis scale values for all objects.  
+	 * An object with the {@link MapExport.objects.si} property of `x` will have the value at `x*3` and the next two in this array to indicate its scale.
+	 */
 	xyz: Array<number>;
 
-	// TODO: Specify number range. Some numbers are treated as booleans and have a range of 0-1.
+	// https://docs.krunker.io/#/./files/scene?id=adding-3d-objects
 	objects: Array<{
-		// Visible
-		v?: 0 | 1;
-
-		// Collidable
-		l?: 0 | 1;
-
-		// Complex Collisions
-		cpx?: 0 | 1;
-		tris?: Array<number>;
-
-		// Penetrable
-		pe?: 0 | 1;
-
-		// Wall Jumpable
-		wj?: 0 | 1;
-
-		// Can Grapple
-		gp?: 0 | 1;
-
-		// Border
-		bo?: 0 | 1;
 
 		/**
-		 * Step Sound
-		 * Default: undefined
-		 * Wood: 1
-		 * Water: 2
-		 * Sand: 3
-		 * Snow: 4
+		 * @type {number}
+		 * @description Object index used to define the object's size.  
+		 * The index is repeated for objects of the same size.
 		 */
-		sat?: undefined | 1 | 2 | 3 | 4;
+		si: number;
 
-		// Transform: Position (x, y, z)
+		/**
+		 * @type {Array<number>}
+		 * @description Object position in x, y, z space.
+		 */
 		p: Array<number>;
 
-		// Transform: Rotation (x, y, z)
+
+		/**
+		 * @type {(undefined | Array<number>)}
+		 * @default undefined No rotation is applied.
+		 * @description Object rotation in x, y, z space in radians.  
+		 * float, -Infinity - Infinity
+		 */
 		r?: Array<number>;
 
-		// Transform: Size (x, y, z)
-		xyz?: Array<number>;
+		/**
+		 * @type {(undefined | SlimBoolean)}
+		 * @default true
+		 * @description Is object visible?
+		 */
+		v?: SlimBoolean;
 
 		/**
-		 * Texture: Type
-		 * stone: undefined
-		 * 1: Dirt
-		 * 2: Wood
-		 * 3: Grid
-		 * 4: Grey
-		 * 5: Solid
-		 * 6: Roof
-		 * 7: Flag
-		 * 8: Grass
-		 * 9: Check
-		 * 10: Lines
-		 * 11: Brick
-		 * 12: Link
-		 * 13: Liquid
-		 * 14: Grain
-		 * 15: Fabric
-		 * 16: Tile
+		 * @type {(undefined | SlimBoolean)}
+		 * @default true
+		 * @description Is object collidable?
 		 */
-		t?: undefined | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
+		l?: SlimBoolean;
 
-		// Texture: Asset ID
+
+		/**
+		 * @type {(undefined | number)}
+		 * @default 0
+		 * @description Object penetration damage multiplier.  
+		 * float, 2 decimal places, 0 - 1.
+		 */
+		pe?: number;
+
+		/**
+		 * @type {(undefined | SlimBoolean)}
+		 * @default false
+		 * @description Does object have complex collisions?
+		 */
+		cpx?: SlimBoolean;
+
+		/**
+		 * @type {(undefined | Array<number>)}
+		 * @description Object geometry.
+		 */
+		tris?: Array<number>;
+
+		/**
+		 * @type {(undefined | SlimBoolean)}
+		 * @default true
+		 * @description Is object wall jumpable?
+		 */
+		wj?: SlimBoolean;
+
+		/**
+		 * @type {(undefined | SlimBoolean)}
+		 * @default true
+		 * @description Is object grapple-able?
+		 */
+		gp?: SlimBoolean;
+
+		/**
+		 * @type {(undefined | SlimBoolean)}
+		 * @default false
+		 * @description Is object border?
+		 */
+		bo?: SlimBoolean;
+
+		/**
+		 * @type {(undefined | 1 | 2 | 3 | 4)}
+		 * @default undefined Default sound is applied.
+		 * @description Step sound.  
+		 * * 1: `wood`
+		 * * 2: `water`
+		 * * 3: `sand`
+		 * * 4: `snow`
+		 */
+		sat?: 1 | 2 | 3 | 4;
+
+		/**
+		 * @type {(undefined | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16)}
+		 * @default 0 Stone texture is applied.
+		 * @description Texture type.  
+		 * * 0: `stone` - `Default`, `Classic`, `Light` - used when `t` is undefined
+		 * * 1: `dirt` - `Default`, `Classic`
+		 * * 2: `wood` - `Default`, `Classic`
+		 * * 3: `grid`
+		 * * 4: `grey`
+		 * * 5: `default`
+		 * * 6: `roof` - `Default`, `Classic`
+		 * * 7: `flag` - `Default`, `Classic`, `Classic alt`
+		 * * 8: `grass`
+		 * * 9: `check`
+		 * * 10: `lines` - `Default`, thick
+		 * * 11: `brick` - `Default`, `Classic`, `Classic alt`
+		 * * 12: `link`
+		 * * 13: `liquid`
+		 * * 14: `grain`
+		 * * 15: `fabric`
+		 * * 16: `tile`
+		 */
+		t?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
+
+		/**
+		 * @type {number}
+		 * @default 0
+		 * @description Texture variant.
+		 */
+		tv?: number;
+
+		/**
+		 * @type {(undefined | number)}
+		 * @default 0 No custom image texture is applied.
+		 * @description Texture asset to use
+		 */
 		at?: number;
 
-		// Texture: Stretch
-		tsr?: 0 | 1;
-
-		// Texture: Scale
-		tsm?: number;
-
-		// Texture: Force Transparency
-		ft?: 0 | 1;
-
-		// Texture: Rotation
-		tro?: number;
+		/**
+		 * @type {(undefined | number)}
+		 * @default false
+		 * @description Should the texture repeat (false) or stretch (true) to fill the object?
+		 */
+		tsr?: SlimBoolean;
 
 		/**
-		 * Texture: Encoding
-		 * LinearEncoding: 0 | undefined
-		 * sRGBEncoding: 1
+		 * @type {(undefined | number)}
+		 * @default 0
+		 * @description Texture scale.  
+		 * float, 1 decimal place, 0 - 10.  
+		 * Larger values result in a smaller texture. Exactly 0 is the same as 1.
 		 */
-		ten?: undefined | 0 | 1;
+		tsm?: number;
 
-		// Texture: Color
-		ci?: unknown;
+		/**
+		 * @type {(undefined | SlimBoolean)}
+		 * @default false
+		 * @description Should transparency be forced on the texture?
+		 */
+		ft?: SlimBoolean;
 
-		// Texture: Emissive
-		ei?: 0 | 1;
+		/**
+		 * @type {(undefined | number)}
+		 * @default 0
+		 * @description Texture rotation.  
+		 * integer, 0 - 360.  
+		 * Rotation is applied in degrees and is relative to the individual texture faces.
+		 */
+		tro?: number;
 
-		// Texture: Opacity
+
+		/**
+		 * @type {(undefined | number)}
+		 * @default 0
+		 * @description How much to offset the texture on the x-axis (relative to individual texture faces)
+		 */
+		tox?: number;
+
+		/**
+		 * @type {(undefined | number)}
+		 * @default 0
+		 * @description How much to offset the texture on the y-axis (relative to individual texture faces)
+		 */
+		toy?: number;
+
+		/**
+		 * @type {(undefined | number)}
+		 * @default 0
+		 * @description Texture speed along the axis determined by {@link MapExport.objects.td}.
+		 */
+		ts?: number;
+
+		/**
+		 * @type {(undefined | 0 | 1)}
+		 * @default 0
+		 * @description Texture direction. 0 for x-axis, 1 for y-axis.
+		 */
+		td?: number;
+
+		/**
+		 * @type {(undefined, number)}
+		 * @default 1
+		 * @description Frame count of an animated texture.
+		 */
+		fct?: number;
+
+		/**
+		 * @type {(undefined, number)}
+		 * @default 0
+		 * @description Frame speed of an animated texture.
+		 */
+		fs?: number;
+
+		/**
+		 * @type {(undefined | 0 | 1)}
+		 * @default 0 Linear Encoding
+		 * @description The texture encoding.  
+		 * * 0: `Linear Encoding` - used when `ten` is undefined
+		 * * 1: `sRGB Encoding`
+		 * * 2: `Gamma Encoding`
+		 * * 3: `RGBE Encoding`
+		 * * 4: `Log Luv Encoding`
+		 * * 5: `RGBM7 Encoding`
+		 * * 6: `RGBM16 Encoding`
+		 * * 7: `RGBD Encoding`
+		 * * 8: `Basic Depth Packing`
+		 * * 9: `RGBA Depth Packing`
+		 */
+		ten?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+
+		/**
+		 * @type {(undefined | number)}
+		 * @description The texture coloring.  
+		 * Value is index of color in the {@link MapExport.colors} array.
+		 */
+		ci?: number;
+
+		/**
+		 * @type {(undefined | number)}
+		 * @description The texture emissive coloring.  
+		 * Value is index of color in the {@link MapExport.colors} array.
+		 */
+		ei?: number;
+
+		/**
+		 * @type {(undefined | number)}
+		 * @default 1
+		 * @description The texture/object opacity.  
+		 * float, 1 decimal place, 0 - 1.  
+		 * Larger values result in a more opaque texture.
+		 */
 		o?: number;
 
-		// Texture: Shading
-		ab?: 0 | 1;
+		/**
+		 * @type {(undefined | SlimBoolean)}
+		 * @default 0
+		 * @description Should the texture be shaded?  
+		 * If false, enable shading. If true, disable shading.
+		 */
+		ab?: SlimBoolean;
 
-		// Texture: Subdivision
+		/**
+		 * @type {(undefined | number)}
+		 * @default 0
+		 * @description The object subdivision count for baking lighting and rendering.  
+		 * More subdivisions result in lower performance.  
+		 * integer, 0 - 50.
+		 */
 		ba?: number;
 
-		// Texture: Fog TODO: Is this a valid property?
-		fog?: 0 | 1;
+		/**
+		 * @type {(undefined | SlimBoolean)}
+		 * @default true
+		 * @description Should the object fade out with the fog?
+		 */
+		nf?: SlimBoolean;
 
-		// Technical & Logic: Destructible
-		cdy?: 0 | 1;
-		nf?: 0 | 1;
+		/**
+		 * @type {(undefined | SlimBoolean)}
+		 * @default false
+		 * @description Is object destructible?
+		 */
+		cdy?: SlimBoolean;
 
 		// Technical & Logic: Health
+		/**
+		 * @type {(undefined | number)}
+		 * @default 0
+		 * @description Object health. Damage it takes to destroy the object.  
+		 * integer, 0 - 50000.
+		 */
 		h?: number;
 
-		// Interface: ID
+		/**
+		 * @type {(undefined | SlimBoolean)}
+		 * @default false
+		 * @description Should the object start destroyed?
+		 */
+		sd?: SlimBoolean;
+
+		/**
+		 * @type {(undefined | number)}
+		 * @default 0 Never
+		 * @description Respawn time.  
+		 * The time it takes for the object to spawn again after being destroyed.
+		 */
+		rt?: number;
+
+		/**
+		 * @type {(undefined | Array<number>)}
+		 * @description In the event that {@link MapExport.objects.si} is not defined, this array can be used to determine the object's size.
+		 */
+		s?: Array<number>
+
+		/**
+		 * @type {(undefined | Hexadecimal)}
+		 * @description In the event that {@link MapExport.objects.ci} is not defined, this hex color can be used to determine the object's color.
+		 */
+		c?: Hexadecimal;
+
+		/**
+		 * @type {(undefined | Hexadecimal)}
+		 * @description In the event that {@link MapExport.objects.ei} is not defined, this hex color can be used to determine the object's emissive color.
+		 */
+		e?: Hexadecimal;
+
+		/**
+		 * @type {(undefined | SlimBoolean)}
+		 * @default false
+		 * @description Random Respawn. If true, respawn the object at a random time.
+		 */
+		rr?: SlimBoolean;
+
+		/**
+		 * @type {(undefined | number)}
+		 * @default 0
+		 * @description The interface ID in the scene. Used with triggers.  
+		 * integer, 0 - 2000.
+		 */
 		in?: number;
 
 		/**
-		 * Render Faces
-		 * right: 1f
-		 * left: 2f
-		 * top: 37
-		 * bottom: 3b
-		 * back: 3d
-		 * front: 3e
+		 * @type {(undefined | string)}
+		 * @default '3f' 63 in decimal; all faces shown.
+		 * @description Toggle rendering from selected object faces.  
+		 * Add together the values from the following table, and convert to a hexadecimal string, to determine what faces to in- and exclude from rendering.
+		 * * Front: `1`
+		 * * Back: `2`
+		 * * Left: `4`
+		 * * Right: `8`
+		 * * Top: `16`
+		 * * Bottom: `32`
 		 */
-		// TODO: See what the string is when multiple faces are hidden.
 		f?: string;
 
-		// TODO: What are these?
-		e?: number;
-		si?: number;
-		// Item type?
+		// Only relevant for special objects
+		/**
+		 * @type {(undefined | number)}
+		 * @default 0
+		 * @description Defines the objects type, be it not a cube.  
+		 * Associated with this type are numerous properties that are not applicable to all objects.
+		 */
 		i?: number;
-		tv?: number;
-		d?: number;
-		ec?: number;
 	}>;
 	config: Record<string, unknown>;
 	camPos: Array<number | boolean>;
 	spawns: Array<Array<unknown>>;
 
 	/**
-	 * The ambient sound of the map.
+	 * @type {number}
 	 * @default 1
+	 * @description The ambient sound of the map.
 	 */
 	ambInd: number;
 
 	/**
-	 * Custom ambient sound.
+	 * @type {number}
 	 * @default 0
+	 * @description Custom ambient sound.
 	 */
 	ambIndC: number;
 
 	/**
-	 * The sky dome type. Set as a number, 0 for solid, 1 for gradient.  
-	 * Converted twice to a boolean with !!.
+	 * @type {boolean}
 	 * @default 'map-dependent'
+	 * @description The sky dome type. Set as a number, 0 for solid, 1 for gradient.  
+	 * Converted twice to a boolean with !!.
 	 */
 	skyDome: boolean;
 
 	/**
-	 * The top color of the sky dome. Only applicable with gradient skydome type.
+	 * @type {Hexadecimal}
 	 * @default '#74a4b9'
+	 * @description The top color of the sky dome. Only applicable with gradient skydome type.
 	 */
 	skyDomeCol0: Hexadecimal;
 
 	/**
-	 * The middle color of the sky dome. Only applicable with gradient skydome type.
+	 * @type {Hexadecimal}
 	 * @default '#dce8ed'
+	 * @description The middle color of the sky dome. Only applicable with gradient skydome type.
 	 */
 	skyDomeCol1: Hexadecimal;
 
 	/**
-	 * The bottom color of the sky dome. Only applicable with gradient skydome type.
+	 * @type {Hexadecimal}
 	 * @default '#dce8ed'
+	 * @description The bottom color of the sky dome. Only applicable with gradient skydome type.
 	 */
 	skyDomeCol2: Hexadecimal;
 
 	/**
-	 * The emissive color of the sky dome.
+	 * @type {Hexadecimal}
 	 * @default '#000000'
+	 * @description The emissive color of the sky dome.
 	 */
 	// TODO: Check if this is only applicable for a specific skydome type.
 	skyDomeEmis: Hexadecimal;
 
 	/**
-	 * The asset ID of the sky dome emissive.
+	 * @type {number}
 	 * @default 0
+	 * @description The asset ID of the sky dome emissive.
 	 */
 	skyDomeEmisTex: number;
 
 	/**
-	 * Whether to use default cloud texture or not?
+	 * @type {boolean}
 	 * @default 'map-dependent'
+	 * @description Whether to use default cloud texture or not?
 	 */
 	// TODO: Might not be correct.
 	skyDomeTex: boolean;
 
 	/**
-	 * The asset ID of the sky dome texture.
+	 * @type {number}
 	 * @default 0
+	 * @description The asset ID of the sky dome texture.
 	 */
 	skyDomeTexA: number;
 
 	/**
-	 * texture move axis?
+	 * @type {number}
 	 * @default 0
+	 * @description The axis on which the sky dome rotates.
 	 */
 	skyDomeMovD: number;
 
 	/**
-	 * The speed of the sky dome rotation.
+	 * @type {number}
 	 * @default 0
+	 * @description The speed of the sky dome rotation.
 	 */
 	skyDomeMovT: number;
 
 	/**
-	 * The resolution of the shadow map.
+	 * @type {number}
 	 * @default 1024
+	 * @description The resolution of the shadow map.
 	 */
 	shadowR: number;
 
 	/**
-	 * The distance of the shadow map.
+	 * @type {number}
 	 * @default 1200
+	 * @description The distance of the shadow map.
 	 */
 	shadowD: number;
 
 	/**
-	 * The ambient color of the map.
+	 * @type {Hexadecimal}
 	 * @default '#97a0a8'
+	 * @description The ambient color of the map.
 	 */
 	ambient: Hexadecimal;
 
 	/**
-	 * The intensity of the ambient color. The lower the number, the darker the shade.
+	 * @type {number}
 	 * @default 1
+	 * @description The intensity of the ambient color.  
+	 * The lower the number, the darker the shade.
 	 */
 	ambientI: number;
 
 	/**
-	 * The light color (also called lightC).
+	 * @type {Hexadecimal}
 	 * @default '#f2f8fc'
+	 * @description The light color (also called lightC).
 	 */
 	light: Hexadecimal;
 
 	/**
-	 * The distance of the light.
+	 * @type {number}
 	 * @default 500
+	 * @description The distance of the light.
 	 */
 	lightD: number;
 
 	/**
-	 * The intensity of the light.
+	 * @type {number}
 	 * @default 1.3
+	 * @description The intensity of the light.
 	 */
 	lightI: number;
 
 	/**
-	 * The angle of the sun in the X axis.
+	 * @type {number}
 	 * @default 90
+	 * @description The angle of the sun in the X axis.
 	 */
 	sunAngX: number;
 
 	/**
-	 * The angle of the sun in the Y axis. 90 degrees is straight up.
+	 * @type {number}
 	 * @default 54
+	 * @description The angle of the sun in the Y axis. 90 degrees is straight up.
 	 */
 	sunAngY: number;
 
 	/**
-	 * The sky color. Only applicable with solid skydome type.
+	 * @type {Hexadecimal}
 	 * @default '#dce8ed'
+	 * @description The sky color. Only applicable with solid skydome type.
 	 */
 	sky: Hexadecimal;
 
 	/**
-	 * The fog color.
+	 * @type {Hexadecimal}
 	 * @default '#8d9aa0'
+	 * @description The fog color.
 	 */
 	fog: Hexadecimal;
 
 	/**
-	 * The fog distance.
+	 * @type {number}
 	 * @default 2000
+	 * @description The fog distance.
 	 */
 	fogD: number;
 
 	/** 
-	 * https://threejs.org/docs/#api/en/renderers/WebGLRenderer.physicallyCorrectLights
+	 * @type {boolean}
 	 * @default 'map-dependent'
+	 * @description See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.physicallyCorrectLights|WebGLRenderer.physicallyCorrectLights}
 	 */
 	correctLights: boolean;
 
 	/**
-	 * https://threejs.org/docs/#api/en/renderers/WebGLRenderer.toneMapping
+	 * @type {(0 | 1 | 2 | 3 | 4)}
 	 * @default 0 (THREE.NoToneMapping)
+	 * @description See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.toneMapping|WebGLRenderer.toneMapping}
 	 */
 	toneMapping: 0 | 1 | 2 | 3 | 4;
 
 	/**
-	 * https://threejs.org/docs/#api/en/renderers/WebGLRenderer.toneMappingExposure
+	 * @type {number}
 	 * @default 1
+	 * @description See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.toneMappingExposure|WebGLRenderer.toneMappingExposure}
 	 */
 	toneMappingExposure: number;
 
 	/**
-	 * https://threejs.org/docs/#api/en/constants/Textures (Encoding)  
-	 * Options: 'LinearEncoding' | 'sRGBEncoding'
+	 * @type {(0 | 1)}
 	 * @default 0 (THREE.LinearEncoding)
+	 * @description See {@link https://threejs.org/docs/#api/en/constants/Textures|Encoding}  
+	 * * 0: `LinearEncoding`
+	 * * 1: `sRGBEncoding`
 	 */
 	outputEncoding: 0 | 1;
 
 	/**
-	 * Possibly deprecated, doesn't seem to have any visual effect.
+	 * @type {number}
 	 * @default 2
+	 * @description Possibly deprecated, doesn't seem to have any visual effect.
 	 */
 	gammaFactor: number;
 }
