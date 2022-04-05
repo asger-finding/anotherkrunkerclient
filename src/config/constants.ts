@@ -108,12 +108,12 @@ module.exports = {
 	},
 
 	/**
-	 * TODO:  Unsafe!
 	 * I can't find an alternative to setting contextIsolation to off and risking it.
 	 * Krunker hangs when enabling nodeIntegration, so using executeJavascript is not an option.
 	 * You cannot preload multiple scripts with different webPreferences.
 	 * contextBridge.exposeInMainWorld only allows for exposing objects.
 	 */
+	// TODO:  Unsafe!
 	get GAME_CONSTRUCTOR_OPTIONS(): Electron.BrowserWindowConstructorOptions {
 		const options = this.getDefaultConstructorOptions(this.TABS.GAME);
 		options.webPreferences.preload = join(__dirname, '../window/game-pre');

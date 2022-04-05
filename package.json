@@ -75,7 +75,7 @@
     "gulp": "^4.0.2",
     "gulp-htmlmin": "^5.0.1",
     "gulp-if": "^3.0.0",
-    "gulp-libsquoosh": "^1.1.2",
+    "gulp-imagemin": "^7",
     "gulp-sass": "^5.1.0",
     "gulp-swc": "^1.2.3",
     "postcss": "^8.4.12",

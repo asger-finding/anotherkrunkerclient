@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-import { KrunkerMap } from '../client';
+import { MapExport } from '../krunker';
 
 (function() {
 	require('../aliases');
@@ -18,7 +18,7 @@ import { KrunkerMap } from '../client';
 	});
 
 	// TODO: Map settings in Client Settings
-	const mapSettings: Partial<KrunkerMap> = {
+	const mapSettings: Partial<MapExport> = {
 		skyDome: false,
 		toneMapping: 4,
 		sky: 0x040a14,
@@ -28,13 +28,13 @@ import { KrunkerMap } from '../client';
 
 	const proxy = JSON.parse;
 	JSON.parse = function(...args) {
-		const parsed: KrunkerMap = proxy.apply(this, args);
+		const parsed: MapExport = proxy.apply(this, args);
 
 		// Check if the parsed object is a map.
 		if (parsed.name && parsed.spawns) {
 			// Merge the parsed map with the client map settings. Proxy the map settings so whenever they're accessed, we can pass values by reference to mapSettings.
 			return new Proxy({ ...parsed, ...mapSettings }, {
-				get(target, key: keyof KrunkerMap) {
+				get(target: MapExport, key: keyof MapExport) {
 					return mapSettings[key] ?? target[key];
 				}
 			});

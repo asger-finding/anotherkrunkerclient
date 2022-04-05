@@ -4,7 +4,7 @@ const del          = require('del');
 const gulpif       = require('gulp-if');
 const swc          = require('gulp-swc');
 const sass         = require('gulp-sass')(require('sass'));
-const squoosh      = require('gulp-libsquoosh');
+const imagemin     = require('gulp-imagemin');
 const htmlmin      = require('gulp-htmlmin');
 
 const origin = './src';
@@ -79,7 +79,7 @@ function html() {
 
 function images() {
     return src(paths.files.images)
-        .pipe(gulpif(state.prod, squoosh()))
+        .pipe(gulpif(state.prod, imagemin()))
 		.pipe(dest(paths.build));
 }
 
