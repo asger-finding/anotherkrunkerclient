@@ -29,37 +29,36 @@ const state = {
 	}
 }
 
-const swcOptions = {
-	minify: state.prod,
-	jsc: {
-		parser: {
-			syntax: 'typescript',
-			tsx: false,
-			decorators: true,
-			dynamicImport: true
-		},
-		target: 'es2022',
-		loose: false,
-		minify: {
-			mangle: state.prod,
-			compress: {
-				unused: true
-			}
-		}
-	},
-	module: {
-		type: 'commonjs',
-		strict: true,
-		strictMode: true,
-		lazy: false,
-		noInterop: true,
-		ignoreDynamic: true
-	}
-}
-
 function typescript() {
 	return src(paths.files.typescript)
-		.pipe(swc(swcOptions))
+		.pipe(swc({
+			minify: state.prod,
+			jsc: {
+				parser: {
+					syntax: 'typescript',
+					tsx: false,
+					decorators: true,
+					dynamicImport: true
+				},
+				target: 'es2022',
+				...(state.prod ? {
+					minify: {
+						mangle: true,
+						compress: {
+							unused: true
+						}
+					}
+				}: {})
+			},
+			module: {
+				type: 'commonjs',
+				strict: true,
+				strictMode: true,
+				lazy: false,
+				noInterop: true,
+				ignoreDynamic: true
+			}
+		}))
 		.pipe(dest(paths.build));
 }
 
