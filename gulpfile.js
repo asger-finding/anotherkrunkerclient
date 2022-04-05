@@ -3,7 +3,7 @@ const yargs = require('yargs');
 const del = require('del');
 const gulpif = require('gulp-if');
 const swc = require('gulp-swc');
-const sass = require('gulp-sass')(require('sass'));
+const gulpsass = require('gulp-sass')(require('sass'));
 const imagemin = require('gulp-imagemin');
 const htmlmin = require('gulp-htmlmin');
 
@@ -64,7 +64,7 @@ function typescript() {
 
 function sass() {
 	return src(paths.files.css)
-		.pipe(sass({
+		.pipe(gulpsass({
 			...(state.prod ? { outputStyle: 'compressed' } : {})
 		}))
 		.pipe(dest(paths.build));
