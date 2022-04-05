@@ -62,7 +62,7 @@ function typescript() {
 		.pipe(dest(paths.build));
 }
 
-function css() {
+function sass() {
 	return src(paths.files.css)
 		.pipe(sass({
 			...(state.prod ? { outputStyle: 'compressed' } : {})
@@ -94,5 +94,5 @@ function annihilation() {
 
 exports.clean = clean;
 exports.annihilation = annihilation;
-exports.build = series(clean, parallel(typescript, css, html, images));
+exports.build = series(clean, parallel(typescript, sass, html, images));
 exports.default = exports.build;
