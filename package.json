@@ -44,6 +44,7 @@
     "nsis": {
       "artifactName": "anotherkrunkerclient-Windows-${arch}.exe",
       "installerSidebar": "media/installerSidebar.bmp",
+      "differentialPackage": false,
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "deleteAppDataOnUninstall": true
