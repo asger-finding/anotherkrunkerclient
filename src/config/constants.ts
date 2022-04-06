@@ -14,7 +14,8 @@ module.exports = {
 	CLIENT_LICENSE_PERMALINK: 'https://yerl.org/ZKZ8V',
 
 	TARGET_GAME_DOMAIN: 'krunker.io',
-	TARGET_GAME_URL: 'https://krunker.io/',
+	get TARGET_GAME_URL(): string { return `https://${ this.TARGET_GAME_DOMAIN }/`; },
+	get TARGET_GAME_SHORTNAME(): string { return this.TARGET_GAME_DOMAIN.split('.')[0]; },
 	QUICKJOIN_URL_QUERY_PARAM: 'quickjoin',
 
 	// (doesn't work as global require)

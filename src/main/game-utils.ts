@@ -14,7 +14,7 @@ module.exports = class {
 	 * @param  {Electron.BrowserWindow} window
 	 * @returns {Promise<Electron.BrowserWindow>} window promise
 	 * @description
-	 * Load the game window with the krunker.io URL
+	 * Load the game window with the game URL
 	 * Show the window on ready-to-show and callback.
 	 */
 	public static load(window: Electron.BrowserWindow, precursor: Electron.BrowserWindow | undefined): Promise<Electron.BrowserWindow> {
