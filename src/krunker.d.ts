@@ -1,12 +1,12 @@
 /**
- * A representation of hexadecimal as a string ('#...') or hex number (0x...)
  * @typedef {(string | number)} Hexadecimal
+ * @description A representation of hexadecimal as a string ('#...') or hex number (0x...)
  */
 type Hexadecimal = (string | number);
 
 /**
- * A representation of a minified boolean value as 0 or 1 or boolean
  * @typedef {(0 | 1 | boolean)} SlimBoolean
+ * @description A representation of a minified boolean value as 0 or 1 or boolean
  */
 type SlimBoolean = (0 | 1 | boolean);
 
@@ -46,6 +46,10 @@ export interface MapExport {
 	xyz: Array<number>;
 
 	// https://docs.krunker.io/#/./files/scene?id=adding-3d-objects
+	/**
+	 * @type {Array.<Object>}
+	 * @description Objects in the map.
+	 */
 	objects: Array<{
 
 		/**
@@ -56,19 +60,19 @@ export interface MapExport {
 		si: number;
 
 		/**
-		 * @type {Array<number>}
+		 * @type {[ number, number, number ]}
 		 * @description Object position in x, y, z space.
 		 */
-		p: Array<number>;
+		p: [ number, number, number ];
 
 
 		/**
-		 * @type {(undefined | Array<number>)}
+		 * @type {(undefined | [ number, number, number ])}
 		 * @default undefined No rotation is applied.
 		 * @description Object rotation in x, y, z space in radians.  
 		 * float, -Infinity - Infinity
 		 */
-		r?: Array<number>;
+		r?: [ number, number, number ];
 
 		/**
 		 * @type {(undefined | SlimBoolean)}
@@ -149,11 +153,11 @@ export interface MapExport {
 		 * * 4: `grey`
 		 * * 5: `default`
 		 * * 6: `roof` - `Default`, `Classic`
-		 * * 7: `flag` - `Default`, `Classic`, `Classic alt`
+		 * * 7: `flag` - `Default`, `Classic`, `Classic Alt`
 		 * * 8: `grass`
 		 * * 9: `check`
 		 * * 10: `lines` - `Default`, thick
-		 * * 11: `brick` - `Default`, `Classic`, `Classic alt`
+		 * * 11: `brick` - `Default`, `Classic`, `Classic Alt`
 		 * * 12: `link`
 		 * * 13: `liquid`
 		 * * 14: `grain`
@@ -163,9 +167,9 @@ export interface MapExport {
 		t?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
 
 		/**
-		 * @type {number}
+		 * @type {(undefined | number)}
 		 * @default 0
-		 * @description Texture variant.
+		 * @description Texture variant. Refer to {@link MapExport.objects.t} for texture variants.
 		 */
 		tv?: number;
 
@@ -238,14 +242,14 @@ export interface MapExport {
 		td?: number;
 
 		/**
-		 * @type {(undefined, number)}
+		 * @type {(undefined | number)}
 		 * @default 1
 		 * @description Frame count of an animated texture.
 		 */
 		fct?: number;
 
 		/**
-		 * @type {(undefined, number)}
+		 * @type {(undefined | number)}
 		 * @default 0
 		 * @description Frame speed of an animated texture.
 		 */
@@ -347,10 +351,10 @@ export interface MapExport {
 		rt?: number;
 
 		/**
-		 * @type {(undefined | Array<number>)}
+		 * @type {(undefined | [ number, number, number ])}
 		 * @description In the event that {@link MapExport.objects.si} is not defined, this array can be used to determine the object's size.
 		 */
-		s?: Array<number>
+		s?: [ number, number, number ];
 
 		/**
 		 * @type {(undefined | Hexadecimal)}
@@ -402,6 +406,7 @@ export interface MapExport {
 		 */
 		i?: number;
 	}>;
+
 	config: Record<string, unknown>;
 	camPos: Array<number | boolean>;
 	spawns: Array<Array<unknown>>;
@@ -574,35 +579,36 @@ export interface MapExport {
 	/**
 	 * @type {number}
 	 * @default 2000
-	 * @description The fog distance.
+	 * @description The fog distance.  
 	 */
 	fogD: number;
 
 	/** 
 	 * @type {boolean}
 	 * @default 'map-dependent'
-	 * @description See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.physicallyCorrectLights|WebGLRenderer.physicallyCorrectLights}
+	 * @remarks See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.physicallyCorrectLights THREE.js: WebGLRenderer.physicallyCorrectLights}
 	 */
 	correctLights: boolean;
 
 	/**
 	 * @type {(0 | 1 | 2 | 3 | 4)}
 	 * @default 0 (THREE.NoToneMapping)
-	 * @description See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.toneMapping|WebGLRenderer.toneMapping}
+	 * @remarks See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.toneMapping THREE.js: WebGLRenderer.toneMapping}  
 	 */
 	toneMapping: 0 | 1 | 2 | 3 | 4;
 
 	/**
 	 * @type {number}
 	 * @default 1
-	 * @description See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.toneMappingExposure|WebGLRenderer.toneMappingExposure}
+	 * @remarks See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.toneMappingExposure THREE.js: WebGLRenderer.toneMappingExposure}
 	 */
 	toneMappingExposure: number;
 
 	/**
 	 * @type {(0 | 1)}
 	 * @default 0 (THREE.LinearEncoding)
-	 * @description See {@link https://threejs.org/docs/#api/en/constants/Textures|Encoding}  
+	 * @remarks See {@link https://threejs.org/docs/#api/en/constants/Textures THREE.js: Encoding}
+	 * @description
 	 * * 0: `LinearEncoding`
 	 * * 1: `sRGBEncoding`
 	 */
@@ -611,7 +617,7 @@ export interface MapExport {
 	/**
 	 * @type {number}
 	 * @default 2
-	 * @description Possibly deprecated, doesn't seem to have any visual effect.
+	 * @remarks Possibly deprecated or requires a different render engine.
 	 */
 	gammaFactor: number;
 }
