@@ -1,3 +1,6 @@
+// TODO: Switch to a modern alternative such as rollup or webpack.
+// I am most comfortable with the gulp, but it is no longer a good choice.
+
 const { src, dest, series, parallel } = require('gulp');
 const yargs = require('yargs');
 const del = require('del');

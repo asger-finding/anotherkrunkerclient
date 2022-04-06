@@ -18,9 +18,9 @@ module.exports = {
 	get TARGET_GAME_SHORTNAME(): string { return this.TARGET_GAME_DOMAIN.split('.')[0]; },
 	QUICKJOIN_URL_QUERY_PARAM: 'quickjoin',
 
-	// (doesn't work as global require)
+	// If not contained, it will throw an error whenever Constants is referenced outside the main process.
 	// eslint-disable-next-line global-require
-	IS_DEVELOPMENT: process.type === 'browser' ? require('electron-is-dev') : false,
+	IS_DEVELOPMENT: process.type === 'browser' ? require('electron-is-dev') : null,
 
 	ELECTRON_FLAGS: [
 		// Unlock the frame rate
@@ -59,7 +59,6 @@ module.exports = {
 		['disable-background-timer-throttling'],
 		['disable-renderer-backgrounding'],
 		['disable-ipc-flooding-protection'],
-
 		[ 'max-active-webgl-contexts', 100 ],
 		[ 'renderer-process-limit', 100 ],
 		[ 'webrtc-max-cpu-consumption-percentage', 100 ]
@@ -68,7 +67,13 @@ module.exports = {
 	// How long the splash window should be visible before entering the game
 	SPLASH_ALIVE_TIME: 1500,
 
-	getDefaultConstructorOptions(name: string): Electron.BrowserWindowConstructorOptions {
+
+	/**
+	 * @param {string} name The name of the tab to get sizing data for.
+	 * @returns {Electron.BrowserWindowConstructorOptions}
+	 * @description Returns the default window options, with sizing for the given tab.
+	 */
+	getDefaultConstructorOptions(name = ''): Electron.BrowserWindowConstructorOptions {
 		const existsInTabs = Object.values(module.exports.TABS).includes(name);
 
 		return {
@@ -88,6 +93,10 @@ module.exports = {
 		};
 	},
 
+	/**
+	 * @returns {Electron.BrowserWindowConstructorOptions}
+	 * @description Get the window constructor options for the splash screen.
+	 */
 	get SPLASH_CONSTRUCTOR_OPTIONS(): Electron.BrowserWindowConstructorOptions {
 		return {
 			width: 640,
@@ -109,12 +118,15 @@ module.exports = {
 	},
 
 	/**
+	 * @returns {Electron.BrowserWindowConstructorOptions}
+	 * @description
+	 * Returns the options for the primary game window.  
+	 * 
 	 * I can't find an alternative to setting contextIsolation to off and risking it.
-	 * Krunker hangs when enabling nodeIntegration, so using executeJavascript is not an option.
+	 * Krunker hangs when enabling nodeIntegration, so using executeJavascript is not an option.  
 	 * You cannot preload multiple scripts with different webPreferences.
 	 * contextBridge.exposeInMainWorld only allows for exposing objects.
 	 */
-	// TODO:  Unsafe!
 	get GAME_CONSTRUCTOR_OPTIONS(): Electron.BrowserWindowConstructorOptions {
 		const options = this.getDefaultConstructorOptions(this.TABS.GAME);
 		options.webPreferences.preload = join(__dirname, '../window/game-pre');
