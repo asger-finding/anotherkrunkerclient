@@ -54,7 +54,7 @@ module.exports = class {
 		register(window, 'Alt+F4', () => app.quit());
 		register(window, 'F11', () => window.setFullScreen(!window.isFullScreen()));
 		register(window, 'F5', () => webContents.reload());
-		register(window, 'F12', () => webContents.openDevTools());
+		register(window, [ 'F12', 'Ctrl+Shift+I' ], () => webContents.openDevTools());
 
 		if (windowData.tab === TABS.GAME) {
 			info('Registering shortcuts for the game tab');

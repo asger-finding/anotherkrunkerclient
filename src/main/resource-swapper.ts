@@ -31,10 +31,7 @@ module.exports = class {
 		this.window = window;
 	}
 
-	/**
-	 * @description
-	 * Initialize the resource swapper for the target window.
-	 */
+	/** @description Initialize the resource swapper for the target window.*/
 	public start(): void {
 		// If the target directory doesn't exist, create it.
 		if (!fs.existsSync(global.resourceswapProtocolSource)) {

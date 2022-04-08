@@ -9,9 +9,10 @@ import { MapExport } from '../krunker';
 	const { ipcRenderer } = require('electron');
 	const { MESSAGE_EXIT_CLIENT } = require('@constants');
 
-	// Remove the client deprecated popup.
+	// Remove the 'client deprecated' popup.
 	window.OffCliV = true;
 
+	// When closeClient is called from the onclick, close the client.
 	Object.defineProperty(window, 'closeClient', {
 		enumerable: false,
 		value(): void { return ipcRenderer.send(MESSAGE_EXIT_CLIENT); }
@@ -32,7 +33,7 @@ import { MapExport } from '../krunker';
 
 		// Check if the parsed object is a map.
 		if (parsed.name && parsed.spawns) {
-			// Merge the parsed map with the client map settings. Proxy the map settings so whenever they're accessed, we can pass values by reference to mapSettings.
+			// Merge the parsed map with the client map settings. Proxy the map settings so whenever they're accessed, we can pass values and reference mapSettings.
 			return new Proxy({ ...parsed, ...mapSettings }, {
 				get(target: MapExport, key: keyof MapExport) {
 					return mapSettings[key] ?? target[key];
@@ -42,9 +43,11 @@ import { MapExport } from '../krunker';
 		return parsed;
 	};
 
+	// Show the client exit button
 	document.addEventListener('DOMContentLoaded', () => {
 		const showClientExit = document.createElement('style');
 		showClientExit.innerHTML = '#clientExit { display: flex; }';
+
 		document.head.appendChild(showClientExit);
 	});
 }());

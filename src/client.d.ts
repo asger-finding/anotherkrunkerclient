@@ -18,12 +18,11 @@ declare global {
 		clientAPI: {
 			clientName: string;
 
-			send(channel: string, data: unknown): void;
-			recieve(channel: string, callback: (data: unknown) => void): void;
-			requestFromStore(key: string, fallback: unknown): unknown;
+			send(channel: string, data: unknown[]): void;
+			receive(channel: string, ...callback: ((data: unknown) => void)[]): boolean | void;
+			requestFromStore(key: string, fallback: unknown): unknown | void;
 			setToStore(key: string, value: unknown): void;
-			storeHas(key: string): boolean;
-			onNotWhiteListed(key: string): void;
+			storeHas(key: string): unknown | null;
 		};
 		openSettings: () => null;
 		closeClient: () => null;

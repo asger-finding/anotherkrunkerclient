@@ -31,10 +31,7 @@ class Application {
 
 	private eventHandler = new EventHandler();
 
-	/**
-	 * @description
-	 * Set flags, event listeners before the app is ready.
-	 */
+	/** @description Set flags, event listeners before the app is ready. */
 	public constructor() {
 		info('Constructing initializer class');
 
