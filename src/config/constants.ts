@@ -86,6 +86,7 @@ module.exports = {
 			backgroundColor: '#1c1c1c',
 			icon: join(__dirname, '../renderer/assets/icon.ico'),
 			webPreferences: {
+				nodeIntegration: false,
 				contextIsolation: true,
 				worldSafeExecuteJavaScript: true,
 				enableRemoteModule: false

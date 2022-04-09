@@ -2,7 +2,7 @@
 // I am most comfortable with the gulp, but it is no longer a good choice.
 
 const { src, dest, series, parallel } = require('gulp');
-const yargs = require('yargs');
+const { argv } = require('yargs');
 const del = require('del');
 const gulpif = require('gulp-if');
 const swc = require('gulp-swc');
@@ -25,7 +25,7 @@ const state = {
 	PRODUCTION: 'production',
 	DEFAULT:    'default',
 	get current() {
-		return yargs.argv.state || this[this.DEFAULT];
+		return argv.state || this[this.DEFAULT];
 	},
 	get prod() {
 		return this.current === this.PRODUCTION;
