@@ -47,14 +47,17 @@ import { MapExport } from '../krunker';
 	/** Addresses https://stackoverflow.com/a/44854201/11452298 and https://stackoverflow.com/a/28121768/11452298 */
 
 	// Array of native function names
-	const proxyDict = { 'JSON.parse': 'function parse() { [native code] }' };
+	const proxyDict = {
+		'Function.prototype.toString.call': 'function call() { [native code] }',
+		'JSON.parse': 'function parse() { [native code] }'
+	};
 
 	for (const [ key, value ] of Object.entries(proxyDict)) {
 		// eslint-disable-next-line no-eval
 		const func = eval(key);
 
 		func.toString = String.bind(null, value);
-		delete func.prototype.constructor;
+		delete func.prototype?.constructor;
 	}
 
 	Function.prototype.toString.call = new Proxy(Function.prototype.toString.call, {
