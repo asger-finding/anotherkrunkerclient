@@ -27,8 +27,14 @@ import { MapExport } from '../krunker';
 		lightI: 1.6
 	};
 
+	// Proxy JSON.parse
 	const proxy = JSON.parse;
 	JSON.parse = function(...args) {
+		/**
+		 * See issue: https://stackoverflow.com/a/6599105/11452298
+		 * This is a hack and will not work if it is not tested with the /\{\s+\[native code\]/ expression
+		 */
+		// { [native code] }
 		const parsed: MapExport = proxy.apply(this, args);
 
 		// Check if the parsed object is a map.
@@ -42,6 +48,12 @@ import { MapExport } from '../krunker';
 		}
 		return parsed;
 	};
+
+	/** See issue: https://stackoverflow.com/a/44854201/11452298 */
+	JSON.parse.toString = String.bind(0, 'function parse() { [native code] }');
+
+	/** See issue: https://stackoverflow.com/a/28121768/11452298 */
+	delete JSON.parse.prototype.constructor;
 
 	// Show the client exit button
 	document.addEventListener('DOMContentLoaded', () => {

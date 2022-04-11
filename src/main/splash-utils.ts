@@ -39,8 +39,8 @@ module.exports = class {
 				info('ready-to-show reached on Splash window');
 
 				await this.emitReleaseData(window);
-				window.show();
 				if (IS_DEVELOPMENT) window.webContents.openDevTools({ mode: 'detach' });
+				window.show();
 
 				// Resolve the promise when everything is done and dusted in the splash window.
 				ipcMain.once(MESSAGE_SPLASH_DONE, () => {

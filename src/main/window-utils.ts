@@ -17,7 +17,7 @@ module.exports = class {
 
 	/**
 	 * @param  {Electron.BrowserWindowConstructorOptions} parameters
-	 * @param  {(string|undefined)} windowURL
+	 * @param  {(string | undefined)} windowURL
 	 * @returns {Electron.BrowserWindow} Newly generated window instance
 	 * @description
 	 * Create a new window instance, load given URL (if any)  

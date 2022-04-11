@@ -108,6 +108,7 @@ module.exports = {
 			center: true,
 			resizable: false,
 			fullscreenable: false,
+			darkTheme: true,
 			icon: join(__dirname, '../renderer/assets/icon.ico'),
 			webPreferences: {
 				contextIsolation: true,

@@ -21,13 +21,15 @@ module.exports = class {
 		// Show the game window when things have all loaded.
 		return new Promise(resolve => {
 			window.once('ready-to-show', () => {
-				window.show();
-				if (IS_DEVELOPMENT) window.webContents.openDevTools();
-			});
-			window.webContents.once('did-finish-load', () => {
 				info('ready-to-show reached on Game window');
 
 				if (precursor) WindowUtils.destroyWindow(precursor);
+				if (IS_DEVELOPMENT) window.webContents.openDevTools();
+
+				window.show();
+			});
+			window.webContents.once('did-finish-load', () => {
+				info('did-finish-load reached on Game window');
 
 				// Resolve the promise when everything is done and dusted in the game window.
 				ipcMain.once(MESSAGE_GAME_DONE, () => {

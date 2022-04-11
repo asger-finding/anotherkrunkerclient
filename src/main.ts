@@ -78,7 +78,7 @@ protocol.registerSchemesAsPrivileged([{
 }]);
 
 const client = new Application();
-app.once('ready', async() => {
+app.whenReady().then(async(): Promise<void> => {
 	await client.init();
 
 	info('Client initialized');
