@@ -62,7 +62,7 @@ import { MapExport } from '../krunker';
 			const [func] = args;
 			const result = func.toString();
 
-			// If we have it in our proxy dictionary, return the .toString() result as a native .
+			// If we have it in our proxy dictionary, return the .toString() result as a native function.
 			if (Object.values(proxyDict).includes(result)) return result;
 
 			// Call the original function and return the result.
