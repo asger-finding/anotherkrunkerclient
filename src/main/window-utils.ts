@@ -11,6 +11,7 @@ const {
 	TARGET_GAME_URL,
 	QUICKJOIN_URL_QUERY_PARAM
 } = require('@constants');
+const GameUtils = require('@game-utils');
 const Swapper = require('@resource-swapper');
 
 module.exports = class {
@@ -25,7 +26,7 @@ module.exports = class {
 	 * If the window is a Krunker tab, set the window scaling preferences.  
 	 * Return the window
 	 */
-	public static createWindow(parameters: Electron.BrowserWindowConstructorOptions, windowURL: string | undefined): Electron.BrowserWindow {
+	public static async createWindow(parameters: Electron.BrowserWindowConstructorOptions, windowURL: string | undefined): Promise<Electron.BrowserWindow> {
 		info(`Creating a window instance${ windowURL ? ` with URL: ${ windowURL }` : '' }`);
 
 		const window = new BrowserWindow(parameters);
@@ -36,7 +37,10 @@ module.exports = class {
 		if (windowData.isKrunker) this.registerSwapper(window);
 		window.removeMenu();
 
-		return this.registerEventListeners(parameters, window, windowData);
+		this.registerEventListeners(parameters, window, windowData);
+		await this.createSpecialWindow(windowData)(window);
+
+		return window;
 	}
 
 	/**
@@ -138,6 +142,15 @@ module.exports = class {
 		return window;
 	}
 
+	private static createSpecialWindow(windowData: WindowData) {
+		switch (windowData.tab) {
+			case TABS.GAME:
+				return GameUtils.load;
+			default:
+				return function() {};
+		}
+	}
+
 	/**
 	 * @param {Electron.BrowserWindow} window The window to destroy
 	 * @description
@@ -147,6 +160,7 @@ module.exports = class {
 		info('Destroying a window instance');
 		if (window.webContents.isDevToolsOpened()) window.webContents.closeDevTools();
 
+		window.hide();
 		return window.destroy();
 	}
 

@@ -17,7 +17,6 @@ module.exports = class {
 	}
 
 	/**
-	 * 
 	 * @param {string} message The message to listen for
 	 * @param {function} callback The callback to run when the message is received
 	 * @returns {number} The id of the event listener

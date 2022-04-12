@@ -1,11 +1,11 @@
 import { ReleaseData } from '../client';
-import Electron = require('electron');
 
 const { setVibrancy } = require('electron-acrylic-window');
 const { ipcMain } = require('electron');
 const { info, warn } = require('electron-log');
 const { get } = require('axios');
 const { join } = require('path');
+const WindowUtils = require('@window-utils');
 const {
 	IS_DEVELOPMENT,
 	CLIENT_REPO,
@@ -45,6 +45,11 @@ module.exports = class {
 				// Resolve the promise when everything is done and dusted in the splash window.
 				ipcMain.once(MESSAGE_SPLASH_DONE, () => {
 					info(`${ MESSAGE_SPLASH_DONE } received`);
+
+					// Hack to close the splash window without ending the electron process.
+					setTimeout(() => {
+						WindowUtils.destroyWindow(window);
+					}, 1);
 
 					return resolve(window);
 				});

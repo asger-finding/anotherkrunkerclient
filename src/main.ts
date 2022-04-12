@@ -14,7 +14,6 @@ const {
 const { join } = require('path');
 const WindowUtils = require('@window-utils');
 const SplashUtils = require('@splash-utils');
-const GameUtils = require('@game-utils');
 const EventHandler = require('@event-handler');
 
 // eslint-disable-next-line no-console
@@ -56,14 +55,13 @@ class Application {
 		info('Initializing splash window');
 		const splashLoadTime = Date.now();
 
-		this.splashWindow = WindowUtils.createWindow(SPLASH_CONSTRUCTOR_OPTIONS);
+		this.splashWindow = await WindowUtils.createWindow(SPLASH_CONSTRUCTOR_OPTIONS);
 		await SplashUtils.load(this.splashWindow);
 
 		info(`Splash window done after ${ Date.now() - splashLoadTime } ms`);
 		info('Initializing game window');
 
-		this.gameWindow = WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
-		await GameUtils.load(this.gameWindow, this.splashWindow);
+		this.gameWindow = await WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
 
 		return true;
 	}

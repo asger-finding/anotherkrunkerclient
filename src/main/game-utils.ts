@@ -1,8 +1,5 @@
-import Electron = require('electron');
-
 const { ipcMain } = require('electron');
 const { info } = require('electron-log');
-const WindowUtils = require('@window-utils');
 const {
 	IS_DEVELOPMENT,
 	MESSAGE_GAME_DONE
@@ -17,13 +14,12 @@ module.exports = class {
 	 * Load the game window with the game URL
 	 * Show the window on ready-to-show and callback.
 	 */
-	public static load(window: Electron.BrowserWindow, precursor: Electron.BrowserWindow | undefined): Promise<Electron.BrowserWindow> {
+	public static load(window: Electron.BrowserWindow): Promise<Electron.BrowserWindow> {
 		// Show the game window when things have all loaded.
 		return new Promise(resolve => {
 			window.once('ready-to-show', () => {
 				info('ready-to-show reached on Game window');
 
-				if (precursor) WindowUtils.destroyWindow(precursor);
 				if (IS_DEVELOPMENT) window.webContents.openDevTools();
 
 				window.show();
