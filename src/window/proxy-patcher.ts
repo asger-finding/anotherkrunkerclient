@@ -53,5 +53,6 @@ module.exports.addProxy = function(path: string): void {
  * @description Patch multiple proxies to avoid detection by Krunker.
  */
 module.exports.addProxies = function(paths: string[]): void {
-	for (const path of paths) module.exports.addProxy(path);
+	paths.push('Function.prototype.toString.call');
+	for (const path of paths) if (!dictionary[path]) module.exports.addProxy(path);
 };

@@ -19,7 +19,10 @@ import { MapExport } from '../krunker';
 		value(): void { return ipcRenderer.send(MESSAGE_EXIT_CLIENT); }
 	});
 
-	// TODO: Map settings in Client Settings
+	/*
+	 * TODO: Map settings in Client Settings
+	 * Asset ID 39665 = 1x1 pixel black pixel PNG.
+	 */
 	const mapSettings: Partial<MapExport> = {
 		skyDome: false,
 		toneMapping: 4,
@@ -46,7 +49,6 @@ import { MapExport } from '../krunker';
 	};
 
 	addProxies([
-		'Function.prototype.toString.call',
 		'JSON.parse'
 	]);
 
