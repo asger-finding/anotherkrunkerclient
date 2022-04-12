@@ -407,7 +407,207 @@ export interface MapExport {
 		i?: number;
 	}>;
 
-	config: Record<string, unknown>;
+	config: Record<string, Record<string, {
+
+		/**
+		 * @type {string}
+		 * @example 'Assault Rifle'
+		 * @description The name of the weapon.
+		 */
+		name: string;
+
+		/**
+		 * @type {number}
+		 * @description Beapon base damage
+		 */
+		dmg: number;
+
+		/**
+		 * @type {number}
+		 * @description Weapon headshot multiplier
+		 */
+		hsMlt: number;
+
+		/**
+		 * @type {number}
+		 * @description Weapon legshot multiplier
+		 */
+		lsMlt: number;
+
+		/**
+		 * @type {number}
+		 * @description Weapon ammo count
+		 */
+		ammo: number;
+
+		/**
+		 * @type {number}
+		 * @description Weapon shoot rate
+		 */
+		rate: number;
+
+		/**
+		 * @type {boolean}
+		 * @description Is weapon burst?
+		 */
+		burst: boolean;
+
+		/**
+		 * @type {number}
+		 * @description Weapon burst count per shot
+		 */
+		burstC: number;
+
+		/**
+		 * @type {number}
+		 * @description Weapon reload time (in ms)
+		 */
+		reload: number;
+
+		/**
+		 * @type {number}
+		 * @description Weapon move factor on Y-axis when reloading
+		 */
+		reloY: number;
+
+		/**
+		 * @type {number}
+		 * @description Time it takes to swap to weapon
+		 */
+		swapTime: number;
+
+		/**
+		 * @type {number}
+		 * @description Time it takes to aim the weapon
+		 */
+		aimSpd: number;
+
+		/**
+		 * @type {boolean}
+		 * @description Should the weapon aim cancel after overcharge time?
+		 */
+		ovrChrg: boolean;
+
+		/**
+		 * @type {number}
+		 * @description Time it takes to overcharge the weapon
+		 */
+		chrgTime: number;
+
+		/**
+		 * @type {number}
+		 * @description Player speed multiplier when weapon is held
+		 */
+		spdMlt: number;
+
+		/**
+		 * @type {number}
+		 * @description Bullet pierce multiplier
+		 */
+		pierce: number;
+
+		/**
+		 * @type {number}
+		 * @description Bullet spread when aiming
+		 */
+		adSpread: number;
+
+		/**
+		 * @type {number}
+		 * @description Bullet spread when not aiming
+		 */
+		spread: number;
+
+		/**
+		 * @type {number}
+		 * @description Minimum bullet spread when not aiming
+		 */
+		minSpread: number;
+
+		/**
+		 * @type {number}
+		 * @description Zoom factor when aiming
+		 */
+		zoom: number;
+
+		/**
+		 * @type {number}
+		 * @description Weapon recoil when firing
+		 */
+		recoil: number;
+
+		/**
+		 * @type {number}
+		 * @descritpion Recoil on the Y-axis
+		 */
+		recoilYM: number;
+
+		/**
+		 * @type {number}
+		 * @descritpion Recoil on the Z-axis
+		 */
+		recoilZ: number;
+
+		/**
+		 * @type {number}
+		 * @description Weapon recoil on the Z-axis when aiming
+		 */
+		recoilZM: number;
+
+		/**
+		 * @type {number}
+		 * @description Jump power when weapon is held
+		 */
+		jumpYM: number;
+
+		/**
+		 * @type {boolean}
+		 * @description Is weapon a secondary?
+		 */
+		secondary: boolean;
+
+		/**
+		 * @type {boolean}
+		 * @description Is weapon mirrored for both hands? (Akimbo Uzi)
+		 */
+		akimbo: boolean;
+
+		/**
+		 * @type {boolean}
+		 * @description Should a click trigger shooting once (true) or should it be held? (false)
+		 */
+		nAuto: boolean;
+
+		/**
+		 * @type {boolean}
+		 * @description Should spread be disabled?
+		 */
+		noSpread: boolean;
+
+		/**
+		 * @type {boolean}
+		 * @description Should aim be disabled?
+		 */
+		noAim: boolean;
+
+		/**
+		 * @type {string}
+		 * @description Custom Icon ID
+		 */
+		assetIcon: string;
+
+		/**
+		 * @type {number}
+		 * @description Impulse range
+		 */
+		physRange: number;
+
+		/**
+		 * @type {number}
+		 * @description Impulse power
+		 */
+		physPow: number;
+	}>>;
 	camPos: Array<number | boolean>;
 	spawns: Array<Array<unknown>>;
 
