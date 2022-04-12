@@ -8,6 +8,7 @@ import { MapExport } from '../krunker';
 
 	const { ipcRenderer } = require('electron');
 	const { MESSAGE_EXIT_CLIENT } = require('@constants');
+	const { addProxies } = require('@proxy-patcher');
 
 	// Remove the 'client deprecated' popup.
 	window.OffCliV = true;
@@ -44,34 +45,10 @@ import { MapExport } from '../krunker';
 		return parsed;
 	};
 
-	/** Addresses https://stackoverflow.com/a/44854201/11452298 and https://stackoverflow.com/a/28121768/11452298 */
-
-	// Array of native function names
-	const proxyDict = {
-		'Function.prototype.toString.call': 'function call() { [native code] }',
-		'JSON.parse': 'function parse() { [native code] }'
-	};
-
-	for (const [ key, value ] of Object.entries(proxyDict)) {
-		// eslint-disable-next-line no-eval
-		const func = eval(key);
-
-		func.toString = String.bind(null, value);
-		delete func.prototype?.constructor;
-	}
-
-	Function.prototype.toString.call = new Proxy(Function.prototype.toString.call, {
-		apply(target, thisArg, args) {
-			const [func] = args;
-			const result = func.toString();
-
-			// If we have it in our proxy dictionary, return the .toString() result as a native function.
-			if (Object.values(proxyDict).includes(result)) return result;
-
-			// Call the original function and return the result.
-			return target.call(thisArg, func);
-		}
-	});
+	addProxies([
+		'Function.prototype.toString.call',
+		'JSON.parse'
+	]);
 
 	// Show the client exit button
 	document.addEventListener('DOMContentLoaded', () => {

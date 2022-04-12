@@ -9,8 +9,7 @@ addAliases({
 	'@splash-pre-utils': resolve(__dirname, './window/splash-pre-utils'),
 	'@game-api': resolve(__dirname, './window/game-api'),
 	'@game-settings': resolve(__dirname, './window/game-settings'),
-
-	// the deep vast emptiness of the renderer
+	'@proxy-patcher': resolve(__dirname, './window/proxy-patcher'),
 
 	// main
 	'@splash-utils': resolve(__dirname, './main/splash-utils'),
