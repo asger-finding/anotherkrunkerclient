@@ -407,6 +407,7 @@ export interface MapExport {
 		i?: number;
 	}>;
 
+	// Config is sent to the client via a webhook (api.krunker.io/webhooks/general/maps/config?mn=<MAP_NAME>)
 	config: {
 		weps: Record<string, {
 
