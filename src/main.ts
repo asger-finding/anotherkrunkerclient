@@ -89,3 +89,10 @@ app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') return app.quit();
 	return null;
 });
+app.on('web-contents-created', (_event, webContents) => {
+	webContents.on('select-bluetooth-device', (evt, _devices, callback) => {
+		evt.preventDefault();
+		// Cancel the request
+		callback('');
+	});
+});

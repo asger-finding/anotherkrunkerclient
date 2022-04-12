@@ -60,7 +60,7 @@
     "electron-store": "^8.0.1",
     "electron-updater": "4.6.5",
     "module-alias": "^2.2.2",
-    "semver": "^7.3.5"
+    "semver": "^7.3.6"
   },
   "devDependencies": {
     "@swc/core": "^1.2.163",

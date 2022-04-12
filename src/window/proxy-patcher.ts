@@ -35,10 +35,11 @@ function generateNativeMessage(path: string): string {
  * Bind a native toString() description to the proxy and delete prototype access.
  */
 module.exports.addProxy = function(path: string): void {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const func = path.split('.').reduce((prev, current) => prev[current] || null, window as any);
 	const nativeMessage = generateNativeMessage(path);
 
-	if (func) {
+	if (typeof func === 'function') {
 		// Make func.toString() return native code.
 		func.toString = String.bind(null, nativeMessage);
 		dictionary[path] = nativeMessage;
