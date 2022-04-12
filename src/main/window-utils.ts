@@ -36,7 +36,7 @@ module.exports = class {
 		if (windowData.isKrunker) this.registerSwapper(window);
 		window.removeMenu();
 
-		return this.createEventListeners(parameters, window, windowData);
+		return this.registerEventListeners(parameters, window, windowData);
 	}
 
 	/**
@@ -86,7 +86,7 @@ module.exports = class {
 	 * Create electron event listeners for the window.  
 	 * Some one-time events are triggered onces, some are triggered on every event.
 	 */
-	private static createEventListeners(parameters: Electron.BrowserWindowConstructorOptions, window: Electron.BrowserWindow, windowData: WindowData): Electron.BrowserWindow {
+	private static registerEventListeners(parameters: Electron.BrowserWindowConstructorOptions, window: Electron.BrowserWindow, windowData: WindowData): Electron.BrowserWindow {
 		// If the window is a Krunker tab, set the window scaling preferences.
 		if (windowData.isInTabs) {
 			window.once('close', () => {
@@ -122,12 +122,15 @@ module.exports = class {
 			else if (!newWindowData.invalid) window.webContents.loadURL(newWindowURL);
 		});
 
+		// Don't allow the target website to set the window title.
+		window.on('page-title-updated', evt => evt.preventDefault());
+
 		// If parameters have an explicit show true value, show the window.
 		window.once('ready-to-show', () => { if (typeof parameters.show === 'undefined' ? true : parameters.show) window.show(); });
 
-		// Register shortcuts for the window.
+		// Set the window title and register shortcuts for the window.
 		window.webContents.once('did-finish-load', () => {
-			if (windowData.tab) window.setTitle(`${ app.getName() } — ${ windowData.tab }`);
+			if (windowData.tab) window.setTitle(`${ windowData.tab } — ${ app.getName() }`);
 
 			this.registerShortcuts(window, windowData);
 		});
