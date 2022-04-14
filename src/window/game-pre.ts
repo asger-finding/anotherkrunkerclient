@@ -33,8 +33,8 @@ import { MapExport } from '../krunker';
 
 	// Proxy JSON.parse
 	const proxy = JSON.parse;
-	(JSON.parse as typeof proxy) = function(text, reviver?) {
-		const parsed: MapExport = proxy.apply(this, [ text, reviver ]);
+	(JSON.parse as typeof proxy) = function(text, reviver) {
+		const parsed: MapExport = proxy(text, reviver);
 
 		// Check if the parsed object is a map.
 		if (parsed.name && parsed.spawns) {
