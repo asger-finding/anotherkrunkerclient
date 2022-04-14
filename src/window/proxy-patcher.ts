@@ -24,9 +24,12 @@ Function.prototype.toString.call = new Proxy(Function.prototype.toString.call, {
  * @param {string} path Path to the proxy relative to window.
  * @returns {string} Native function toString() message.
  */
-function generateNativeMessage(path: string): string {
+function generateNativeMessage(path: string): { nativeMessage: string, funcName: string } {
 	const split = path.split('.');
-	return `function ${ split[split.length - 1] }() { [native code] }`;
+	return {
+		nativeMessage: `function ${split[split.length - 1]}() { [native code] }`,
+		funcName: split[split.length - 1]
+	}
 }
 
 /**
@@ -37,14 +40,20 @@ function generateNativeMessage(path: string): string {
 module.exports.addProxy = function(path: string): void {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const func = path.split('.').reduce((prev, current) => prev[current] || null, window as any);
-	const nativeMessage = generateNativeMessage(path);
+	const { nativeMessage, funcName } = generateNativeMessage(path);
 
 	if (typeof func === 'function') {
 		// Make func.toString() return native code.
-		func.toString = String.bind(null, nativeMessage);
-		dictionary[path] = nativeMessage;
+		Object.defineProperty(func, 'toString', {
+			value: String.bind(null, nativeMessage),
+			configurable: true
+		});
+		Object.defineProperty(func, 'name', {
+			value: funcName,
+			configurable: true
+		});
 
-		delete func.prototype?.constructor;
+		dictionary[path] = nativeMessage;
 	}
 };
 
@@ -52,7 +61,7 @@ module.exports.addProxy = function(path: string): void {
  * @param {string[]} paths Array of paths to the proxies relative to window.
  * @description Patch multiple proxies to avoid detection by Krunker.
  */
-module.exports.addProxies = function(paths: string[]): void {
+module.exports.addProxies = function (paths: string[]): void {
 	paths.push('Function.prototype.toString.call');
 	for (const path of paths) if (!dictionary[path]) module.exports.addProxy(path);
 };

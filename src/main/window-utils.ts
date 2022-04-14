@@ -57,7 +57,8 @@ module.exports = class {
 		register(window, 'Esc', () => webContents.executeJavaScript('document.exitPointerLock()', true));
 		register(window, 'Alt+F4', () => app.quit());
 		register(window, 'F11', () => window.setFullScreen(!window.isFullScreen()));
-		register(window, 'F5', () => webContents.reload());
+		register(window, [ 'F5', 'Ctrl+R' ], () => webContents.reload());
+		register(window, [ 'Ctrl+F5', 'Ctrl+Shift+R' ], () => webContents.reloadIgnoringCache());
 		register(window, [ 'F12', 'Ctrl+Shift+I' ], () => webContents.openDevTools());
 
 		if (windowData.tab === TABS.GAME) {
