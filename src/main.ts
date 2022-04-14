@@ -75,13 +75,6 @@ protocol.registerSchemesAsPrivileged([{
 	privileges: { secure: true, corsEnabled: true }
 }]);
 
-const client = new Application();
-app.whenReady().then(async(): Promise<void> => {
-	await client.init();
-
-	info('Client initialized');
-});
-
 app.on('quit', () => app.quit());
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') return app.quit();
@@ -94,3 +87,14 @@ app.on('web-contents-created', (_event, webContents) => {
 		callback('');
 	});
 });
+
+if (!app.requestSingleInstanceLock()) {
+	app.quit();
+} else {
+	const client = new Application();
+	app.whenReady().then(async(): Promise<void> => {
+		await client.init();
+
+		info('Client initialized');
+	});
+}
