@@ -1,6 +1,7 @@
-require('./aliases');
 import Electron = require('electron');
+require('./aliases');
 
+const { join } = require('path');
 const { app, protocol } = require('electron');
 const { info } = require('electron-log');
 const {
@@ -11,7 +12,6 @@ const {
 	SPLASH_CONSTRUCTOR_OPTIONS,
 	GAME_CONSTRUCTOR_OPTIONS
 } = require('@constants');
-const { join } = require('path');
 const WindowUtils = require('@window-utils');
 const SplashUtils = require('@splash-utils');
 const EventHandler = require('@event-handler');

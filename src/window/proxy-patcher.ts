@@ -29,7 +29,7 @@ function generateNativeMessage(path: string): { nativeMessage: string, funcName:
 	return {
 		nativeMessage: `function ${split[split.length - 1]}() { [native code] }`,
 		funcName: split[split.length - 1]
-	}
+	};
 }
 
 /**
@@ -61,7 +61,7 @@ module.exports.addProxy = function(path: string): void {
  * @param {string[]} paths Array of paths to the proxies relative to window.
  * @description Patch multiple proxies to avoid detection by Krunker.
  */
-module.exports.addProxies = function (paths: string[]): void {
+module.exports.addProxies = function(paths: string[]): void {
 	paths.push('Function.prototype.toString.call');
 	for (const path of paths) if (!dictionary[path]) module.exports.addProxy(path);
 };

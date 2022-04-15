@@ -4,11 +4,8 @@ require('../aliases');
 const { ipcRenderer, shell } = require('electron');
 const { gt: versionGreater, diff: versionDifference } = require('semver');
 const { info } = require('electron-log');
-const {
-	SPLASH_ALIVE_TIME,
-	MESSAGE_SPLASH_DONE
-} = require('@constants');
 const SplashPreloadUtils = require('@splash-pre-utils');
+const { SPLASH_ALIVE_TIME, MESSAGE_SPLASH_DONE } = require('@constants');
 
 function transformSplash(rel: ReleaseData) {
 	const { clientVersionElement, clientUpdateElement } = SplashPreloadUtils;

@@ -1,10 +1,7 @@
 import { EventListener } from '../client';
 
 const { app, ipcMain } = require('electron');
-const {
-	MESSAGE_EXIT_CLIENT
-	// MESSAGE_OPEN_SETTINGS
-} = require('@constants');
+const { MESSAGE_EXIT_CLIENT } = require('@constants');
 
 module.exports = class {
 

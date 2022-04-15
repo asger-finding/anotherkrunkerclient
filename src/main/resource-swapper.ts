@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { join } = require('path');
-const { CLIENT_NAME, TARGET_GAME_DOMAIN } = require('@constants');
 const { error } = require('electron-log');
+const { CLIENT_NAME, TARGET_GAME_DOMAIN } = require('@constants');
 
 module.exports = class {
 

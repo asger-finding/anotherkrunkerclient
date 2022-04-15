@@ -7,8 +7,8 @@ import { MapExport } from '../krunker';
 	require('@game-api');
 
 	const { ipcRenderer } = require('electron');
-	const { MESSAGE_EXIT_CLIENT } = require('@constants');
 	const { addProxies } = require('@proxy-patcher');
+	const { MESSAGE_EXIT_CLIENT } = require('@constants');
 
 	// Remove the 'client deprecated' popup.
 	window.OffCliV = true;

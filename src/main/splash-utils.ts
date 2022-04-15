@@ -1,10 +1,10 @@
 import { ReleaseData } from '../client';
 
-const { setVibrancy } = require('electron-acrylic-window');
-const { ipcMain } = require('electron');
-const { info, warn } = require('electron-log');
-const { get } = require('axios');
 const { join } = require('path');
+const { ipcMain } = require('electron');
+const { get } = require('axios');
+const { setVibrancy } = require('electron-acrylic-window');
+const { info, warn } = require('electron-log');
 const WindowUtils = require('@window-utils');
 const {
 	IS_DEVELOPMENT,

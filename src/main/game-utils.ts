@@ -1,9 +1,6 @@
 const { ipcMain } = require('electron');
 const { info } = require('electron-log');
-const {
-	IS_DEVELOPMENT,
-	MESSAGE_GAME_DONE
-} = require('@constants');
+const { IS_DEVELOPMENT, MESSAGE_GAME_DONE } = require('@constants');
 
 module.exports = class {
 

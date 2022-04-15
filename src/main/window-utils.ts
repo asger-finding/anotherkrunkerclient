@@ -3,6 +3,8 @@ import { WindowData } from '../client';
 const { BrowserWindow, shell, app } = require('electron');
 const { info } = require('electron-log');
 const { register } = require('electron-localshortcut');
+const GameUtils = require('@game-utils');
+const Swapper = require('@resource-swapper');
 const {
 	preferences,
 	getDefaultConstructorOptions,
@@ -11,8 +13,6 @@ const {
 	TARGET_GAME_URL,
 	QUICKJOIN_URL_QUERY_PARAM
 } = require('@constants');
-const GameUtils = require('@game-utils');
-const Swapper = require('@resource-swapper');
 
 module.exports = class {
 

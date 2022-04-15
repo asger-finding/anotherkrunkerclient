@@ -1,5 +1,5 @@
-const { addAliases } = require('module-alias');
 const { resolve } = require('path');
+const { addAliases } = require('module-alias');
 
 addAliases({
 	// config

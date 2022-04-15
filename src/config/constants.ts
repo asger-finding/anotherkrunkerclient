@@ -1,8 +1,8 @@
 import { WindowData } from '../client';
 
-const pkg = require('../../package.json');
 const { join } = require('path');
 const Store = require('electron-store');
+const pkg = require('../../package.json');
 
 module.exports = {
 	preferences: new Store(),
