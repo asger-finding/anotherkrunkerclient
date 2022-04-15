@@ -48,15 +48,21 @@ module.exports = class {
 			});
 		}
 
+		// Fix CORS problem with browserfps.com.
 		this.window.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-			if (details.responseHeaders && details.responseHeaders['access-control-allow-credentials']) return callback(details.responseHeaders);
-
 			for (const key in details.responseHeaders) {
-				if (key.toLowerCase() === 'access-control-allow-origin') {
+				const lowercase = key.toLowerCase();
+
+				// If the credentials mode is 'include', callback normally or the request will error with CORS.
+				if (lowercase === 'access-control-allow-credentials' && details.responseHeaders[key][0] === 'true') return callback(details.responseHeaders);
+
+				// Response headers may have varying letter casing, so we need to check in lowercase.
+				if (lowercase === 'access-control-allow-origin') {
 					delete details.responseHeaders[key];
 					break;
 				}
 			}
+
 			return callback({
 				responseHeaders: {
 					...details.responseHeaders,
