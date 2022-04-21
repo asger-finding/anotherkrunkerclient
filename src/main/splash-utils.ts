@@ -2,7 +2,7 @@ import { ReleaseData } from '../client';
 
 const { join } = require('path');
 const { ipcMain } = require('electron');
-const { get } = require('axios');
+const { fetch } = require('cross-fetch');
 const { setVibrancy } = require('electron-acrylic-window');
 const { info, warn } = require('electron-log');
 const WindowUtils = require('@window-utils');
@@ -46,7 +46,7 @@ module.exports = class {
 				ipcMain.once(MESSAGE_SPLASH_DONE, () => {
 					info(`${ MESSAGE_SPLASH_DONE } received`);
 
-					// Hack to close the splash window without ending the electron process.
+					// Hack to close the splash window without ending the electron process. TODO: Find better method.
 					setTimeout(() => {
 						WindowUtils.destroyWindow(window);
 					}, 1);
@@ -80,22 +80,24 @@ module.exports = class {
 	private static async getReleaseData(): Promise<ReleaseData> {
 		info('Getting latest GitHub release...');
 
-		const newest: ReleaseData = await get(`https://api.github.com/repos/${ CLIENT_REPO }/releases/latest`)
+		return fetch(`https://api.github.com/repos/${ CLIENT_REPO }/releases/latest`)
+			.then((response: any) => {
+				if (response.status >= 400) throw new Error(response.status);
+				return response.json();
+			})
 			.then((response: { data: { tag_name: string, html_url: string } }) => (<ReleaseData>{
 				clientVersion: CLIENT_VERSION,
 				releaseVersion: response.data.tag_name,
 				releaseUrl: response.data.html_url
 			}))
 			.catch((err: Error) => {
-				warn(`Error getting latest GitHub release: ${ err.message }`);
+				warn(`Bad response getting GitHub release: ${ err.message }`);
 				return <ReleaseData>{
 					clientVersion: CLIENT_VERSION,
 					releaseVersion: '0.0.0',
 					releaseUrl: ''
 				};
 			});
-
-		return newest;
 	}
 
 	/**
