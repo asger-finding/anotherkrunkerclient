@@ -7,6 +7,7 @@
   "license": "GPLV3",
   "private": true,
   "repository": "asger-finding/anotherkrunkerclient",
+  "main": "./build/main.js",
   "scripts": {
     "start": "gulp clean && gulp --state=development && electron ./build/main.js",
     "deploy": "gulp annihilation && gulp --state=production && electron-builder --win && yarn postinstall",
@@ -52,7 +53,6 @@
   "dependencies": {
     "axios": "^0.26.1",
     "cross-fetch": "^3.1.5",
-    "electron": "^9.4.4",
     "electron-acrylic-window": "^0.5.11",
     "electron-is-dev": "^2.0.0",
     "electron-localshortcut": "^3.2.1",
@@ -70,6 +70,7 @@
     "@typescript-eslint/eslint-plugin": "^5.14.0",
     "@typescript-eslint/parser": "^5.14.0",
     "del": "^6.0.0",
+    "electron": "^9.4.4",
     "electron-builder": "^22.14.13",
     "eslint": "^8.10.0",
     "eslint-config-airbnb-typescript": "^16.2.0",
@@ -78,7 +79,7 @@
     "gulp": "^4.0.2",
     "gulp-htmlmin": "^5.0.1",
     "gulp-if": "^3.0.0",
-    "gulp-imagemin": "^7",
+    "gulp-imagemin": "^8.0.0",
     "gulp-sass": "^5.1.0",
     "gulp-swc": "^1.2.3",
     "postcss": "^8.4.12",
