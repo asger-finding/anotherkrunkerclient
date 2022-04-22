@@ -1,9 +1,8 @@
+import { app, ipcMain } from 'electron';
 import { EventListener } from '../client';
+import { MESSAGE_EXIT_CLIENT } from '@constants';
 
-const { app, ipcMain } = require('electron');
-const { MESSAGE_EXIT_CLIENT } = require('@constants');
-
-module.exports = class {
+export default class {
 
 	private eventListeners: EventListener[] = [];
 
@@ -39,4 +38,4 @@ module.exports = class {
 		return true;
 	}
 
-};
+}

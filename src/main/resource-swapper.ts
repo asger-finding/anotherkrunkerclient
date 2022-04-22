@@ -1,9 +1,9 @@
-const fs = require('fs');
-const { join } = require('path');
-const { error } = require('electron-log');
-const { CLIENT_NAME, TARGET_GAME_DOMAIN } = require('@constants');
+import * as fs from 'fs';
+import { CLIENT_NAME, TARGET_GAME_DOMAIN } from '@constants';
+import { error } from 'electron-log';
+import { join } from 'path';
 
-module.exports = class {
+export default class {
 
 	/**
 	 * @type {string}
@@ -34,11 +34,7 @@ module.exports = class {
 	/** @description Initialize the resource swapper for the target window.*/
 	public start(): void {
 		// If the target directory doesn't exist, create it.
-		if (!fs.existsSync(global.resourceswapProtocolSource)) {
-			fs.mkdir(global.resourceswapProtocolSource, { recursive: true }, (err: Error) => {
-				if (err) error('Error creating resource-swap folder', err);
-			});
-		}
+		if (!fs.existsSync(global.resourceswapProtocolSource)) fs.mkdirSync(global.resourceswapProtocolSource, { recursive: true });
 
 		this.recursiveSwap('');
 		if (this.urls.length) {
@@ -106,4 +102,4 @@ module.exports = class {
 		}
 	}
 
-};
+}

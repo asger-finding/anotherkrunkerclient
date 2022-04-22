@@ -1,15 +1,14 @@
+import { MESSAGE_RELEASES_DATA } from '@constants';
 import { ReleaseData } from '../client';
+import { ipcRenderer } from 'electron';
 
-const { ipcRenderer } = require('electron');
-const { MESSAGE_RELEASES_DATA } = require('@constants');
-
-module.exports = class {
+export default class {
 
 	/**
 	 * @returns {Promise<ReleaseData>} clientUpdateElement The version update on the splash window
 	 * @description Get the client release data and emit it to the splash window event listener.
 	 */
-	public static getReleaseDataFromEventListener() {
+	public static getReleaseDataFromEventListener(): Promise<ReleaseData> {
 		return new Promise(resolve => {
 			ipcRenderer.once(MESSAGE_RELEASES_DATA, (_evt, data: ReleaseData) => resolve(data));
 		});
@@ -39,4 +38,4 @@ module.exports = class {
 		return <HTMLSpanElement> this.clientInfoElement.getElementsByClassName('update-holder')[0];
 	}
 
-};
+}

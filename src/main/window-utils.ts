@@ -1,20 +1,19 @@
-import { WindowData } from '../client';
-
-const { BrowserWindow, shell, app } = require('electron');
-const { info } = require('electron-log');
-const { register } = require('electron-localshortcut');
-const GameUtils = require('@game-utils');
-const Swapper = require('@resource-swapper');
-const {
-	preferences,
-	getDefaultConstructorOptions,
-	getURLData,
+import { BrowserWindow, app, shell } from 'electron';
+import {
+	QUICKJOIN_URL_QUERY_PARAM,
 	TABS,
 	TARGET_GAME_URL,
-	QUICKJOIN_URL_QUERY_PARAM
-} = require('@constants');
+	getDefaultConstructorOptions,
+	getURLData,
+	preferences
+} from '@constants';
+import GameUtils from '@game-utils';
+import Swapper from '@resource-swapper';
+import { WindowData } from '../client';
+import { info } from 'electron-log';
+import { register } from 'electron-localshortcut';
 
-module.exports = class {
+export default class {
 
 	/**
 	 * @param  {Electron.BrowserWindowConstructorOptions} parameters
@@ -26,7 +25,7 @@ module.exports = class {
 	 * If the window is a Krunker tab, set the window scaling preferences.  
 	 * Return the window
 	 */
-	public static async createWindow(parameters: Electron.BrowserWindowConstructorOptions, windowURL: string | undefined): Promise<Electron.BrowserWindow> {
+	public static async createWindow(parameters: Electron.BrowserWindowConstructorOptions, windowURL?: string): Promise<Electron.BrowserWindow> {
 		info(`Creating a window instance${ windowURL ? ` with URL: ${ windowURL }` : '' }`);
 
 		const window = new BrowserWindow(parameters);
@@ -165,4 +164,4 @@ module.exports = class {
 		return window.destroy();
 	}
 
-};
+}

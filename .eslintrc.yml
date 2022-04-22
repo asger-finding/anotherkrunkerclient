@@ -10,7 +10,7 @@ plugins:
 ignorePatterns:
   - node_modules/
   - build/
-  - gulpfile.js
+  - gulpfile.mjs
 
 extends:
   - raven

@@ -1,9 +1,9 @@
-require('../aliases');
-require('@game-settings');
-require('@game-api');
+import '../aliases';
+import '@game-settings';
+import '@game-api';
 
-const { ipcRenderer } = require('electron');
-const { MESSAGE_EXIT_CLIENT } = require('@constants');
+import { MESSAGE_EXIT_CLIENT } from '@constants';
+import { ipcRenderer } from 'electron';
 
 // Remove the 'client deprecated' popup.
 window.OffCliV = true;

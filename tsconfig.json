@@ -14,7 +14,23 @@
         "outDir": "build",
         "baseUrl": ".",
         "paths": {
-            "*": [ "node_modules/*" ]
+            "*": ["node_modules/*"],
+
+            // config
+            "@constants": ["src/config/constants"],
+
+            // window
+            "@splash-pre-utils": ["src/window/splash-pre-utils"],
+            "@game-api": ["src/window/game-api"],
+            "@game-settings": ["src/window/game-settings"],
+            "@proxy-patcher": ["src/window/proxy-patcher"],
+
+            // main
+            "@splash-utils": ["src/main/splash-utils"],
+            "@game-utils": ["src/main/game-utils"],
+            "@window-utils": ["src/main/window-utils"],
+            "@event-handler": ["src/main/event-handler"],
+            "@resource-swapper": ["src/main/resource-swapper"]
         }
     },
     "include": [

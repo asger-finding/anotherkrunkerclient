@@ -42,7 +42,7 @@ export interface ReleaseData {
 }
 
 export interface WindowData {
-	url: string,
+	url: string | undefined,
 	tab: string | null,
 	isInTabs: boolean,
 	isKrunker: boolean,

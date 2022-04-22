@@ -1,31 +1,33 @@
 // TODO: Switch to a modern alternative such as rollup or webpack.
 // I am most comfortable with the gulp, but it is no longer a good choice.
 
-const { src, dest, series, parallel } = require('gulp');
-const { argv } = require('yargs');
-const del = require('del');
-const gulpif = require('gulp-if');
-const swc = require('gulp-swc');
-const gulpsass = require('gulp-sass')(require('sass'));
-const imagemin = require('gulp-imagemin');
-const htmlmin = require('gulp-htmlmin');
+import gulp from 'gulp';
+import argv from 'yargs';
+import del from 'del';
+import gulpif from 'gulp-if';
+import swc from 'gulp-swc';
+import _gulpsass from 'gulp-sass';
+import _sass from 'sass';
+import imagemin from 'gulp-imagemin';
+import htmlmin from 'gulp-htmlmin';
+const gulpsass = _gulpsass(_sass);
 
 const origin = './src';
 const paths = {
 	files: {
 		typescript: `${ origin }/**/*.ts`,
-		css :       `${ origin }/**/*.@(css|sass)`,
-		html:       `${ origin }/**/*.html`,
-		images:     `${ origin }/**/*.@(png|jpg|jpeg|gif|svg|ico)`
+		css : `${ origin }/**/*.@(css|sass)`,
+		html: `${ origin }/**/*.html`,
+		images: `${ origin }/**/*.@(png|jpg|jpeg|gif|svg|ico)`
 	},
 	build: './build'
 }
 const state = {
-	DEV:        'development',
+	DEV: 'development',
 	PRODUCTION: 'production',
-	DEFAULT:    'default',
+	DEFAULT: 'default',
 	get current() {
-		return argv.state || this[this.DEFAULT];
+		return argv.state ?? this[this.DEFAULT];
 	},
 	get prod() {
 		return this.current === this.PRODUCTION;
@@ -33,7 +35,7 @@ const state = {
 }
 
 function typescript() {
-	return src(paths.files.typescript)
+	return gulp.src(paths.files.typescript)
 		.pipe(swc({
 			minify: state.prod,
 			jsc: {
@@ -62,40 +64,38 @@ function typescript() {
 				ignoreDynamic: true
 			}
 		}))
-		.pipe(dest(paths.build));
+		.pipe(gulp.dest(paths.build));
 }
 
 function sass() {
-	return src(paths.files.css)
+	return gulp.src(paths.files.css)
 		.pipe(gulpsass({
 			...(state.prod ? { outputStyle: 'compressed' } : {})
 		}))
-		.pipe(dest(paths.build));
+		.pipe(gulp.dest(paths.build));
 }
 
 function html() {
-	return src(paths.files.html)
+	return gulp.src(paths.files.html)
 		.pipe(gulpif(state.prod, htmlmin({ collapseWhitespace: true })))
-		.pipe(dest(paths.build));
+		.pipe(gulp.dest(paths.build));
 }
 
 function images() {
-	return src(paths.files.images)
+	return gulp.src(paths.files.images)
 		.pipe(gulpif(state.prod, imagemin()))
-		.pipe(dest(paths.build));
+		.pipe(gulp.dest(paths.build));
 }
 
-function clean() {
+export function clean() {
 	// Before building, clean up the the target folder for all previous files.
 	return del(['./build'], { force: true });
 }
 
-function annihilation() {
+export function annihilation() {
 	// Nuke the build and distribution folders. Leave no trace.
 	return del([ './build', './dist' ], { force: true });
 }
 
-exports.clean = clean;
-exports.annihilation = annihilation;
-exports.build = series(clean, parallel(typescript, sass, html, images));
-exports.default = exports.build;
+export const build = gulp.series(clean, gulp.parallel(typescript, sass, html, images));
+export default build;

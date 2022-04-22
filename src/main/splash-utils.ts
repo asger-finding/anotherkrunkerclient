@@ -1,25 +1,24 @@
-import { ReleaseData } from '../client';
-
-const { join } = require('path');
-const { ipcMain } = require('electron');
-const { fetch } = require('cross-fetch');
-const { setVibrancy } = require('electron-acrylic-window');
-const { info, warn } = require('electron-log');
-const WindowUtils = require('@window-utils');
-const {
-	IS_DEVELOPMENT,
+import { BrowserWindow as AcrylicBrowserWindow, setVibrancy } from 'electron-acrylic-window';
+import {
 	CLIENT_REPO,
 	CLIENT_VERSION,
 	ELECTRON_FLAGS,
-	MESSAGE_SPLASH_DONE,
-	MESSAGE_RELEASES_DATA
-} = require('@constants');
+	IS_DEVELOPMENT,
+	MESSAGE_RELEASES_DATA,
+	MESSAGE_SPLASH_DONE
+} from '@constants';
+import { info, warn } from 'electron-log';
+import { ReleaseData } from '../client';
+import WindowUtils from '@window-utils';
+import { fetch } from 'cross-fetch';
+import { ipcMain } from 'electron';
+import { join } from 'path';
 
-module.exports = class {
+export default class {
 
 	/**
-	 * @param  {Electron.BrowserWindow} window
-	 * @returns {Promise<Electron.BrowserWindow>} window promise
+	 * @param  {AcrylicBrowserWindow} window
+	 * @returns {Promise<AcrylicBrowserWindow>} window promise
 	 * @description
 	 * Load the splash window with the splash.html file.  
 	 * Get the client release data and emit it to the splash window.  
@@ -27,7 +26,7 @@ module.exports = class {
 	 */
 	public static load(window: Electron.BrowserWindow): Promise<Electron.BrowserWindow> {
 		// Set the vibrancy of the splash window
-		setVibrancy(window, {
+		setVibrancy((window as AcrylicBrowserWindow), {
 			theme: 'dark',
 			effect: 'blur'
 		});
@@ -59,16 +58,14 @@ module.exports = class {
 
 	/**
 	 * @param  {Electron.App} app
-	 * @returns {Array<Array<string>>} Constants.ELECTRON_FLAGS The constants.js array of flags
 	 * @description
 	 * Get Electron flags from Constants and set them in the app.  
 	 * Return the flags.
 	 */
-	public static setFlags(app: Electron.App): Array<Array<string | null>> {
+	public static setFlags(app: Electron.App): void {
 		info('Setting Electron flags');
 
-		for (const [ flag, value ] of ELECTRON_FLAGS) app.commandLine.appendSwitch(flag, typeof value === 'undefined' ? null : value);
-		return <Array<Array<string | null>>>ELECTRON_FLAGS;
+		for (const flag of Object.keys(ELECTRON_FLAGS)) app.commandLine.appendSwitch(flag, ELECTRON_FLAGS[flag as keyof typeof ELECTRON_FLAGS] ?? '');
 	}
 
 	/**
@@ -110,4 +107,4 @@ module.exports = class {
 		return window.webContents.send(MESSAGE_RELEASES_DATA, await this.getReleaseData());
 	}
 
-};
+}

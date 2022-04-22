@@ -1,20 +1,19 @@
-import Electron = require('electron');
-require('./aliases');
+import './aliases';
 
-const { join } = require('path');
-const { app, protocol } = require('electron');
-const { info } = require('electron-log');
-const {
-	CLIENT_NAME,
+import {
 	CLIENT_AUTHOR,
 	CLIENT_LICENSE_PERMALINK,
-	TARGET_GAME_URL,
+	CLIENT_NAME,
+	GAME_CONSTRUCTOR_OPTIONS,
 	SPLASH_CONSTRUCTOR_OPTIONS,
-	GAME_CONSTRUCTOR_OPTIONS
-} = require('@constants');
-const WindowUtils = require('@window-utils');
-const SplashUtils = require('@splash-utils');
-const EventHandler = require('@event-handler');
+	TARGET_GAME_URL
+} from '@constants';
+import { app, protocol } from 'electron';
+import EventHandler from '@event-handler';
+import SplashUtils from '@splash-utils';
+import WindowUtils from '@window-utils';
+import { info } from 'electron-log';
+import { join } from 'path';
 
 // eslint-disable-next-line no-console
 console.log(`${ CLIENT_NAME }  Copyright (C) 2022  ${ CLIENT_AUTHOR }
@@ -24,7 +23,7 @@ conditions; read ${ CLIENT_LICENSE_PERMALINK } for more details.\n`);
 
 class Application {
 
-	private splashWindow: Electron.BrowserWindow | null;
+	private splashWindow: Electron.BrowserWindow;
 
 	private gameWindow: Electron.BrowserWindow;
 

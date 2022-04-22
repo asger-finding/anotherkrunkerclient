@@ -1,8 +1,8 @@
-const { ipcMain } = require('electron');
-const { info } = require('electron-log');
-const { IS_DEVELOPMENT, MESSAGE_GAME_DONE } = require('@constants');
+import { IS_DEVELOPMENT, MESSAGE_GAME_DONE } from '@constants';
+import { info } from 'electron-log';
+import { ipcMain } from 'electron';
 
-module.exports = class {
+export default class {
 
 	/**
 	 * @param  {Electron.BrowserWindow} window
@@ -34,4 +34,4 @@ module.exports = class {
 		});
 	}
 
-};
+}

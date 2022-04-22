@@ -1,13 +1,12 @@
+import '../aliases';
+import { MESSAGE_SPLASH_DONE, SPLASH_ALIVE_TIME } from '@constants';
+import { ipcRenderer, shell } from 'electron';
+import { diff as versionDifference, gt as versionGreater } from 'semver';
 import { ReleaseData } from '../client';
-require('../aliases');
+import SplashPreloadUtils from '@splash-pre-utils';
+import { info } from 'electron-log';
 
-const { ipcRenderer, shell } = require('electron');
-const { gt: versionGreater, diff: versionDifference } = require('semver');
-const { info } = require('electron-log');
-const SplashPreloadUtils = require('@splash-pre-utils');
-const { SPLASH_ALIVE_TIME, MESSAGE_SPLASH_DONE } = require('@constants');
-
-function transformSplash(rel: ReleaseData) {
+function transformSplash(rel: ReleaseData): void {
 	const { clientVersionElement, clientUpdateElement } = SplashPreloadUtils;
 	if (clientVersionElement instanceof HTMLSpanElement) clientVersionElement.innerText = rel.clientVersion;
 
@@ -33,7 +32,7 @@ function transformSplash(rel: ReleaseData) {
 }
 
 async function setupEventListeners() {
-	const releaseData: ReleaseData = await SplashPreloadUtils.getReleaseDataFromEventListener();
+	const releaseData = await SplashPreloadUtils.getReleaseDataFromEventListener();
 
 	document.addEventListener('DOMContentLoaded', () => {
 		transformSplash(releaseData);
