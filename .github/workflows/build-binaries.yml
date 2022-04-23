@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
 
     steps:
       - name: Checkout
@@ -19,7 +19,7 @@ jobs:
         run: sudo apt update && sudo apt install g++-multilib
 
       - name: Setup build environment
-        uses: actions/setup-node@1
+        uses: actions/setup-node@v1
         with:
           node-version: 16
 
