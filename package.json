@@ -12,7 +12,7 @@
     "start": "gulp clean && gulp --state=development && electron ./build/main.js",
     "bundle:windows": "yarn preinstall && electron-builder -w && yarn postinstall",
     "bundle:linux": "yarn preinstall && electron-builder -l && yarn postinstall",
-    "bundle:mac": "yarn preinstall && electron-builder -m && yarn postinstall",
+    "bundle:darwin": "yarn preinstall && electron-builder -m && yarn postinstall",
     "preinstall": "gulp annihilation && gulp --state=production",
     "postinstall": "electron-builder install-app-deps && gulp clean",
     "lint": "yarn eslint . --ext .ts,.js"
