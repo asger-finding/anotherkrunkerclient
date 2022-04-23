@@ -1,5 +1,5 @@
 import { app, ipcMain } from 'electron';
-import { EventListener } from '../client';
+import { EventListener } from '@client';
 import { MESSAGE_EXIT_CLIENT } from '@constants';
 
 export default class {

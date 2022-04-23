@@ -4,6 +4,7 @@ import { resolve } from 'path';
 addAliases({
 	// config
 	'@constants': resolve(__dirname, './config/constants'),
+	'@client': resolve(__dirname, './config/client'),
 
 	// window
 	'@splash-pre-utils': resolve(__dirname, './window/splash-pre-utils'),

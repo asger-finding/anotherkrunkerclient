@@ -1,6 +1,12 @@
-import { author as CLIENT_AUTHOR, productName as CLIENT_NAME, repository as CLIENT_REPO, version as CLIENT_VERSION } from '../../package.json';
+import {
+	author as CLIENT_AUTHOR,
+	productName as CLIENT_NAME,
+	repository as CLIENT_REPO,
+	version as CLIENT_VERSION
+} from '../../package.json';
 import Store from 'electron-store';
-import { WindowData } from '../client';
+import { WindowData } from '@client';
+import { app } from 'electron';
 import { join } from 'path';
 
 export const preferences = new Store();
@@ -15,7 +21,7 @@ export const QUICKJOIN_URL_QUERY_PARAM = 'quickjoin';
 
 // If not contained, it will throw an error whenever Constants is referenced outside the main process.
 // eslint-disable-next-line global-require
-export const IS_DEVELOPMENT = process.type === 'browser' ? require('electron-is-dev') : null;
+export const IS_DEVELOPMENT = process.type === 'browser' ? !app.isPackaged : null;
 
 export const ELECTRON_FLAGS = {
 	// Unlock the frame rate

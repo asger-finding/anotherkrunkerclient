@@ -1,5 +1,5 @@
 import { MESSAGE_RELEASES_DATA } from '@constants';
-import { ReleaseData } from '../client';
+import { ReleaseData } from '@client';
 import { ipcRenderer } from 'electron';
 
 export default class {

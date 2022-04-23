@@ -9,7 +9,7 @@ import {
 } from '@constants';
 import GameUtils from '@game-utils';
 import Swapper from '@resource-swapper';
-import { WindowData } from '../client';
+import { WindowData } from '@client';
 import { info } from 'electron-log';
 import { register } from 'electron-localshortcut';
 

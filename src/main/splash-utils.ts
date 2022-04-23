@@ -7,8 +7,8 @@ import {
 	MESSAGE_RELEASES_DATA,
 	MESSAGE_SPLASH_DONE
 } from '@constants';
+import { GitHubResponse, ReleaseData } from '@client';
 import { info, warn } from 'electron-log';
-import { ReleaseData } from '../client';
 import WindowUtils from '@window-utils';
 import { fetch } from 'cross-fetch';
 import { ipcMain } from 'electron';
@@ -17,8 +17,8 @@ import { join } from 'path';
 export default class {
 
 	/**
-	 * @param  {AcrylicBrowserWindow} window
-	 * @returns {Promise<AcrylicBrowserWindow>} window promise
+	 * @param  {Electron.BrowserWindow} window
+	 * @returns {Promise<Electron.BrowserWindow>} window promise
 	 * @description
 	 * Load the splash window with the splash.html file.  
 	 * Get the client release data and emit it to the splash window.  
@@ -77,24 +77,23 @@ export default class {
 	private static async getReleaseData(): Promise<ReleaseData> {
 		info('Getting latest GitHub release...');
 
-		return fetch(`https://api.github.com/repos/${ CLIENT_REPO }/releases/latest`)
-			.then((response: any) => {
-				if (response.status >= 400) throw new Error(response.status);
-				return response.json();
-			})
-			.then((response: { data: { tag_name: string, html_url: string } }) => (<ReleaseData>{
+		const response: GitHubResponse = await fetch(`https://api.github.com/repos/${ CLIENT_REPO }/releases/latest`);
+
+		const { data } = await response.json();
+		if (response.ok) {
+			return <ReleaseData>{
 				clientVersion: CLIENT_VERSION,
-				releaseVersion: response.data.tag_name,
-				releaseUrl: response.data.html_url
-			}))
-			.catch((err: Error) => {
-				warn(`Bad response getting GitHub release: ${ err.message }`);
-				return <ReleaseData>{
-					clientVersion: CLIENT_VERSION,
-					releaseVersion: '0.0.0',
-					releaseUrl: ''
-				};
-			});
+				releaseVersion: data.tag_name,
+				releaseUrl: data.html_url
+			};
+		}
+
+		warn(`Bad response getting latest release: ${ response.status } ${ response.statusText }`);
+		return <ReleaseData>{
+			clientVersion: CLIENT_VERSION,
+			releaseVersion: '0.0.0',
+			releaseUrl: ''
+		};
 	}
 
 	/**

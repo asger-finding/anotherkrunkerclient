@@ -35,6 +35,13 @@ export interface EventListener {
 	callback: () => unknown;
 }
 
+interface GitHubResponse extends Response {
+	data?: {
+		tag_name: string;
+		html_url: string;
+	}
+}
+
 export interface ReleaseData {
 	clientVersion: string;
 	releaseVersion: string,
