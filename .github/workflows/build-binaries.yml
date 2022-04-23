@@ -31,38 +31,16 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: yarn bundle:windows
         env: 
-          GH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
-
-      - uses: actions/upload-artifact@v3
-        if: matrix.os == 'windows-latest'
-        with:
-          name: Windows-Installer
-          path: dist/*.exe
-          if-no-files-found: error
+          GH_TOKEN: ${{ secrets.gh_token }}
 
       - name: Target Linux
         if: matrix.os == 'ubuntu-latest'
         run: yarn bundle:linux
         env: 
-          GH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
-
-      - uses: actions/upload-artifact@v3
-        if: matrix.os == 'ubuntu-latest'
-        with:
-          name: Linux-AppImages
-          path: dist/*.AppImage
-          if-no-files-found: error
+          GH_TOKEN: ${{ secrets.gh_token }}
 
       - name: Target MacOS
         if: matrix.os == 'macos-latest'
         run: yarn bundle:darwin
         env: 
-          GH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
-
-      - uses: actions/upload-artifact@v3
-        if: matrix.os == 'macos-latest'
-        with:
-          name: MacOS-Image
-          path: dist/*.dmg
-          if-no-files-found: error
-
+          GH_TOKEN: ${{ secrets.gh_token }}
