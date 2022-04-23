@@ -12,14 +12,14 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
 
       - name: Install g++-multilib
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt update && sudo apt install g++-multilib
 
       - name: Setup build environment
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: 16
 
