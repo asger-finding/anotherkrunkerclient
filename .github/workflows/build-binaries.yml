@@ -30,11 +30,17 @@ jobs:
       - name: Target Windows
         if: matrix.os == 'windows-latest'
         run: yarn bundle:windows
+        env: 
+          GH_TOKEN: ${{ secrets.github_token }}
 
       - name: Target Linux
         if: matrix.os == 'ubuntu-latest'
         run: yarn bundle:linux
+        env: 
+          GH_TOKEN: ${{ secrets.github_token }}
 
       - name: Target MacOS
         if: matrix.os == 'macos-latest'
         run: yarn bundle:darwin
+        env: 
+          GH_TOKEN: ${{ secrets.github_token }}
