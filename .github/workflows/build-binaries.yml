@@ -10,6 +10,7 @@ jobs:
       matrix:
         os: [ windows-latest, ubuntu-latest, macos-latest ]
 
+    # TODO: This is crap.
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -31,19 +32,22 @@ jobs:
         run: yarn bundle:windows
         env: 
           GH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
-        uses: actions/upload-artifact@v3
+
+      - uses: actions/upload-artifact@v3
+        if: matrix.os == 'windows-latest'
         with:
           name: Windows-Installer
           path: dist/*.exe
           if-no-files-found: error
-
 
       - name: Target Linux
         if: matrix.os == 'ubuntu-latest'
         run: yarn bundle:linux
         env: 
           GH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
-        uses: actions/upload-artifact@v3
+
+      - uses: actions/upload-artifact@v3
+        if: matrix.os == 'ubuntu-latest'
         with:
           name: Linux-AppImages
           path: dist/*.AppImage
@@ -54,7 +58,9 @@ jobs:
         run: yarn bundle:darwin
         env: 
           GH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
-        uses: actions/upload-artifact@v3
+
+      - uses: actions/upload-artifact@v3
+        if: matrix.os == 'macos-latest'
         with:
           name: MacOS-Image
           path: dist/*.dmg
