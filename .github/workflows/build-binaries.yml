@@ -1,3 +1,5 @@
+# https://github.com/marketplace/actions/electron-builder-action#Releasing
+
 name: Build/release packaged binaries
 
 # on:
