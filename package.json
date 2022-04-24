@@ -13,6 +13,7 @@
     "bundle:windows": "yarn prebundle && electron-builder -w && yarn postinstall",
     "bundle:linux": "yarn prebundle && electron-builder -l && yarn postinstall",
     "bundle:darwin": "yarn prebundle && electron-builder -m && yarn postinstall",
+    "bundle:github": "yarn prebundle",
     "prebundle": "gulp annihilation && gulp --state=production",
     "postinstall": "electron-builder install-app-deps && gulp clean",
     "lint": "yarn eslint . --ext .ts,.js"
