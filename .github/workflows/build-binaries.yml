@@ -8,70 +8,9 @@ on:
   pull_request:
     branches: [ master ]
 
+
+
 jobs:
-  unix:
-    runs-on: ${{ matrix.os }}
-    continue-on-error: false
-    timeout-minutes: 45
-
-    strategy:
-      matrix:
-        os: [macos-11, ubuntu-latest]
-
-    env:
-      DISPLAY: ":99.0"
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v2
-
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          check-latest: true
-          cache: yarn
-          cache-dependency-path: yarn.lock
-
-      - name: Install build dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt update
-          sudo apt install libc6-dev-i386 gcc-multilib g++-multilib
-
-      - name: Cache node_modules
-        uses: actions/cache@v2
-        id: cacheNodeModules
-        with:
-          path: ${{ github.workspace }}/node_modules
-          key: ${{ runner.os }}-node_modules-cache-v1-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
-          restore-keys: |
-            ${{ runner.os }}-node_modules-cache-v1-
-
-      - name: Cache Electron
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.HOME }}/.cache/electron
-          key: ${{ runner.os }}-electron-cache-v1-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
-
-      - name: Cache Electron-Builder
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.HOME }}/.cache//electron-builder
-          key: ${{ runner.os }}-electron-builder-cache-v1-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
-
-      - name: Install dependencies
-        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-        run: yarn install --check-files --frozen-lockfile
-
-      - name: Build for Linux
-        if: runner.os == 'linux'
-        run: yarn bundle:linux
-
-      - name: Build for MacOS
-        if: runner.os == 'macos'
-        run: yarn bundle:darwin
 
   windows:
     runs-on: windows-latest
@@ -118,3 +57,121 @@ jobs:
 
       - name: Build for Windows
         run: yarn bundle:windows
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Windows-Installer
+          path: dist/*.exe
+          if-no-files-found: error
+
+
+  linux:
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    timeout-minutes: 45
+
+    env:
+      DISPLAY: ":99.0"
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          check-latest: true
+          cache: yarn
+          cache-dependency-path: yarn.lock
+
+      - name: Install build dependencies
+        run: |
+          sudo apt update
+          sudo apt install libc6-dev-i386 gcc-multilib g++-multilib
+
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        id: cacheNodeModules
+        with:
+          path: ${{ github.workspace }}/node_modules
+          key: ${{ runner.os }}-node_modules-cache-v1-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-node_modules-cache-v1-
+
+      - name: Cache Electron
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.HOME }}/.cache/electron
+          key: ${{ runner.os }}-electron-cache-v1-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
+
+      - name: Cache Electron-Builder
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.HOME }}/.cache//electron-builder
+          key: ${{ runner.os }}-electron-builder-cache-v1-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
+
+      - name: Install dependencies
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        run: yarn install --check-files --frozen-lockfile
+
+      - name: Build for Linux
+        run: yarn bundle:linux
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Linux-AppImages
+          path: dist/*.AppImage
+          if-no-files-found: error
+
+  darwin:
+    runs-on: macos-latest
+    continue-on-error: false
+    timeout-minutes: 45
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          check-latest: true
+          cache: yarn
+          cache-dependency-path: yarn.lock
+
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        id: cacheNodeModules
+        with:
+          path: ${{ github.workspace }}/node_modules
+          key: ${{ runner.os }}-node_modules-cache-v1-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-node_modules-cache-v1-
+
+      - name: Cache Electron
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.HOME }}/.cache/electron
+          key: ${{ runner.os }}-electron-cache-v1-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
+
+      - name: Cache Electron-Builder
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.HOME }}/.cache//electron-builder
+          key: ${{ runner.os }}-electron-builder-cache-v1-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
+
+      - name: Install dependencies
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        run: yarn install --check-files --frozen-lockfile
+
+      - name: Build for MacOS
+        run: yarn bundle:darwin
+      - uses: actions/upload-artifact@v2
+        with:
+          name: MacOS-Image
+          path: dist/*.dmg
+          if-no-files-found: error
