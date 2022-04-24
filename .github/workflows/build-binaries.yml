@@ -19,6 +19,10 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
+      - name: Print GitHub event action
+        run: |
+          echo "${{ github.event.action }}"
+
       - name: Check out Git repository
         uses: actions/checkout@v2
 
