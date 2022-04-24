@@ -58,12 +58,13 @@ jobs:
 
       - name: Build for Windows
         run: yarn bundle:windows
+
       - uses: actions/upload-artifact@v3
+        if: ${{ github.event.action == 'workflow_dispatch' }}
         with:
           name: Windows-Installer
           path: dist/*.exe
           if-no-files-found: error
-
 
   linux:
     runs-on: ubuntu-latest
@@ -117,7 +118,9 @@ jobs:
 
       - name: Build for Linux
         run: yarn bundle:linux
+
       - uses: actions/upload-artifact@v3
+        if: ${{ github.event.action == 'workflow_dispatch' }}
         with:
           name: Linux-AppImage
           path: dist/*.AppImage
@@ -169,7 +172,9 @@ jobs:
 
       - name: Build for MacOS
         run: yarn bundle:darwin
+
       - uses: actions/upload-artifact@v3
+        if: ${{ github.event.action == 'workflow_dispatch' }}
         with:
           name: MacOS-Image
           path: dist/*.dmg
