@@ -8,8 +8,6 @@ on:
   pull_request:
     branches: [ master ]
 
-
-
 jobs:
 
   windows:
@@ -57,7 +55,7 @@ jobs:
 
       - name: Build for Windows
         run: yarn bundle:windows
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: Windows-Installer
           path: dist/*.exe
@@ -117,9 +115,9 @@ jobs:
 
       - name: Build for Linux
         run: yarn bundle:linux
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
-          name: Linux-AppImages
+          name: Linux-AppImage
           path: dist/*.AppImage
           if-no-files-found: error
 
@@ -170,7 +168,7 @@ jobs:
 
       - name: Build for MacOS
         run: yarn bundle:darwin
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: MacOS-Image
           path: dist/*.dmg
