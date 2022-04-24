@@ -37,9 +37,9 @@ export interface MapExport {
 	/**
 	 * @type {Array<number>}
 	 * @example
-	 * map.xyz = [ 1, 2, 3, 6, 7, 8 ];
-	 * // foo.si = 0;  ->  foo has dimensions [ 1, 2, 3 ];
-	 * // bar.si = 1;  ->  bar has dimensions [ 6, 7, 8 ];
+	 * map.xyz = [1, 2, 3, 6, 7, 8];
+	 * // foo.si = 0;  ->  foo has dimensions [1, 2, 3];
+	 * // bar.si = 1;  ->  bar has dimensions [6, 7, 8];
 	 * @description Array relating to {@link MapExport.objects} containing the 3 axis scale values for all objects.  
 	 * An object with the {@link MapExport.objects.si} property of `x` will have the value at `x*3` and the next two in this array to indicate its scale.
 	 */
@@ -60,19 +60,19 @@ export interface MapExport {
 		si: number;
 
 		/**
-		 * @type {[ number, number, number ]}
+		 * @type {[number, number, number]}
 		 * @description Object position in x, y, z space.
 		 */
-		p: [ number, number, number ];
+		p: [number, number, number];
 
 
 		/**
-		 * @type {(undefined | [ number, number, number ])}
+		 * @type {(undefined | [number, number, number])}
 		 * @default undefined No rotation is applied.
 		 * @description Object rotation in x, y, z space in radians.  
 		 * float, -Infinity - Infinity
 		 */
-		r?: [ number, number, number ];
+		r?: [number, number, number];
 
 		/**
 		 * @type {(undefined | SlimBoolean)}
@@ -351,10 +351,10 @@ export interface MapExport {
 		rt?: number;
 
 		/**
-		 * @type {(undefined | [ number, number, number ])}
+		 * @type {(undefined | [number, number, number])}
 		 * @description In the event that {@link MapExport.objects.si} is not defined, this array can be used to determine the object's size.
 		 */
-		s?: [ number, number, number ];
+		s?: [number, number, number];
 
 		/**
 		 * @type {(undefined | Hexadecimal)}
@@ -677,7 +677,7 @@ export interface MapExport {
 	 * @default 'map-dependent'
 	 * @description Whether to use default cloud texture or not?
 	 */
-	// TODO: Might not be correct.
+	// FIXME: Might not be correct.
 	skyDomeTex: boolean;
 
 	/**

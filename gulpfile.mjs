@@ -94,7 +94,7 @@ export function clean() {
 
 export function annihilation() {
 	// Nuke the build and distribution folders. Leave no trace.
-	return del([ './build', './dist' ], { force: true });
+	return del(['./build', './dist'], { force: true });
 }
 
 export const build = gulp.series(clean, gulp.parallel(typescript, sass, html, images));

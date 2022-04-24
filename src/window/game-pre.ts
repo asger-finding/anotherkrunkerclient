@@ -8,14 +8,14 @@ import { ipcRenderer } from 'electron';
 // Remove the 'client deprecated' popup.
 window.OffCliV = true;
 
-// When closeClient is called from the onclick, close the client.
+// When closeClient is called from the onclick, close the client. This must not be enumerable as Krunker will overrride it.
 Object.defineProperty(window, 'closeClient', {
 	enumerable: false,
 	value(): void { return ipcRenderer.send(MESSAGE_EXIT_CLIENT); }
 });
 
 // Show the client exit button
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', (): void => {
 	const showClientExit = document.createElement('style');
 	showClientExit.innerHTML = '#clientExit { display: flex; }';
 

@@ -1,7 +1,7 @@
 parser: '@typescript-eslint/parser'
 
 settings:
-  import/core-modules: [ electron ]
+  import/core-modules: [electron]
 
 plugins:
   - '@typescript-eslint'
@@ -22,20 +22,13 @@ parserOptions:
   sourceType: module
 
 rules:
-  '@typescript-eslint/indent': [ error, tab ]
-  '@typescript-eslint/comma-dangle': [ error, never ]
-  '@typescript-eslint/space-before-function-paren': [ error, never ]
-  '@typescript-eslint/no-var-requires': 0
-
-  no-tabs: 0
-  linebreak-style: 0
-  max-classe-per-file: 0
-  sort-keys: 0
+  '@typescript-eslint/indent': [error, tab]
+  '@typescript-eslint/comma-dangle': [error, never]
+  '@typescript-eslint/space-before-function-paren': [error, never]
+  no-trailing-spaces: [error, { ignoreComments: true }]
   prefer-named-capture-group: 0
-  
-  array-bracket-spacing: [ error, always, { singleValue: false } ]
-  no-trailing-spaces: [ error, { ignoreComments: true } ]
-  lines-around-comment: [ warn, { allowArrayStart: true } ]
+  linebreak-style: 0
+  sort-keys: 0
 
 env:
   browser: true

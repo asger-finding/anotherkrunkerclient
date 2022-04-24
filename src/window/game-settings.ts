@@ -34,7 +34,7 @@ window.SettingsGenerator = {
 
 		div.append(slider);
 
-		return [ input, div ];
+		return [input, div];
 	},
 
 	createSelect(onchange, inputNodeAttributes, options) {
@@ -42,7 +42,7 @@ window.SettingsGenerator = {
 		select.classList.add('inputGrey2');
 		select.onchange = onchange;
 
-		for (const [ key, value ] of Object.entries(options)) {
+		for (const [key, value] of Object.entries(options)) {
 			const option = document.createElement('option');
 			option.value = key;
 			option.innerText = value;
