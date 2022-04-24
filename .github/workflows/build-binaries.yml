@@ -22,6 +22,14 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v2
 
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          check-latest: true
+          cache: yarn
+          cache-dependency-path: yarn.lock
+
       - name: Cache node_modules
         uses: actions/cache@v2
         id: cacheNodeModules
@@ -40,14 +48,6 @@ jobs:
         with:
           path: ${{ env.LOCALAPPDATA }}\electron-builder\cache
           key: ${{ runner.os }}-electron-builder-cache-v2-${{ hashFiles(format('{0}{1}', github.workspace, '\yarn.lock')) }}
-
-      - name: Install Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16
-          check-latest: true
-          cache: yarn
-          cache-dependency-path: yarn.lock
 
       - name: Install dependencies
         run: yarn install --check-files --frozen-lockfile
@@ -74,6 +74,14 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v2
 
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          check-latest: true
+          cache: yarn
+          cache-dependency-path: yarn.lock
+
       - name: Cache node_modules
         uses: actions/cache@v2
         id: cacheNodeModules
@@ -99,14 +107,6 @@ jobs:
           sudo apt update
           sudo apt install libc6-dev-i386 gcc-multilib g++-multilib
 
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          check-latest: true
-          cache: yarn
-          cache-dependency-path: yarn.lock
-
       - name: Install dependencies
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
         run: yarn install --check-files --frozen-lockfile
@@ -131,6 +131,14 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v2
 
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          check-latest: true
+          cache: yarn
+          cache-dependency-path: yarn.lock
+
       - name: Cache node_modules
         uses: actions/cache@v2
         id: cacheNodeModules
@@ -150,14 +158,6 @@ jobs:
         with:
           path: ${{ env.HOME }}/.cache//electron-builder
           key: ${{ runner.os }}-electron-builder-cache-v1-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
-
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          check-latest: true
-          cache: yarn
-          cache-dependency-path: yarn.lock
 
       - name: Install dependencies
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
