@@ -74,8 +74,8 @@ export default class {
 		if (windowData.tab === TABS.GAME) {
 			info('Registering shortcuts for the game tab');
 
-			register(window, 'F6', () => this.loadSpoofedURL(window, TARGET_GAME_URL));
-			register(window, 'F4', () => this.loadSpoofedURL(window, `${ TARGET_GAME_URL }?${ QUICKJOIN_URL_QUERY_PARAM }`));
+			register(window, 'F6', () => window.loadURL(TARGET_GAME_URL));
+			register(window, 'F4', () => window.loadURL(`${ TARGET_GAME_URL }?${ QUICKJOIN_URL_QUERY_PARAM }`));
 		}
 
 		return window;
@@ -123,7 +123,7 @@ export default class {
 
 			const newWindowData: WindowData = getURLData(newWindowURL);
 			if (newWindowData.isKrunker) {
-				if (frameName === '_self') this.loadSpoofedURL(window, newWindowURL);
+				if (frameName === '_self') window.loadURL(newWindowURL);
 				else this.createWindow(getDefaultConstructorOptions(newWindowData.tab), newWindowURL);
 			} else {
 				shell.openExternal(newWindowURL);
@@ -135,7 +135,7 @@ export default class {
 
 			const newWindowData: WindowData = getURLData(newWindowURL);
 			if (!newWindowData.isKrunker) shell.openExternal(newWindowURL);
-			else if (!newWindowData.invalid) this.loadSpoofedURL(window, newWindowURL);
+			else if (!newWindowData.invalid) window.loadURL(newWindowURL);
 		});
 
 		// Don't allow the target website to set the window title.
