@@ -20,7 +20,6 @@ export const [TARGET_GAME_SHORTNAME] = TARGET_GAME_DOMAIN.split('.');
 export const QUICKJOIN_URL_QUERY_PARAM = 'quickjoin';
 
 // If not contained, it will throw an error whenever Constants is referenced outside the main process.
-// eslint-disable-next-line global-require
 export const IS_DEVELOPMENT = process.type === 'browser' ? !app.isPackaged : null;
 
 export const ELECTRON_FLAGS = {
@@ -68,19 +67,34 @@ export const ELECTRON_FLAGS = {
 // How long the splash window should be visible before entering the game
 export const SPLASH_ALIVE_TIME = 1500;
 
+export const TABS = {
+	GAME: 'game',
+	SOCIAL: 'social',
+	DOCS: 'docs',
+	COMP: 'comp',
+	VIEWER: 'viewer',
+	EDITOR: 'editor'
+};
+
+// ipc messages
+export const MESSAGE_SPLASH_DONE = 'splash-done';
+export const MESSAGE_GAME_DONE = 'game-done';
+export const MESSAGE_EXIT_CLIENT = 'exit-client';
+export const MESSAGE_OPEN_SETTINGS = 'open-settings';
+export const MESSAGE_RELEASES_DATA = 'releases-data';
 
 /**
  * @param {string} name The name of the tab to get sizing data for.
  * @returns {Electron.BrowserWindowConstructorOptions}
  * @description Returns the default window options, with sizing for the given tab.
  */
-export const getDefaultConstructorOptions = (name: string | null): Electron.BrowserWindowConstructorOptions => {
-	const existsInTabs = Object.values(module.exports.TABS).includes(name);
+export const getDefaultConstructorOptions = (windowName: string | undefined): Electron.BrowserWindowConstructorOptions => {
+	const existsInTabs = Object.values(TABS).includes(String(windowName));
 
 	return <Electron.BrowserWindowConstructorOptions>{
-		width: existsInTabs ? module.exports.preferences.get(`window.${ name }.width`, 1280) : 1280,
-		height: existsInTabs ? module.exports.preferences.get(`window.${ name }.height`, 720) : 720,
-		fullscreen: existsInTabs ? module.exports.preferences.get(`window.${ name }.fullscreen`, false) : false,
+		width: existsInTabs ? preferences.get(`window.${ windowName }.width`, 1280) : 1280,
+		height: existsInTabs ? preferences.get(`window.${ windowName }.height`, 720) : 720,
+		fullscreen: existsInTabs ? preferences.get(`window.${ windowName }.fullscreen`, false) : false,
 		movable: true,
 		resizable: true,
 		fullscreenable: true,
@@ -93,6 +107,17 @@ export const getDefaultConstructorOptions = (name: string | null): Electron.Brow
 			enableRemoteModule: false
 		}
 	};
+};
+
+// Returns the options for the primary game window.
+export const GAME_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions = {
+	...getDefaultConstructorOptions(TABS.GAME),
+	show: false,
+	webPreferences: {
+		...getDefaultConstructorOptions(TABS.GAME).webPreferences,
+		preload: join(__dirname, '../window/game-pre'),
+		contextIsolation: false
+	}
 };
 
 /**
@@ -117,33 +142,6 @@ export const SPLASH_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOption
 		preload: join(__dirname, '../window/splash-pre')
 	}
 };
-
-export const TABS = {
-	GAME: 'game',
-	SOCIAL: 'social',
-	DOCS: 'docs',
-	COMP: 'comp',
-	VIEWER: 'viewer',
-	EDITOR: 'editor'
-};
-
-// Returns the options for the primary game window.
-export const GAME_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions = {
-	...getDefaultConstructorOptions(TABS.GAME),
-	show: false,
-	webPreferences: {
-		...getDefaultConstructorOptions(TABS.GAME).webPreferences,
-		preload: join(__dirname, '../window/game-pre'),
-		contextIsolation: false
-	}
-};
-
-// ipc messages
-export const MESSAGE_SPLASH_DONE = 'splash-done';
-export const MESSAGE_GAME_DONE = 'game-done';
-export const MESSAGE_EXIT_CLIENT = 'exit-client';
-export const MESSAGE_OPEN_SETTINGS = 'open-settings';
-export const MESSAGE_RELEASES_DATA = 'releases-data';
 
 /**
  * @param  {string} baseURL The URL to analyze
@@ -171,7 +169,7 @@ export const getURLData = (baseURL?: string): WindowData => {
 			quickJoin
 		};
 	} catch (err) {
-		// fallback to default
+		// Fallback to default
 		return {
 			url: baseURL,
 			invalid: true,

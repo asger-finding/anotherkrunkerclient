@@ -96,12 +96,13 @@ export default class {
 			window.once('close', () => {
 				info(`Closing window instance${ window.webContents.getURL() ? ` with URL: ${ window.webContents.getURL() }` : '' }`);
 
-				const windowPref = {
+				// Save the window sizing and bounds to the store
+				const windowPreferences = {
 					...window.getBounds(),
 					fullscreen: window.isFullScreen(),
 					maximized: window.isMaximized()
 				};
-				for (const key in windowPref) preferences.set(`window.${ windowData.tab }.${ key }`, windowPref[key as keyof typeof windowPref]);
+				for (const [key, value] of Object.entries(windowPreferences)) preferences.set(`window.${ windowData.tab }.${ key }`, value);
 			});
 		}
 
