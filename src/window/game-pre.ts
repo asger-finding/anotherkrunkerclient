@@ -5,9 +5,6 @@ import '@game-api';
 import { MESSAGE_EXIT_CLIENT } from '@constants';
 import { ipcRenderer } from 'electron';
 
-// Remove the 'client deprecated' popup.
-window.OffCliV = true;
-
 // When closeClient is called from the onclick, close the client. This must not be enumerable as Krunker will overrride it.
 Object.defineProperty(window, 'closeClient', {
 	enumerable: false,

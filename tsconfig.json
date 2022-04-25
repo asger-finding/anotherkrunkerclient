@@ -19,6 +19,7 @@
             // config
             "@constants": ["src/config/constants"],
             "@client": ["src/config/client"],
+            "@useragent-spoof": ["src/config/useragent-spoof"],
 
             // window
             "@splash-pre-utils": ["src/window/splash-pre-utils"],

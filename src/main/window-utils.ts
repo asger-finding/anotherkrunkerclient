@@ -10,6 +10,7 @@ import {
 import GameUtils from '@game-utils';
 import Swapper from '@resource-swapper';
 import { WindowData } from '@client';
+import { getSpoofedUA } from '@useragent-spoof';
 import { info } from 'electron-log';
 import { register } from 'electron-localshortcut';
 
@@ -31,7 +32,7 @@ export default class {
 		const window = new BrowserWindow(parameters);
 		const windowData: WindowData = getURLData(windowURL);
 
-		if (windowURL) window.loadURL(windowURL);
+		if (windowURL) this.loadSpoofedURL(window, windowURL);
 		if (preferences.get(`window.${ windowData.tab }.maximized`)) window.maximize();
 		if (windowData.isKrunker) this.registerSwapper(window);
 		window.removeMenu();
@@ -40,6 +41,16 @@ export default class {
 		await this.createSpecialWindow(windowData)(window);
 
 		return window;
+	}
+
+	/**
+	 * 
+	 * @param {Electron.BrowserWindow} window The target window to spoof
+	 * @param {string} url URL to load
+	 */
+	private static async loadSpoofedURL(window: Electron.BrowserWindow, url: string): Promise<void> {
+		const spoofedUserAgent = await getSpoofedUA();
+		window.loadURL(url, spoofedUserAgent ? { userAgent: spoofedUserAgent } : {});
 	}
 
 	/**
@@ -63,8 +74,8 @@ export default class {
 		if (windowData.tab === TABS.GAME) {
 			info('Registering shortcuts for the game tab');
 
-			register(window, 'F6', () => window.loadURL(TARGET_GAME_URL));
-			register(window, 'F4', () => window.loadURL(`${ TARGET_GAME_URL }?${ QUICKJOIN_URL_QUERY_PARAM }`));
+			register(window, 'F6', () => this.loadSpoofedURL(window, TARGET_GAME_URL));
+			register(window, 'F4', () => this.loadSpoofedURL(window, `${ TARGET_GAME_URL }?${ QUICKJOIN_URL_QUERY_PARAM }`));
 		}
 
 		return window;
@@ -112,7 +123,7 @@ export default class {
 
 			const newWindowData: WindowData = getURLData(newWindowURL);
 			if (newWindowData.isKrunker) {
-				if (frameName === '_self') window.webContents.loadURL(newWindowURL);
+				if (frameName === '_self') this.loadSpoofedURL(window, newWindowURL);
 				else this.createWindow(getDefaultConstructorOptions(newWindowData.tab), newWindowURL);
 			} else {
 				shell.openExternal(newWindowURL);
@@ -124,7 +135,7 @@ export default class {
 
 			const newWindowData: WindowData = getURLData(newWindowURL);
 			if (!newWindowData.isKrunker) shell.openExternal(newWindowURL);
-			else if (!newWindowData.invalid) window.webContents.loadURL(newWindowURL);
+			else if (!newWindowData.invalid) this.loadSpoofedURL(window, newWindowURL);
 		});
 
 		// Don't allow the target website to set the window title.

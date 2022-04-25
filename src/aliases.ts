@@ -5,6 +5,7 @@ addAliases({
 	// config
 	'@constants': resolve(__dirname, './config/constants'),
 	'@client': resolve(__dirname, './config/client'),
+	'@useragent-spoof': resolve(__dirname, './config/useragent-spoof'),
 
 	// window
 	'@splash-pre-utils': resolve(__dirname, './window/splash-pre-utils'),

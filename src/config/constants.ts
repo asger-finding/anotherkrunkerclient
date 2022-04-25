@@ -88,8 +88,8 @@ export const MESSAGE_RELEASES_DATA = 'releases-data';
  * @returns {Electron.BrowserWindowConstructorOptions}
  * @description Returns the default window options, with sizing for the given tab.
  */
-export const getDefaultConstructorOptions = (windowName: string | undefined): Electron.BrowserWindowConstructorOptions => {
-	const existsInTabs = Object.values(TABS).includes(String(windowName));
+export const getDefaultConstructorOptions = (windowName: string | null): Electron.BrowserWindowConstructorOptions => {
+	const existsInTabs = Object.values(TABS).includes(windowName ?? '');
 
 	return <Electron.BrowserWindowConstructorOptions>{
 		width: existsInTabs ? preferences.get(`window.${ windowName }.width`, 1280) : 1280,
