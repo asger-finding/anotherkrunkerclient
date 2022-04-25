@@ -20,8 +20,7 @@ export default class {
 	 * @param  {Electron.BrowserWindowConstructorOptions} parameters
 	 * @param  {(string | undefined)} windowURL
 	 * @returns {Electron.BrowserWindow} Newly generated window instance
-	 * @description
-	 * Create a new window instance, load given URL (if any)  
+	 * @description Create a new window instance, load given URL (if any)  
 	 * Register shortcuts for the window. If show is true in parameters, show the window.  
 	 * If the window is a Krunker tab, set the window scaling preferences.  
 	 * Return the window
@@ -56,8 +55,7 @@ export default class {
 	/**
 	 * @param {Electron.BrowserWindow} window The window to register the event on
 	 * @returns {Electron.BrowserWindow} window The window instance
-	 * @description
-	 * Register global shortcuts for the window. Should be done before dom-ready
+	 * @description Register global shortcuts for the window. Should be done before dom-ready
 	 */
 	private static registerShortcuts(window: Electron.BrowserWindow, windowData: WindowData): Electron.BrowserWindow {
 		const { webContents } = window;
@@ -84,8 +82,7 @@ export default class {
 	/**
 	 * @param {Electron.BrowserWindow} window The window to register the event on 
 	 * @returns {Electron.BrowserWindow} window The window instance
-	 * @description
-	 * Register the resource swapper for the window. Should be done before dom-ready.
+	 * @description Register the resource swapper for the window. Should be done before dom-ready.
 	 */
 	private static registerSwapper(window: Electron.BrowserWindow) {
 		const swapper = new Swapper(window);
@@ -97,8 +94,7 @@ export default class {
 	 * @param {Electron.BrowserWindow} window 
 	 * @param {WindowData} windowData Data about the window target URL 
 	 * @returns {Electron.BrowserWindow} window The window instance
-	 * @description
-	 * Create electron event listeners for the window.  
+	 * @description Create electron event listeners for the window.  
 	 * Some one-time events are triggered onces, some are triggered on every event.
 	 */
 	private static registerEventListeners(parameters: Electron.BrowserWindowConstructorOptions, window: Electron.BrowserWindow, windowData: WindowData): Electron.BrowserWindow {
@@ -154,19 +150,24 @@ export default class {
 		return window;
 	}
 
-	private static createSpecialWindow(windowData: WindowData) {
+	/**
+	 * 
+	 * @param {WindowData} windowData Data about the window target URL
+	 * @returns {(window: Electron.BrowserWindow) => Promise<void>} A function that returns a void promise when all is done
+	 * @description If the tab matches the switch case, apply tab-specific methods to the window.
+	 */
+	private static createSpecialWindow(windowData: WindowData): (window: Electron.BrowserWindow) => Promise<void> {
 		switch (windowData.tab) {
 			case TABS.GAME:
 				return GameUtils.load;
 			default:
-				return function() {};
+				return async() => {};
 		}
 	}
 
 	/**
 	 * @param {Electron.BrowserWindow} window The window to destroy
-	 * @description
-	 * Destroy the splash window.
+	 * @description Destroy the splash window.
 	 */
 	public static destroyWindow(window: Electron.BrowserWindow): void {
 		info('Destroying a window instance');

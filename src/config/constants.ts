@@ -146,8 +146,7 @@ export const SPLASH_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOption
 /**
  * @param  {string} baseURL The URL to analyze
  * @returns {Object.<string, boolean>}
- * @description
- * Returns the current Krunker tab (if any), whether we're on Krunker, what Krunker tab we're on, and whether quickJoin is enabled
+ * @description Returns the current Krunker tab (if any), whether we're on Krunker, what Krunker tab we're on, and whether quickJoin is enabled
  */
 export const getURLData = (baseURL?: string): WindowData => {
 	try {

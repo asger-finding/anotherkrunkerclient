@@ -70,8 +70,7 @@ export default class {
 
 	/**
 	 * @param {string} prefix The target directory to swap.
-	 * @description
-	 * Recursively swap all files in the target directory.
+	 * @description Recursively swap all files in the target directory.
 	 */
 	private recursiveSwap(prefix: string): void {
 		try {

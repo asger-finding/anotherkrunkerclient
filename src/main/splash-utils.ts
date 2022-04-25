@@ -19,8 +19,7 @@ export default class {
 	/**
 	 * @param  {Electron.BrowserWindow} window
 	 * @returns {Promise<Electron.BrowserWindow>} window promise
-	 * @description
-	 * Load the splash window with the splash.html file.  
+	 * @description Load the splash window with the splash.html file.  
 	 * Get the client release data and emit it to the splash window.  
 	 * Show the window on ready-to-show and callback.
 	 */
@@ -58,8 +57,7 @@ export default class {
 
 	/**
 	 * @param  {Electron.App} app
-	 * @description
-	 * Get Electron flags from Constants and set them in the app.  
+	 * @description Get Electron flags from Constants and set them in the app.  
 	 * Return the flags.
 	 */
 	public static setFlags(app: Electron.App): void {
@@ -70,8 +68,7 @@ export default class {
 
 	/**
 	 * @returns {Promise<ReleaseData>} ReleaseData promise for current client version, latest client version, and (optional) url to update
-	 * @description
-	 * Get the latest release from GitHub.  
+	 * @description Get the latest release from GitHub.  
 	 * If none is found, return v0.0.0 to resolve with semver.
 	 */
 	private static async getReleaseData(): Promise<ReleaseData> {
@@ -99,8 +96,7 @@ export default class {
 	/**
 	 * @param {Electron.BrowserWindow} window
 	 * @returns {Promise<void>}
-	 * @description
-	 * Emit the client release data to the splash window event listener.
+	 * @description Emit the client release data to the splash window event listener.
 	 */
 	private static async emitReleaseData(window: Electron.BrowserWindow): Promise<void> {
 		return window.webContents.send(MESSAGE_RELEASES_DATA, await this.getReleaseData());

@@ -7,13 +7,12 @@ export default class {
 	/**
 	 * @param  {Electron.BrowserWindow} window
 	 * @returns {Promise<Electron.BrowserWindow>} window promise
-	 * @description
-	 * Load the game window with the game URL
+	 * @description Load the game window with the game URL.  
 	 * Show the window on ready-to-show and callback.
 	 */
-	public static load(window: Electron.BrowserWindow): Promise<Electron.BrowserWindow> {
+	public static load(window: Electron.BrowserWindow): Promise<void> {
 		// Show the game window when things have all loaded.
-		return new Promise(resolve => {
+		return new Promise<void>(resolve => {
 			window.once('ready-to-show', () => {
 				info('ready-to-show reached on Game window');
 
@@ -28,7 +27,7 @@ export default class {
 				ipcMain.once(MESSAGE_GAME_DONE, () => {
 					info(`${ MESSAGE_GAME_DONE } received`);
 
-					return resolve(window);
+					resolve();
 				});
 			});
 		});

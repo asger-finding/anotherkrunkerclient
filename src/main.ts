@@ -39,8 +39,7 @@ class Application {
 
 	/**
 	 * @returns {Promise<boolean>} Successful initialization
-	 * @description
-	 * Initialize the app, register protocols.  
+	 * @description Initialize the app, register protocols.  
 	 * Create the splash window, followed by the game window.
 	 */
 	public async init(): Promise<boolean> {
