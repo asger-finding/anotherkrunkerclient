@@ -60,8 +60,7 @@ function typescript() {
 				strict: true,
 				strictMode: true,
 				lazy: false,
-				noInterop: true,
-				ignoreDynamic: true
+				noInterop: true
 			}
 		}))
 		.pipe(gulp.dest(paths.build));

@@ -31,7 +31,7 @@ export async function getSpoofedUA(): Promise<(string | null)> {
 
 		// Get the top user agents. This is a pretty large task, so it's cached and only used when strictly necessary.
 		// eslint-disable-next-line global-require
-		const UserAgents = await require('top-user-agents');
+		const UserAgents = await import('top-user-agents');
 		const currentOS = getCurrentUAOS();
 
 		if (Array.isArray(UserAgents)) {
