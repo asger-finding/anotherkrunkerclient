@@ -29,6 +29,7 @@ export async function getSpoofedUA(): Promise<(string | null)> {
 	if (!currentUA) {
 		info('Generating a new spoofed user agent');
 
+		// Get the top user agents. This is a pretty large task, so it's cached and only used when strictly necessary.
 		// eslint-disable-next-line global-require
 		const UserAgents = await require('top-user-agents');
 		const currentOS = getCurrentUAOS();
