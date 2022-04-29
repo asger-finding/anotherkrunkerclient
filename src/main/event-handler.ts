@@ -6,29 +6,30 @@ export default class {
 
 	private eventListeners: EventListener[] = [];
 
-	/** @description Set up event listeners between main and renderer processes. */
+	/** Set up event listeners between main and renderer processes. */
 	public registerEventListeners(): void {
 		// Close the client when MESSAGE_EXIT_CLIENT is called from the renderer process
 		this.registerEventListener(MESSAGE_EXIT_CLIENT, () => app.quit());
 	}
 
 	/**
-	 * @param {string} message The message to listen for
-	 * @param {function} callback The callback to run when the message is received
-	 * @returns {number} The id of the event listener
-	 * @description Register an event listener for a message and set an id and callback for it.
+	 * Register an event listener for a message and set an id and callback for it.
+	 * @param message - The message to listen for
+	 * @param callback - The callback to run when the message is received
+	 * @returns The ID of the event listener
 	 */
 	private registerEventListener(message: string, callback: () => unknown): number {
 		ipcMain.on(message, callback);
 
 		const id = this.eventListeners.length;
 		this.eventListeners.push({ id, message, callback });
+
 		return id;
 	}
 
 	/**
-	 * @param {string} message The message to remove the eventlisteners for
-	 * @description Remove all event listeners for a message.
+	 * Remove all event listeners for a message.
+	 * @param message - The message to remove the eventlisteners for
 	 */
 	public destroyAllEventListenersForMessage(message: string): boolean {
 		ipcMain.removeAllListeners(message);

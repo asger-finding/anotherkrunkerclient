@@ -12,6 +12,8 @@ import { join } from 'path';
 export const preferences = new Store();
 
 export { CLIENT_NAME, CLIENT_AUTHOR, CLIENT_VERSION, CLIENT_REPO };
+
+// Permalink to the license
 export const CLIENT_LICENSE_PERMALINK = 'https://yerl.org/ZKZ8V';
 
 export const TARGET_GAME_DOMAIN = 'krunker.io';
@@ -84,9 +86,8 @@ export const MESSAGE_OPEN_SETTINGS = 'open-settings';
 export const MESSAGE_RELEASES_DATA = 'releases-data';
 
 /**
- * @param {string} name The name of the tab to get sizing data for.
- * @returns {Electron.BrowserWindowConstructorOptions}
- * @description Returns the default window options, with sizing for the given tab.
+ * Returns the default window options, with sizing for the given tab.
+ * @param name - The name of the tab to get sizing data for.
  */
 export const getDefaultConstructorOptions = (windowName: string | null): Electron.BrowserWindowConstructorOptions => {
 	const existsInTabs = Object.values(TABS).includes(windowName ?? '');
@@ -121,8 +122,8 @@ export const GAME_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions 
 };
 
 /**
- * @returns {Electron.BrowserWindowConstructorOptions}
- * @description Get the window constructor options for the splash screen.
+ * Get the window constructor options for the splash screen.
+ * @returns Splash window constructor options
  */
 export const SPLASH_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions = {
 	width: 640,
@@ -144,13 +145,13 @@ export const SPLASH_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOption
 };
 
 /**
- * @param  {string} baseURL The URL to analyze
- * @returns {Object.<string, boolean>}
- * @description Returns the current Krunker tab (if any), whether we're on Krunker, what Krunker tab we're on, and whether quickJoin is enabled
+ * Returns the current Krunker tab (if any), whether we're on Krunker, what Krunker tab we're on, and whether quickJoin is enabled
+ * @param baseURL - The URL to analyze
+ * @returns Analyzed URL
  */
 export const getURLData = (baseURL?: string): WindowData => {
 	try {
-		if (typeof baseURL !== 'string') throw new Error('URL was not a string');
+		if (typeof baseURL !== 'string') throw new TypeError('Provided URL is not typeof string');
 
 		const url = new URL(baseURL);
 

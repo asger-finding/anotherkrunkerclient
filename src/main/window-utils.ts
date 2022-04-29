@@ -17,18 +17,17 @@ import { register } from 'electron-localshortcut';
 export default class {
 
 	/**
-	 * @param  {Electron.BrowserWindowConstructorOptions} parameters
-	 * @param  {(string | undefined)} windowURL
-	 * @returns {Electron.BrowserWindow} Newly generated window instance
-	 * @description Create a new window instance, load given URL (if any)  
+	 * Create a new window instance, load given URL (if any)  
 	 * Register shortcuts for the window. If show is true in parameters, show the window.  
-	 * If the window is a Krunker tab, set the window scaling preferences.  
-	 * Return the window
+	 * If the window is a Krunker tab, set the window scaling preferences.
+	 * @param constructorOptions - The options to pass to the window constructor
+	 * @param windowURL - The URL to load in the window
+	 * @returns Newly generated window instance
 	 */
-	public static async createWindow(parameters: Electron.BrowserWindowConstructorOptions, windowURL?: string): Promise<Electron.BrowserWindow> {
+	public static async createWindow(constructorOptions: Electron.BrowserWindowConstructorOptions, windowURL?: string): Promise<Electron.BrowserWindow> {
 		info(`Creating a window instance${ windowURL ? ` with URL: ${ windowURL }` : '' }`);
 
-		const window = new BrowserWindow(parameters);
+		const window = new BrowserWindow(constructorOptions);
 		const windowData: WindowData = getURLData(windowURL);
 
 		if (windowURL) this.loadSpoofedURL(window, windowURL);
@@ -36,16 +35,16 @@ export default class {
 		if (windowData.isKrunker) this.registerSwapper(window);
 		window.removeMenu();
 
-		this.registerEventListeners(parameters, window, windowData);
+		this.registerEventListeners(constructorOptions, window, windowData);
 		await this.createSpecialWindow(windowData)(window);
 
 		return window;
 	}
 
 	/**
-	 * 
-	 * @param {Electron.BrowserWindow} window The target window to spoof
-	 * @param {string} url URL to load
+	 * Load a URL in the specified window with a spoofed user agent
+	 * @param window - The target window to spoof
+	 * @param url - URL to load
 	 */
 	private static async loadSpoofedURL(window: Electron.BrowserWindow, url: string): Promise<void> {
 		const spoofedUserAgent = await getSpoofedUA();
@@ -53,11 +52,10 @@ export default class {
 	}
 
 	/**
-	 * @param {Electron.BrowserWindow} window The window to register the event on
-	 * @returns {Electron.BrowserWindow} window The window instance
-	 * @description Register global shortcuts for the window. Should be done before dom-ready
+	 * Register global shortcuts for the window. Should be done before dom-ready
+	 * @param window - The window to register the event on
 	 */
-	private static registerShortcuts(window: Electron.BrowserWindow, windowData: WindowData): Electron.BrowserWindow {
+	private static registerShortcuts(window: Electron.BrowserWindow, windowData: WindowData): void {
 		const { webContents } = window;
 
 		info(`Registering shortcuts for window: ${ window.id }`);
@@ -75,29 +73,25 @@ export default class {
 			register(window, 'F6', () => window.loadURL(TARGET_GAME_URL));
 			register(window, 'F4', () => window.loadURL(`${ TARGET_GAME_URL }?${ QUICKJOIN_URL_QUERY_PARAM }`));
 		}
-
-		return window;
 	}
 
 	/**
-	 * @param {Electron.BrowserWindow} window The window to register the event on 
-	 * @returns {Electron.BrowserWindow} window The window instance
-	 * @description Register the resource swapper for the window. Should be done before dom-ready.
+	 * Register the resource swapper for the window. Should be done before dom-ready.
+	 * @param window - The window to register the event on
 	 */
-	private static registerSwapper(window: Electron.BrowserWindow) {
+	private static registerSwapper(window: Electron.BrowserWindow): void {
 		const swapper = new Swapper(window);
 		return swapper.start();
 	}
 
 	/**
-	 * @param {Electron.BrowserWindowConstructorOptions} parameters The parameters the window was created with
-	 * @param {Electron.BrowserWindow} window 
-	 * @param {WindowData} windowData Data about the window target URL 
-	 * @returns {Electron.BrowserWindow} window The window instance
-	 * @description Create electron event listeners for the window.  
+	 * Create electron event listeners for the window.  
 	 * Some one-time events are triggered onces, some are triggered on every event.
+	 * @param constructorOptions - The parameters the window was created with
+	 * @param window - Target window
+	 * @param windowData - Data from Constants.getURLData on the target window URL
 	 */
-	private static registerEventListeners(parameters: Electron.BrowserWindowConstructorOptions, window: Electron.BrowserWindow, windowData: WindowData): Electron.BrowserWindow {
+	private static registerEventListeners(constructorOptions: Electron.BrowserWindowConstructorOptions, window: Electron.BrowserWindow, windowData: WindowData): void {
 		// If the window is a Krunker tab, set the window scaling preferences.
 		if (windowData.isInTabs) {
 			window.once('close', () => {
@@ -137,8 +131,8 @@ export default class {
 		// Don't allow the target website to set the window title.
 		window.on('page-title-updated', evt => evt.preventDefault());
 
-		// If parameters have an explicit show true value, show the window.
-		window.once('ready-to-show', () => { if (typeof parameters.show === 'undefined' ? true : parameters.show) window.show(); });
+		// If constructorOptions have an explicit show true value, show the window.
+		window.once('ready-to-show', () => { if (typeof constructorOptions.show === 'undefined' ? true : constructorOptions.show) window.show(); });
 
 		// Set the window title and register shortcuts for the window.
 		window.webContents.once('did-finish-load', () => {
@@ -146,15 +140,12 @@ export default class {
 
 			this.registerShortcuts(window, windowData);
 		});
-
-		return window;
 	}
 
 	/**
-	 * 
-	 * @param {WindowData} windowData Data about the window target URL
-	 * @returns {(window: Electron.BrowserWindow) => Promise<void>} A function that returns a void promise when all is done
-	 * @description If the tab matches the switch case, apply tab-specific methods to the window.
+	 * If the tab matches the switch case, apply tab-specific methods to the window.
+	 * @param windowData - Data from Constants.getURLData on the target window URL
+	 * @returns A function that returns a void promise when all is done
 	 */
 	private static createSpecialWindow(windowData: WindowData): (window: Electron.BrowserWindow) => Promise<void> {
 		switch (windowData.tab) {
@@ -166,15 +157,15 @@ export default class {
 	}
 
 	/**
-	 * @param {Electron.BrowserWindow} window The window to destroy
-	 * @description Destroy the splash window.
+	 * Destroy the splash window.
+	 * @param window - The window to destroy
 	 */
 	public static destroyWindow(window: Electron.BrowserWindow): void {
 		info('Destroying a window instance');
 		if (window.webContents.isDevToolsOpened()) window.webContents.closeDevTools();
 
 		window.hide();
-		return window.destroy();
+		window.destroy();
 	}
 
 }

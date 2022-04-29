@@ -29,7 +29,7 @@ class Application {
 
 	private eventHandler = new EventHandler();
 
-	/** @description Set flags, event listeners before the app is ready. */
+	/** Set flags, event listeners before the app is ready. */
 	public constructor() {
 		info('Constructing initializer class');
 
@@ -38,11 +38,10 @@ class Application {
 	}
 
 	/**
-	 * @returns {Promise<boolean>} Successful initialization
-	 * @description Initialize the app, register protocols.  
+	 * Initialize the app, register protocols.  
 	 * Create the splash window, followed by the game window.
 	 */
-	public async init(): Promise<boolean> {
+	public async init(): Promise<void> {
 		app.setName(CLIENT_NAME);
 
 		// Register resource swapper file protocols. TODO: Dynamic protocol source.
@@ -60,8 +59,6 @@ class Application {
 		info('Initializing game window');
 
 		this.gameWindow = await WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
-
-		return true;
 	}
 
 }
@@ -91,6 +88,7 @@ if (!app.requestSingleInstanceLock()) {
 	app.quit();
 } else {
 	const client = new Application();
+
 	app.whenReady().then(async(): Promise<void> => {
 		await client.init();
 

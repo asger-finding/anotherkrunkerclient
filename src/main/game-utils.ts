@@ -5,10 +5,10 @@ import { ipcMain } from 'electron';
 export default class {
 
 	/**
-	 * @param  {Electron.BrowserWindow} window
-	 * @returns {Promise<Electron.BrowserWindow>} window promise
-	 * @description Load the game window with the game URL.  
+	 * Load the game window with the game URL.  
 	 * Show the window on ready-to-show and callback.
+	 * @param window - The target window to load onto
+	 * @returns Promise for when everything is done
 	 */
 	public static load(window: Electron.BrowserWindow): Promise<void> {
 		// Show the game window when things have all loaded.

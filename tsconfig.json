@@ -19,7 +19,6 @@
             // config
             "@constants": ["src/config/constants"],
             "@client": ["src/config/client"],
-            "@useragent-spoof": ["src/config/useragent-spoof"],
 
             // window
             "@splash-pre-utils": ["src/window/splash-pre-utils"],
@@ -31,7 +30,8 @@
             "@game-utils": ["src/main/game-utils"],
             "@window-utils": ["src/main/window-utils"],
             "@event-handler": ["src/main/event-handler"],
-            "@resource-swapper": ["src/main/resource-swapper"]
+            "@resource-swapper": ["src/main/resource-swapper"],
+            "@useragent-spoof": ["src/main/useragent-spoof"]
         }
     },
     "include": [

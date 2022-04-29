@@ -5,8 +5,8 @@ import { ipcRenderer } from 'electron';
 export default class {
 
 	/**
-	 * @returns {Promise<ReleaseData>} clientUpdateElement The version update on the splash window
-	 * @description Get the client release data and emit it to the splash window event listener.
+	 * Get the client release data and emit it to the splash window event listener.
+	 * @returns Promise for when MESSAGE_RELEASES_DATA is received
 	 */
 	public static getReleaseDataFromEventListener(): Promise<ReleaseData> {
 		return new Promise(resolve => {
@@ -15,24 +15,24 @@ export default class {
 	}
 
 	/**
-	 * @returns {HTMLDivElement} client info wrapper element
-	 * @description Getter for the client info wrapper element
+	 * Getter for the client info wrapper element
+	 * @returns Client info wrapper element
 	 */
 	public static get clientInfoElement(): HTMLDivElement {
 		return <HTMLDivElement> document.getElementById('client-info');
 	}
 
 	/**
-	 * @returns {HTMLSpanElement} version text element
-	 * @description Getter for the version text element
+	 * Getter for the version text element
+	 * @returns Version text element
 	 */
 	public static get clientVersionElement(): HTMLSpanElement {
 		return <HTMLSpanElement> this.clientInfoElement.getElementsByClassName('version-holder')[0];
 	}
 
 	/**
-	 * @returns {HTMLSpanElement} update text element
-	 * @description Getter for the update text element
+	 * Getter for the update text element
+	 * @returns Update text element
 	 */
 	public static get clientUpdateElement(): HTMLSpanElement {
 		return <HTMLSpanElement> this.clientInfoElement.getElementsByClassName('update-holder')[0];

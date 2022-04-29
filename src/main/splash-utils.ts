@@ -17,11 +17,11 @@ import { join } from 'path';
 export default class {
 
 	/**
-	 * @param  {Electron.BrowserWindow} window
-	 * @returns {Promise<Electron.BrowserWindow>} window promise
-	 * @description Load the splash window with the splash.html file.  
+	 * Load the splash window with the splash.html file.  
 	 * Get the client release data and emit it to the splash window.  
 	 * Show the window on ready-to-show and callback.
+	 * @param window - The target window to load onto
+	 * @returns Promise for when everything is done
 	 */
 	public static load(window: Electron.BrowserWindow): Promise<Electron.BrowserWindow> {
 		// Set the vibrancy of the splash window
@@ -55,11 +55,7 @@ export default class {
 		});
 	}
 
-	/**
-	 * @param  {Electron.App} app
-	 * @description Get Electron flags from Constants and set them in the app.  
-	 * Return the flags.
-	 */
+	/** Get Electron flags from Constants and set them in the app. */
 	public static setFlags(app: Electron.App): void {
 		info('Setting Electron flags');
 
@@ -67,9 +63,9 @@ export default class {
 	}
 
 	/**
-	 * @returns {Promise<ReleaseData>} ReleaseData promise for current client version, latest client version, and (optional) url to update
-	 * @description Get the latest release from GitHub.  
+	 * Get the latest release from GitHub.  
 	 * If none is found, return v0.0.0 to resolve with semver.
+	 * @returns ReleaseData promise for current client version, latest client version, and (optional) url to update
 	 */
 	private static async getReleaseData(): Promise<ReleaseData> {
 		info('Getting latest GitHub release...');
@@ -94,9 +90,8 @@ export default class {
 	}
 
 	/**
-	 * @param {Electron.BrowserWindow} window
-	 * @returns {Promise<void>}
-	 * @description Emit the client release data to the splash window event listener.
+	 * Emit the client release data to the splash window event listener.
+	 * @param window - The target window to emit the release data to
 	 */
 	private static async emitReleaseData(window: Electron.BrowserWindow): Promise<void> {
 		return window.webContents.send(MESSAGE_RELEASES_DATA, await this.getReleaseData());

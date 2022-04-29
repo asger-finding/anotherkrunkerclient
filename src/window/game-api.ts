@@ -6,7 +6,7 @@ const whiteListedReceive = /a^/u;
 const whiteListedStoreRequest = /window.(.*?).width|window.(.*?).height|window.(.*?).fullscreen|window.(.*?).maximized/u;
 const whiteListedStoreSet = /a^/u;
 
-/** @description Throw an error if the attempted action is not whitelisted. */
+/** Throw an error if the attempted action is not whitelisted. */
 function onNotWhiteListed(attempt: string) {
 	throw new Error(`${ attempt } is not whitelisted.`);
 }
@@ -17,8 +17,8 @@ Object.freeze(window.clientAPI = {
 	clientName: CLIENT_NAME,
 
 	/**
+	 * Send a message to event listeners with optional data.
 	 * @memberof clientAPI
-	 * @description Send a message to event listeners with optional data.
 	 */
 	send(channel, ...data) {
 		if (whitelistedSend.test(channel)) ipcRenderer.send(channel, data);
@@ -26,8 +26,8 @@ Object.freeze(window.clientAPI = {
 	},
 
 	/**
+	 * Set up callbacks to listen for messages.
 	 * @memberof clientAPI
-	 * @description Set up callbacks to listen for messages.
 	 */
 	receive(channel, ...callbacks) {
 		if (whiteListedReceive.test(channel)) {
@@ -41,8 +41,8 @@ Object.freeze(window.clientAPI = {
 	},
 
 	/**
+	 * Request a value from the store.
 	 * @memberof clientAPI
-	 * @description Request a value from the store.
 	 */
 	requestFromStore(key, fallback) {
 		if (whiteListedStoreRequest.test(key)) return preferences.get(key, fallback);
@@ -50,8 +50,8 @@ Object.freeze(window.clientAPI = {
 	},
 
 	/**
+	 * Set a value in the store.
 	 * @memberof clientAPI
-	 * @description Set a value in the store.
 	 */
 	setToStore(key, value) {
 		if (whiteListedStoreSet.test(key)) return preferences.set(key, value);
@@ -59,8 +59,8 @@ Object.freeze(window.clientAPI = {
 	},
 
 	/**
+	 * Check if a key exists in the store.
 	 * @memberof clientAPI
-	 * @description Check if a key exists in the store.
 	 */
 	storeHas(key) {
 		if (whiteListedStoreRequest.test(key)) return preferences.has(key);

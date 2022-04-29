@@ -5,33 +5,24 @@ import { join } from 'path';
 
 export default class {
 
-	/**
-	 * @type {string}
-	 * @description Target directory path.
-	 */
+	/** Target directory path. */
 	private target: string = global.resourceswapProtocolSource;
 
-	/**
-	 * @type {Electron.BrowserWindow}
-	 * @description Target window.
-	 */
+	/** Target window. */
 	private window: Electron.BrowserWindow;
 
-	/**
-	 * @type {string[]}
-	 * @description The list of URLs to swap.
-	 */
+	/** The list of URLs to swap. */
 	private urls: string[] = [];
 
 	/**
-	 * @param {Electron.BrowserWindow} window The target window.
-	 * @description Set the target window.
+	 * Set the target window.
+	 * @param window - The target window.
 	 */
 	public constructor(window: Electron.BrowserWindow) {
 		this.window = window;
 	}
 
-	/** @description Initialize the resource swapper for the target window.*/
+	/** Initialize the resource swapper for the target window.*/
 	public start(): void {
 		// If the target directory doesn't exist, create it.
 		if (!fs.existsSync(global.resourceswapProtocolSource)) fs.mkdirSync(global.resourceswapProtocolSource, { recursive: true });
@@ -69,8 +60,8 @@ export default class {
 	}
 
 	/**
-	 * @param {string} prefix The target directory to swap.
-	 * @description Recursively swap all files in the target directory.
+	 * Recursively swap all files in the target directory.
+	 * @param prefix - The target directory to swap.
 	 */
 	private recursiveSwap(prefix: string): void {
 		try {

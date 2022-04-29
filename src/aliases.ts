@@ -5,7 +5,6 @@ addAliases({
 	// config
 	'@constants': resolve(__dirname, './config/constants'),
 	'@client': resolve(__dirname, './config/client'),
-	'@useragent-spoof': resolve(__dirname, './config/useragent-spoof'),
 
 	// window
 	'@splash-pre-utils': resolve(__dirname, './window/splash-pre-utils'),
@@ -17,5 +16,6 @@ addAliases({
 	'@game-utils': resolve(__dirname, './main/game-utils'),
 	'@window-utils': resolve(__dirname, './main/window-utils'),
 	'@event-handler': resolve(__dirname, './main/event-handler'),
-	'@resource-swapper': resolve(__dirname, './main/resource-swapper')
+	'@resource-swapper': resolve(__dirname, './main/resource-swapper'),
+	'@useragent-spoof': resolve(__dirname, './main/useragent-spoof')
 });

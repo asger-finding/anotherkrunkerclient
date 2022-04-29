@@ -2,8 +2,8 @@ import { info } from 'electron-log';
 import { preferences } from '@constants';
 
 /**
- * @returns {string} The operating system as it would appear in a user agent string
- * @description Get the current operating system and return it in a format matching a UA.
+ * Get the current operating system and return it in a format matching a UA.
+ * @returns The operating system as it would appear in a user agent string
  */
 function getCurrentUAOS(): string {
 	switch (process.platform) {
@@ -18,8 +18,8 @@ function getCurrentUAOS(): string {
 }
 
 /**
- * @returns {Promise<(string | null)>} The spoofed user agent string or null if no spoofed user agent is found
- * @description Get a spoofed user agent from the top-user-agents package corresponding to the user operating system.
+ * Get a spoofed user agent from the top-user-agents package corresponding to the user operating system.
+ * @returns The spoofed user agent string or null if no spoofed user agent is found
  */
 export async function getSpoofedUA(): Promise<(string | null)> {
 	// Check for a cached spoofed UA.
@@ -30,7 +30,6 @@ export async function getSpoofedUA(): Promise<(string | null)> {
 		info('Generating a new spoofed user agent');
 
 		// Get the top user agents. This is a pretty large task, so it's cached and only used when strictly necessary.
-		// eslint-disable-next-line global-require
 		const UserAgents = await import('top-user-agents');
 		const currentOS = getCurrentUAOS();
 
