@@ -1,7 +1,8 @@
 <!-- markdownlint-disable MD033 MD041 -->
-<p align="center">
-  <img src="https://github.com/asger-finding/anotherkrunkerclient/blob/df7c335f6e5bb94331a8c396916f3a2eb624bb07/media/banner.svg?raw=true" alt="anotherkrunkerclient" width="50%"/>
-</p>
+<div align="center">
+  <img width="50%" src="https://github.com/asger-finding/anotherkrunkerclient/raw/main/.github/banner-light.svg#gh-light-mode-only?raw=true">
+  <img width="50%" src="https://github.com/asger-finding/anotherkrunkerclient/raw/main/.github/banner-dark.svg#gh-dark-mode-only?raw=true">
+</div>
 
 <h1 align="center">anotherkrunkerclient</h1>
 <!-- markdownlint-enable MD033 MD041 -->
