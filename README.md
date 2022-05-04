@@ -1,6 +1,6 @@
 <!-- markdownlint-disable MD033 MD041 -->
 <p align="center">
-  <img src="https://github.com/asger-finding/anotherkrunkerclient/blob/6e52bf3789895c3ca4b76356fdf43828b9da304a/app/assets/akc.svg?raw=true" alt="anotherkrunkerclient" width="50%"/>
+  <img src="https://github.com/asger-finding/anotherkrunkerclient/blob/df7c335f6e5bb94331a8c396916f3a2eb624bb07/media/banner.svg?raw=true" alt="anotherkrunkerclient" width="50%"/>
 </p>
 
 <h1 align="center">anotherkrunkerclient</h1>
@@ -8,11 +8,11 @@
 <!-- necessary evil to have a cool header -->
 
 The be-all and end-all Krunker client.  
-All good features from other clients crammed into one neat, fast package.
+All good features from other clients crammed into one neat, fast package. Built with boilerplate in mind so you can base your client off of akc.
 
-## Things to do
+## Work-in-progress
 
-- Everything in the feature tracking [issue](https://github.com/asger-finding/anotherkrunkerclient/issues/1#issue-1167443624).
+A full release (v1.xx) will be considered when everything in this feature tracking [issue](https://github.com/asger-finding/anotherkrunkerclient/issues/1#issue-1167443624) has been addressed.
 
 ## Supported operating systems
 
