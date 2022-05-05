@@ -70,14 +70,14 @@ export default class {
 
 				// If the file is a directory, swap it recursively.
 				if (dirent.isDirectory()) { this.recursiveSwap(name); } else {
-					// browserfps.com has the server name as the subdomain instead of 'assets', so we need to take that into account.
+					// browserfps.com has the server name as the subdomain instead of 'assets', so we must take that into account.
 					const tests = [
 						`*://*.${ TARGET_GAME_DOMAIN }${ name }`,
 						`*://*.${ TARGET_GAME_DOMAIN }${ name }?*`,
 						`*://*.${ TARGET_GAME_DOMAIN }/assets${ name }`,
 						`*://*.${ TARGET_GAME_DOMAIN }/assets${ name }?*`
 					];
-					this.urls.push(...(/^\/(models|textures|sound|scares)($|\/)/u.test(name)
+					this.urls.push(...(/^\/(?:models|textures|sound|scares)(?:$|\/)/u.test(name)
 						? tests
 						: [
 							...tests,

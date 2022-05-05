@@ -3,7 +3,7 @@ import { ipcRenderer } from 'electron';
 
 const whitelistedSend = /a^/u;
 const whiteListedReceive = /a^/u;
-const whiteListedStoreRequest = /window.(.*?).width|window.(.*?).height|window.(.*?).fullscreen|window.(.*?).maximized/u;
+const whiteListedStoreRequest = /^(?:window\.)(?:.*?)(?:\.width)$|^(?:window\.)(?:.*?)(?:\.height)$|^(?:window\.)(?:.*?)(?:\.fullscreen)$|^(?:window\.)(?:.*?)(?:\.maximized)$/u;
 const whiteListedStoreSet = /a^/u;
 
 /** Throw an error if the attempted action is not whitelisted. */

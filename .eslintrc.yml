@@ -26,7 +26,6 @@ rules:
   '@typescript-eslint/comma-dangle': [error, never]
   '@typescript-eslint/space-before-function-paren': [error, never]
   no-trailing-spaces: [error, { ignoreComments: true }]
-  prefer-named-capture-group: 0
   linebreak-style: 0
   sort-keys: 0
 
