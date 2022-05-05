@@ -1,14 +1,12 @@
 import { BrowserWindow, app, shell } from 'electron';
 import {
-	QUICKJOIN_URL_QUERY_PARAM,
 	TABS,
-	TARGET_GAME_URL,
 	getDefaultConstructorOptions,
 	getURLData,
 	preferences
 } from '@constants';
 import GameUtils from '@game-utils';
-import Swapper from '@resource-swapper';
+import ResourceSwapper from '@resource-swapper';
 import { WindowData } from '@client';
 import { getSpoofedUA } from '@useragent-spoof';
 import { info } from 'electron-log';
@@ -28,7 +26,7 @@ export default class {
 		info(`Creating a window instance${ windowURL ? ` with URL: ${ windowURL }` : '' }`);
 
 		const window = new BrowserWindow(constructorOptions);
-		const windowData: WindowData = getURLData(windowURL);
+		const windowData = getURLData(windowURL);
 
 		if (windowURL) this.loadSpoofedURL(window, windowURL);
 		if (preferences.get(`window.${ windowData.tab }.maximized`)) window.maximize();
@@ -55,7 +53,7 @@ export default class {
 	 * Register global shortcuts for the window. Should be done before dom-ready
 	 * @param window - The window to register the event on
 	 */
-	private static registerShortcuts(window: Electron.BrowserWindow, windowData: WindowData): void {
+	private static registerShortcuts(window: Electron.BrowserWindow): void {
 		const { webContents } = window;
 
 		info(`Registering shortcuts for window: ${ window.id }`);
@@ -66,13 +64,6 @@ export default class {
 		register(window, ['F5', 'Ctrl+R'], () => webContents.reload());
 		register(window, ['Ctrl+F5', 'Ctrl+Shift+R'], () => webContents.reloadIgnoringCache());
 		register(window, ['F12', 'Ctrl+Shift+I'], () => webContents.openDevTools());
-
-		if (windowData.tab === TABS.GAME) {
-			info('Registering shortcuts for the game tab');
-
-			register(window, 'F6', () => window.loadURL(TARGET_GAME_URL));
-			register(window, 'F4', () => window.loadURL(`${ TARGET_GAME_URL }?${ QUICKJOIN_URL_QUERY_PARAM }`));
-		}
 	}
 
 	/**
@@ -80,8 +71,8 @@ export default class {
 	 * @param window - The window to register the event on
 	 */
 	private static registerSwapper(window: Electron.BrowserWindow): void {
-		const swapper = new Swapper(window);
-		return swapper.start();
+		const resourceSwapper = new ResourceSwapper(window);
+		return resourceSwapper.start();
 	}
 
 	/**
@@ -92,10 +83,12 @@ export default class {
 	 * @param windowData - Data from Constants.getURLData on the target window URL
 	 */
 	private static registerEventListeners(constructorOptions: Electron.BrowserWindowConstructorOptions, window: Electron.BrowserWindow, windowData: WindowData): void {
+		const { webContents } = window;
+
 		// If the window is a Krunker tab, set the window scaling preferences.
 		if (windowData.isInTabs) {
 			window.once('close', () => {
-				info(`Closing window instance${ window.webContents.getURL() ? ` with URL: ${ window.webContents.getURL() }` : '' }`);
+				info(`Closing window instance${ webContents.getURL() ? ` with URL: ${ webContents.getURL() }` : '' }`);
 
 				// Save the window sizing and bounds to the store
 				const windowPreferences = {
@@ -108,10 +101,10 @@ export default class {
 		}
 
 		// When Krunker URLs are opened, open them in the default electron window. If the URL is external, open it in the default browser.
-		window.webContents.on('new-window', (evt, newWindowURL, frameName) => {
+		webContents.on('new-window', (evt, newWindowURL, frameName) => {
 			evt.preventDefault();
 
-			const newWindowData: WindowData = getURLData(newWindowURL);
+			const newWindowData = getURLData(newWindowURL);
 			if (newWindowData.isKrunker) {
 				if (frameName === '_self') window.loadURL(newWindowURL);
 				else this.createWindow(getDefaultConstructorOptions(newWindowData.tab), newWindowURL);
@@ -120,10 +113,10 @@ export default class {
 			}
 		});
 
-		window.webContents.on('will-navigate', (evt, newWindowURL) => {
+		webContents.on('will-navigate', (evt, newWindowURL) => {
 			evt.preventDefault();
 
-			const newWindowData: WindowData = getURLData(newWindowURL);
+			const newWindowData = getURLData(newWindowURL);
 			if (!newWindowData.isKrunker) shell.openExternal(newWindowURL);
 			else if (!newWindowData.invalid) window.loadURL(newWindowURL);
 		});
@@ -135,10 +128,10 @@ export default class {
 		window.once('ready-to-show', () => { if (typeof constructorOptions.show === 'undefined' ? true : constructorOptions.show) window.show(); });
 
 		// Set the window title and register shortcuts for the window.
-		window.webContents.once('did-finish-load', () => {
+		webContents.once('did-finish-load', () => {
 			if (windowData.tab) window.setTitle(`${ windowData.tab } — ${ app.getName() }`);
 
-			this.registerShortcuts(window, windowData);
+			this.registerShortcuts(window);
 		});
 	}
 

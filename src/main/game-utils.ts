@@ -1,6 +1,7 @@
-import { IS_DEVELOPMENT, MESSAGE_GAME_DONE } from '@constants';
+import { IS_DEVELOPMENT, MESSAGE_GAME_DONE, QUICKJOIN_URL_QUERY_PARAM, TARGET_GAME_URL } from '@constants';
 import { info } from 'electron-log';
 import { ipcMain } from 'electron';
+import { register } from 'electron-localshortcut';
 
 export default class {
 
@@ -13,6 +14,9 @@ export default class {
 	public static load(window: Electron.BrowserWindow): Promise<void> {
 		// Show the game window when things have all loaded.
 		return new Promise<void>(resolve => {
+			register(window, 'F6', () => window.loadURL(TARGET_GAME_URL));
+			register(window, 'F4', () => window.loadURL(`${ TARGET_GAME_URL }?${ QUICKJOIN_URL_QUERY_PARAM }`));
+
 			window.once('ready-to-show', () => {
 				info('ready-to-show reached on Game window');
 
