@@ -2,8 +2,8 @@
 // I am most comfortable with the gulp, but it is no longer a good choice.
 
 import gulp from 'gulp';
-import argv from 'yargs';
 import del from 'del';
+import _yargs from 'yargs';
 import gulpif from 'gulp-if';
 import swc from 'gulp-swc';
 import _gulpsass from 'gulp-sass';
@@ -11,6 +11,7 @@ import _sass from 'sass';
 import imagemin from 'gulp-imagemin';
 import htmlmin from 'gulp-htmlmin';
 const gulpsass = _gulpsass(_sass);
+const { argv } = _yargs(process.argv.slice(2));
 
 const origin = './src';
 const paths = {

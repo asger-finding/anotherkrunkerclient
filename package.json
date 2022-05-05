@@ -15,7 +15,8 @@
     "bundle:darwin": "yarn prebundle && electron-builder -m && yarn postinstall",
     "bundle:github": "yarn prebundle",
     "prebundle": "gulp annihilation && gulp --state=production",
-    "postinstall": "electron-builder install-app-deps && gulp clean",
+    "rebuild": "electron-builder install-app-deps",
+    "postinstall": "yarn rebuild && gulp clean",
     "lint": "yarn eslint . --ext .ts,.js"
   },
   "build": {
