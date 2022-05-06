@@ -70,7 +70,7 @@ function typescript() {
 function sass() {
 	return gulp.src(paths.files.css)
 		.pipe(gulpsass({
-			...(state.prod ? { outputStyle: 'compressed' } : {})
+			outputStyle: (state.prod ? 'compressed' : 'expanded' )
 		}))
 		.pipe(gulp.dest(paths.build));
 }
