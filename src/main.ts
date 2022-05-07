@@ -65,10 +65,12 @@ class Application {
 
 // Register the protocol source for the resource swapper. TODO: User-specified protocol source in settings.
 global.resourceswapProtocolSource = join(app.getPath('documents'), `/${ CLIENT_NAME }`);
-protocol.registerSchemesAsPrivileged([ {
-	scheme: CLIENT_NAME,
-	privileges: { secure: true, corsEnabled: true }
-} ]);
+protocol.registerSchemesAsPrivileged([
+	{
+		scheme: CLIENT_NAME,
+		privileges: { secure: true, corsEnabled: true }
+	}
+]);
 
 app.on('quit', () => app.quit());
 app.on('window-all-closed', () => {
@@ -84,9 +86,7 @@ app.on('web-contents-created', (_event, webContents) => {
 	});
 });
 
-if (!app.requestSingleInstanceLock()) {
-	app.quit();
-} else {
+if (!app.requestSingleInstanceLock()) { app.quit(); } else {
 	const client = new Application();
 
 	app.whenReady().then(async(): Promise<void> => {

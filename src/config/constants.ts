@@ -24,47 +24,49 @@ export const QUICKJOIN_URL_QUERY_PARAM = 'quickjoin';
 // If not contained, it will throw an error whenever Constants is referenced outside the main process.
 export const IS_DEVELOPMENT = process.type === 'browser' ? !app.isPackaged : null;
 
-export const ELECTRON_FLAGS = {
-	// Unlock the frame rate
-	'disable-frame-rate-limit': null,
-	'disable-gpu-vsync': null,
-	'max-gum-fps': '9999',
+export const ELECTRON_FLAGS = [
 
-	// Enable WebGL
-	'enable-webgl': null,
+	// Unlock the frame rate
+	['disable-frame-rate-limit'],
+	['disable-gpu-vsync'],
+	['max-gum-fps', '9999'],
 
 	// Don't require user gesture for autoplay
-	'autoplay-policy': 'no-user-gesture-required',
+	['autoplay-policy', 'no-user-gesture-required'],
 
 	// Performance optimization flags. TODO: client setting for these
-	'enable-highres-timer': null,
-	'enable-gpu-rasterization': null,
-	'enable-zero-copy': null,
-	'enable-javascript-harmony': null,
-	'enable-future-v8-vm-features': null,
-	'enable-quic': null,
-	'enable-webgl2-compute-context': null,
-	'disable-metrics': null,
-	'disable-metrics-repo': null,
-	'disable-logging': null,
-	'disable-component-update': null,
-	'disable-low-end-device-mode': null,
-	'disable-dev-shm-usage': null,
-	'disable-canvas-aa': null,
-	'disable-2d-canvas-clip-aa': null,
-	'disable-hang-monitor': null,
-	'disable-breakpad': null,
-	'disable-bundled-ppapi-flash': null,
-	'ignore-gpu-blocklist': null,
-	'canvas-oop-rasterization': null,
-	'no-zygote': null,
-	'disable-background-timer-throttling': null,
-	'disable-renderer-backgrounding': null,
-	'disable-ipc-flooding-protection': null,
-	'max-active-webgl-contexts': '100',
-	'renderer-process-limit': '100',
-	'webrtc-max-cpu-consumption-percentage': '100'
-};
+	['enable-highres-timer'],
+	['enable-webgl'],
+	['enable-gpu-rasterization'],
+	['enable-zero-copy'],
+	['enable-javascript-harmony'],
+	['enable-future-v8-vm-features'],
+	['enable-quic'],
+	['enable-webgl2-compute-context'],
+	['enable-accelerated-video-decode'],
+	['enable-native-gpu-memory-buffers'],
+	['enable-oop-rasterization'],
+	['disable-metrics'],
+	['disable-metrics-repo'],
+	['disable-logging'],
+	['disable-component-update'],
+	['disable-low-end-device-mode'],
+	['disable-dev-shm-usage'],
+	['disable-canvas-aa'],
+	['disable-2d-canvas-clip-aa'],
+	['disable-hang-monitor'],
+	['disable-breakpad'],
+	['disable-bundled-ppapi-flash'],
+	['ignore-gpu-blocklist'],
+	['canvas-oop-rasterization'],
+	['no-zygote'],
+	['disable-background-timer-throttling'],
+	['disable-renderer-backgrounding'],
+	['disable-ipc-flooding-protection'],
+	['max-active-webgl-contexts', '100'],
+	['renderer-process-limit', '100'],
+	['webrtc-max-cpu-consumption-percentage', '100']
+];
 
 // How long the splash window should be visible before entering the game
 export const SPLASH_ALIVE_TIME = 1500;

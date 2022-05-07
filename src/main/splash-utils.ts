@@ -59,7 +59,8 @@ export default class {
 	public static setFlags(app: Electron.App): void {
 		info('Setting Electron flags');
 
-		for (const flag of Object.keys(ELECTRON_FLAGS)) app.commandLine.appendSwitch(flag, ELECTRON_FLAGS[flag as keyof typeof ELECTRON_FLAGS] ?? '');
+		const { appendSwitch } = app.commandLine;
+		for (const flag of ELECTRON_FLAGS) appendSwitch(flag[0], flag[1]);
 	}
 
 	/**
