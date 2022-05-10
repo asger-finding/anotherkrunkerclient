@@ -1,8 +1,6 @@
 name: Package binaries and upload as artifacts
 
-on:
-  workflow_dispatch:
-    branches: [ main ]
+on: workflow_dispatch
 
 jobs:
 

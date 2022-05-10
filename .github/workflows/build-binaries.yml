@@ -1,12 +1,9 @@
 name: Build packaged binaries
 
 on:
-  workflow_dispatch:
-    branches: [ main ]
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  - workflow_dispatch
+  - push
+  - pull_request
 
 jobs:
 
