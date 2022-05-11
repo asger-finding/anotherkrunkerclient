@@ -1,5 +1,7 @@
+import { USERAGENT_LIFETIME, preferences } from '@constants';
 import { info } from 'electron-log';
-import { preferences } from '@constants';
+
+const storeSchema = 'userAgentSpoof';
 
 /**
  * Get the current operating system and return it in a format matching a UA.
@@ -17,15 +19,23 @@ function getCurrentUAOS(): string {
 	}
 }
 
+function getCurrentUA(): string | null {
+	// If it's been more than 30 days since the last user agent change, generate a new one.
+	const lastSet = preferences.get(`${ storeSchema }.set`, Date.now());
+	if (Date.now() - Number(lastSet) > USERAGENT_LIFETIME) preferences.reset(`${ storeSchema }.userAgent`);
+
+	return preferences.get(`${ storeSchema }.userAgent`, null) as string | null;
+}
+
 /**
  * Get a spoofed user agent from the top-user-agents package corresponding to the user operating system.
  * @returns The spoofed user agent string or null if no spoofed user agent is found
  */
 export async function getSpoofedUA(): Promise<(string | null)> {
 	// Check for a cached spoofed UA.
-	const currentUA = preferences.get('spoofedUserAgent', null);
+	const currentUA = getCurrentUA();
 
-	// If there is no cached UA, generate a new one and cache it.
+	// If there is no cached UA or it's been more than a month, generate a new one
 	if (!currentUA) {
 		info('Generating a new spoofed user agent');
 
@@ -46,7 +56,8 @@ export async function getSpoofedUA(): Promise<(string | null)> {
 			}
 
 			// Cache in preferences
-			preferences.set('spoofedUserAgent', bestUserAgent);
+			preferences.set(`${ storeSchema }.userAgent`, bestUserAgent);
+			preferences.set(`${ storeSchema }.set`, Date.now());
 			return bestUserAgent;
 		}
 

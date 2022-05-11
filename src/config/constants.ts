@@ -71,6 +71,9 @@ export const ELECTRON_FLAGS = [
 // How long the splash window should be visible before entering the game
 export const SPLASH_ALIVE_TIME = 1500;
 
+// 1 month
+export const USERAGENT_LIFETIME = 1000 * 60 * 60 * 24 * 30;
+
 export const TABS = {
 	GAME: 'game',
 	SOCIAL: 'social',
