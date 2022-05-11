@@ -60,7 +60,7 @@ jobs:
           path: ${{ env.LOCALAPPDATA }}\electron-builder\cache
           key: ${{ runner.os }}-electron-builder-cache-v2-${{ hashFiles(format('{0}{1}', github.workspace, '\yarn.lock')) }}
 
-      - name: Build/release Electron app
+      - name: Build electron app binary
         uses: samuelmeuli/action-electron-builder@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
