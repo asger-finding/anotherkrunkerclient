@@ -66,4 +66,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
           # package.json script to call before electron-builder compiles
-          build_script_name: 'bundle:github'
+          build_script_name: 'bundle:gh-actions'

@@ -43,7 +43,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
           # package.json script to call before electron-builder compiles
-          build_script_name: 'bundle:github'
+          build_script_name: 'bundle:gh-actions'
 
       - uses: actions/upload-artifact@v3
         if: runner.os == 'Windows' && env.IS_RELEASE
