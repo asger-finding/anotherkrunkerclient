@@ -10,6 +10,7 @@ addAliases({
 	'@splash-pre-utils': resolve(__dirname, './window/splash-pre-utils'),
 	'@game-api': resolve(__dirname, './window/game-api'),
 	'@game-settings': resolve(__dirname, './window/game-settings'),
+	'@function-hooker': resolve(__dirname, './window/function-hooker'),
 
 	// main
 	'@splash-utils': resolve(__dirname, './main/splash-utils'),

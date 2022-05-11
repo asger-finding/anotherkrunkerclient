@@ -24,6 +24,7 @@
             "@splash-pre-utils": ["src/window/splash-pre-utils"],
             "@game-api": ["src/window/game-api"],
             "@game-settings": ["src/window/game-settings"],
+            "@function-hooker": ["src/window/function-hooker"],
 
             // main
             "@splash-utils": ["src/main/splash-utils"],

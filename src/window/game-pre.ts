@@ -1,9 +1,8 @@
-// TODO: Clean up messy code.
-
 import '../aliases';
 import '@game-settings';
 import '@game-api';
 
+import FunctionHooker from '@function-hooker';
 import { MESSAGE_EXIT_CLIENT } from '@constants';
 import { MapExport } from '../krunker';
 import { ipcRenderer } from 'electron';
@@ -30,43 +29,20 @@ const mapSettings: Partial<MapExport> = {
 	lightI: 1.6
 };
 
-const { parse } = JSON;
-const proxy = <typeof JSON.parse> function(text, reviver) {
-	const parsed: MapExport = parse(text, reviver);
-
+const functionHook = new FunctionHooker();
+functionHook.hook('JSON.parse', (object: MapExport) => {
 	// Check if the parsed object is a map export.
-	if (parsed.name && parsed.spawns) {
+	if (object.name && object.spawns) {
 		/**
 		 * Merge the parsed map with the client map settings.
 		 * Proxy the map settings so whenever they're accessed,
 		 * we can pass values and reference mapSettings.
 		 */
-		return new Proxy({ ...parsed, ...mapSettings }, {
+		return new Proxy({ ...object, ...mapSettings }, {
 			get(target: MapExport, key: keyof MapExport) {
 				return mapSettings[key] ?? target[key];
 			}
 		});
 	}
-	return parsed;
-};
-Reflect.defineProperty(JSON, 'parse', { value: proxy });
-
-interface IFrameWindow {
-	JSON: typeof JSON;
-	HTMLBodyElement: typeof HTMLBodyElement;
-}
-
-const { appendChild } = HTMLBodyElement.prototype;
-const appendChildHook = function(this: unknown, child: Node) {
-	appendChild.call(this, child);
-
-	if (child instanceof HTMLIFrameElement && !child.src && child.contentWindow) {
-		const iFrameWindow = child.contentWindow as unknown as IFrameWindow;
-
-		Reflect.defineProperty(iFrameWindow.JSON, 'parse', { value: proxy });
-
-		// Recursively hook sub-frames's JSON.parse.
-		Reflect.defineProperty(iFrameWindow.HTMLBodyElement.prototype, 'appendChild', { value: appendChildHook });
-	}
-} as typeof HTMLBodyElement.prototype.appendChild;
-Reflect.defineProperty(HTMLBodyElement.prototype, 'appendChild', { value: appendChildHook });
+	return object;
+});
