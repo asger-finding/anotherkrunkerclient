@@ -10,10 +10,7 @@
   "main": "./build/main.js",
   "scripts": {
     "start": "gulp clean && gulp --state=development && electron ./build/main.js",
-    "bundle:windows": "yarn prebundle && electron-builder -w && yarn postinstall",
-    "bundle:linux": "yarn prebundle && electron-builder -l && yarn postinstall",
-    "bundle:darwin": "yarn prebundle && electron-builder -m && yarn postinstall",
-    "bundle:github": "yarn prebundle",
+    "bundle": "electron-builder",
     "prebundle": "gulp annihilation && gulp --state=production",
     "rebuild": "electron-builder install-app-deps",
     "postinstall": "yarn rebuild && gulp clean",
