@@ -10,8 +10,7 @@
   "main": "./build/main.js",
   "scripts": {
     "start": "gulp clean && gulp --state=development && electron ./build/main.js",
-    "bundle": "electron-builder",
-    "prebundle": "gulp annihilation && gulp --state=production",
+    "bundle": "gulp annihilation && gulp --state=production && electron-builder",
     "rebuild": "electron-builder install-app-deps",
     "postinstall": "yarn rebuild && gulp clean",
     "lint": "yarn eslint . --ext .ts,.js"
