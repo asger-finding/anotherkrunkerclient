@@ -3,7 +3,7 @@ type Callback = (...args: never[]) => unknown;
 export default class FunctionHooker {
 
 	/** Map indexing the function paths and their callbacks */
-	private functionMap = new Map<string, Callback>();
+	private functionMap: Record<string, Callback> = Object.create(null);
 
 	/** Native, unmodified appendChild function instance */
 	private static nativeAppendChild = HTMLBodyElement.prototype.appendChild;
@@ -62,8 +62,8 @@ export default class FunctionHooker {
 	 * @param windowContext The window context to proxy the entries to.
 	 * @param functionMap The map of functions to proxy.
 	 */
-	private static defineAllProperties(windowContext: typeof window, functionMap: Map<string, Callback>): void {
-		for (const [functionPath, callback] of functionMap.entries()) FunctionHooker.hookProperty(functionPath, callback, windowContext);
+	private static defineAllProperties(windowContext: typeof window, functionMap: FunctionHooker['functionMap']): void {
+		for (const [functionPath, callback] of Object.entries(functionMap)) FunctionHooker.hookProperty(functionPath, callback, windowContext);
 	}
 
 	/**
@@ -100,7 +100,7 @@ export default class FunctionHooker {
 	 * @param callback The callback to execute after the native function is applied.
 	 */
 	public hook(functionPath: string, callback: Callback): void {
-		this.functionMap.set(functionPath, callback);
+		this.functionMap[functionPath] = callback;
 
 		FunctionHooker.hookProperty(functionPath, callback);
 	}
