@@ -1,6 +1,6 @@
 type Callback = (...args: never[]) => unknown;
 
-export default class FunctionHooker {
+export default class FunctionalHooker {
 
 	/** Map indexing the function paths and their callbacks */
 	private functionMap: Record<string, Callback> = Object.create(null);
@@ -10,10 +10,10 @@ export default class FunctionHooker {
 
 	constructor() {
 		// Check that no other instance is running on the same window by seeing if appendChild is native.
-		if (!/\{ \[native code\] \}$/u.test(FunctionHooker.nativeAppendChild.toString())) throw new SyntaxError('FunctionHook already exists in this context.');
+		if (!/\{ \[native code\] \}$/u.test(FunctionalHooker.nativeAppendChild.toString())) throw new SyntaxError('FunctionHook already exists in this context.');
 
 		// Proxy the appendChild function to the primary window context.
-		FunctionHooker.proxyAppend(window, this.functionMap);
+		FunctionalHooker.proxyAppend(window, this.functionMap);
 	}
 
 	/**
@@ -22,16 +22,16 @@ export default class FunctionHooker {
 	 * @param windowContext The window context to proxy the appendChild function to.
 	 * @param functionMap The map of functions to proxy in the iframe contentWindow.
 	 */
-	private static proxyAppend(windowContext: typeof window, functionMap: FunctionHooker['functionMap']): void {
+	private static proxyAppend(windowContext: typeof window, functionMap: FunctionalHooker['functionMap']): void {
 		Reflect.defineProperty(windowContext.HTMLBodyElement.prototype, 'appendChild', {
-			value: <typeof FunctionHooker.nativeAppendChild> function(this: unknown, node) {
-				FunctionHooker.nativeAppendChild.call(this, node);
+			value: <typeof FunctionalHooker.nativeAppendChild> function(this: unknown, node) {
+				FunctionalHooker.nativeAppendChild.call(this, node);
 
-				if (FunctionHooker.isNodeRelevantIFrame(node)) {
+				if (FunctionalHooker.isNodeRelevantIFrame(node)) {
 					const iWindow = (<HTMLIFrameElement> <unknown>node);
 					const { contentWindow } = iWindow;
 
-					if (contentWindow) FunctionHooker.defineAllProperties(contentWindow.window, functionMap);
+					if (contentWindow) FunctionalHooker.defineAllProperties(contentWindow.window, functionMap);
 				}
 			}
 		});
@@ -46,7 +46,7 @@ export default class FunctionHooker {
 	 */
 	private static hookProperty(functionPath: string, callback: Callback, windowContext?: Window): void {
 		// Pull the item from the path relative to the windowContext.
-		const { itemWrapper, lastPart, nativeFunction } = FunctionHooker.getItemFromPath(functionPath, windowContext);
+		const { itemWrapper, lastPart, nativeFunction } = FunctionalHooker.getItemFromPath(functionPath, windowContext);
 
 		if (typeof nativeFunction === 'function') {
 			Reflect.defineProperty(itemWrapper, lastPart, {
@@ -62,8 +62,8 @@ export default class FunctionHooker {
 	 * @param windowContext The window context to proxy the entries to.
 	 * @param functionMap The map of functions to proxy.
 	 */
-	private static defineAllProperties(windowContext: typeof window, functionMap: FunctionHooker['functionMap']): void {
-		for (const [functionPath, callback] of Object.entries(functionMap)) FunctionHooker.hookProperty(functionPath, callback, windowContext);
+	private static defineAllProperties(windowContext: typeof window, functionMap: FunctionalHooker['functionMap']): void {
+		for (const [functionPath, callback] of Object.entries(functionMap)) FunctionalHooker.hookProperty(functionPath, callback, windowContext);
 	}
 
 	/**
@@ -102,7 +102,7 @@ export default class FunctionHooker {
 	public hook(functionPath: string, callback: Callback): void {
 		this.functionMap[functionPath] = callback;
 
-		FunctionHooker.hookProperty(functionPath, callback);
+		FunctionalHooker.hookProperty(functionPath, callback);
 	}
 
 }

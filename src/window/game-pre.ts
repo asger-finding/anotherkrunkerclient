@@ -2,7 +2,7 @@ import '../aliases';
 import '@game-settings';
 import '@game-api';
 
-import FunctionHooker from '@function-hooker';
+import FunctionalHooker from '@function-hooker';
 import { MESSAGE_EXIT_CLIENT } from '@constants';
 import { MapExport } from '../krunker';
 import { ipcRenderer } from 'electron';
@@ -46,7 +46,7 @@ function toGrayscale(hex: number | string) {
 	return (average << 16) + (average << 8) + (average << 0);
 }
 
-const functionHook = new FunctionHooker();
+const functionHook = new FunctionalHooker();
 functionHook.hook('JSON.parse', (object: MapExport) => {
 	// Check if the parsed object is a map export.
 	if (object.name && object.spawns) {
