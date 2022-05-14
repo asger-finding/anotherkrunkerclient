@@ -26,8 +26,25 @@ const mapSettings: Partial<MapExport> = {
 	toneMapping: 4,
 	sky: 0x040a14,
 	fog: 0x080c12,
-	lightI: 1.6
+	lightI: 1.6,
+	light: 0xffffff,
+	ambient: 0x2d4c80
 };
+
+// Take in hex and return a grayscale hex
+function toGrayscale(hex: number | string) {
+	if (typeof hex === 'string') {
+		hex = hex.replace('#', '');
+		hex = parseInt(hex, 16);
+	}
+	const red = (hex & 0xff0000) >> 16;
+	const green = (hex & 0x00ff00) >> 8;
+	const blue = hex & 0x0000ff;
+
+	const average = (red + green + blue) / 3;
+
+	return (average << 16) + (average << 8) + (average << 0);
+}
 
 const functionHook = new FunctionHooker();
 functionHook.hook('JSON.parse', (object: MapExport) => {
@@ -38,6 +55,7 @@ functionHook.hook('JSON.parse', (object: MapExport) => {
 		 * Proxy the map settings so whenever they're accessed,
 		 * we can pass values and reference mapSettings.
 		 */
+		for (const index in object.colors) object.colors[index] = toGrayscale(object.colors[index]);
 		return new Proxy({ ...object, ...mapSettings }, {
 			get(target: MapExport, key: keyof MapExport) {
 				return mapSettings[key] ?? target[key];
