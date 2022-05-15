@@ -10,6 +10,7 @@ import _gulpsass from 'gulp-sass';
 import _sass from 'sass';
 import imagemin from 'gulp-imagemin';
 import htmlmin from 'gulp-htmlmin';
+import ignore from 'gulp-ignore';
 const gulpsass = _gulpsass(_sass);
 const { argv } = _yargs(process.argv.slice(2));
 
@@ -64,6 +65,7 @@ function typescript() {
 				noInterop: true
 			}
 		}))
+		.pipe(ignore.exclude('**/*.d.js'))
 		.pipe(gulp.dest(paths.build));
 }
 

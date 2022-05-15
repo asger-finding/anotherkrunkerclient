@@ -3458,6 +3458,14 @@ gulp-if@^3.0.0:
     ternary-stream "^3.0.0"
     through2 "^3.0.1"
 
+gulp-ignore@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/gulp-ignore/-/gulp-ignore-3.0.0.tgz#be9dfda29c6de4048b8348fe396ebe1d1a8711ce"
+  integrity sha512-hRQDJipaU5A84J7QacNGG+bnFU3QLESdjuJCRTAZ5VuKsz4LmvOrECFJeeCtqxP3RV0Pn6mawU0Q3CFZGpirSg==
+  dependencies:
+    gulp-match "^1.1.0"
+    through2 "^3.0.1"
+
 gulp-imagemin@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/gulp-imagemin/-/gulp-imagemin-8.0.0.tgz#2ce8a91d9ab2d88d60a80cca2f6dbc8f1a643d30"
