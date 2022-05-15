@@ -9,10 +9,10 @@
   "repository": "asger-finding/anotherkrunkerclient",
   "main": "./build/main.js",
   "scripts": {
-    "start": "gulp clean && gulp --state=development && electron ./build/main.js",
+    "start": "gulp --state=development && electron ./build/main.js",
     "bundle": "electron-builder",
     "bundle:gh-actions": "yarn prebundle",
-    "prebundle": "gulp annihilation && gulp --state=production",
+    "prebundle": "gulp --state=production",
     "rebuild": "electron-builder install-app-deps",
     "postinstall": "yarn rebuild && gulp clean",
     "lint": "yarn eslint . --ext .ts,.js"

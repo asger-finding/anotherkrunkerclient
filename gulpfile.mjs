@@ -99,5 +99,5 @@ export function annihilation() {
 	return del(['./build', './dist'], { force: true });
 }
 
-export const build = gulp.series(clean, gulp.parallel(typescript, sass, html, images));
+export const build = gulp.series((state.prod ? annihilation : clean), gulp.parallel(typescript, sass, html, images));
 export default build;
