@@ -1,7 +1,11 @@
 import { addAliases } from 'module-alias';
 import { resolve } from 'path';
 
+// !!! IMPORTANT: Ensure that the following aliases are added to the tsconfig.json file !!!
 addAliases({
+	// src top-level
+	'@color-utils': resolve(__dirname, './color-utils'),
+
 	// config
 	'@constants': resolve(__dirname, './config/constants'),
 	'@client': resolve(__dirname, './config/client'),

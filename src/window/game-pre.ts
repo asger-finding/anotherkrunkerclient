@@ -6,6 +6,7 @@ import FunctionHook from '@function-hooker';
 import { MESSAGE_EXIT_CLIENT } from '@constants';
 import { MapExport } from '../krunker';
 import { ipcRenderer } from 'electron';
+import { toGrayscale } from '@color-utils';
 
 // When closeClient is called from the onclick, close the client. The game will attempt to override this.
 Object.defineProperty(window, 'closeClient', {
@@ -30,21 +31,6 @@ const mapSettings: Partial<MapExport> = {
 	light: 0xffffff,
 	ambient: 0x2d4c80
 };
-
-// Take in hex and return a grayscale hex
-function toGrayscale(hex: number | string) {
-	if (typeof hex === 'string') {
-		hex = hex.replace('#', '');
-		hex = parseInt(hex, 16);
-	}
-	const red = (hex & 0xff0000) >> 16;
-	const green = (hex & 0x00ff00) >> 8;
-	const blue = hex & 0x0000ff;
-
-	const average = (red + green + blue) / 3;
-
-	return (average << 16) + (average << 8) + (average << 0);
-}
 
 const functionHook = new FunctionHook();
 functionHook.hook('JSON.parse', (object: MapExport) => {

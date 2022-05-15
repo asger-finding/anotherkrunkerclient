@@ -16,6 +16,9 @@
         "paths": {
             "*": ["node_modules/*"],
 
+            // src top-level
+            "@color-utils": ["src/color-utils"],
+
             // config
             "@constants": ["src/config/constants"],
             "@client": ["src/config/client"],
