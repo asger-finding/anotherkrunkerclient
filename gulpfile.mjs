@@ -65,7 +65,7 @@ function typescript() {
 				noInterop: true
 			}
 		}))
-		.pipe(ignore.exclude('**/*.d.js'))
+		.pipe(ignore.exclude((file) => file.contents.length <= 12))
 		.pipe(gulp.dest(paths.build));
 }
 
