@@ -50,7 +50,8 @@
       "differentialPackage": false,
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "deleteAppDataOnUninstall": true
+      "deleteAppDataOnUninstall": true,
+      "license": "LICENSE"
     },
     "linux": {
       "target": [
