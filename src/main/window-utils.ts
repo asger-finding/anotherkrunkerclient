@@ -23,8 +23,6 @@ export default class {
 	 * @returns Newly generated window instance
 	 */
 	public static async createWindow(constructorOptions: Electron.BrowserWindowConstructorOptions, windowURL?: string): Promise<Electron.BrowserWindow> {
-		info(`Creating a window instance${ windowURL ? ` with URL: ${ windowURL }` : '' }`);
-
 		const window = new BrowserWindow(constructorOptions);
 		const windowData = getURLData(windowURL);
 
@@ -34,7 +32,8 @@ export default class {
 		window.removeMenu();
 
 		this.registerEventListeners(constructorOptions, window, windowData);
-		await this.createSpecialWindow(windowData)(window);
+		const specialWindowCb = this.createSpecialWindow(windowData);
+		if (typeof specialWindowCb === 'function') await specialWindowCb(window);
 
 		return window;
 	}
@@ -88,8 +87,6 @@ export default class {
 		// If the window is a Krunker tab, set the window scaling preferences.
 		if (windowData.isInTabs) {
 			window.once('close', () => {
-				info(`Closing window instance${ webContents.getURL() ? ` with URL: ${ webContents.getURL() }` : '' }`);
-
 				// Save the window sizing and bounds to the store
 				const windowPreferences = {
 					...window.getBounds(),
@@ -140,12 +137,12 @@ export default class {
 	 * @param windowData - Data from Constants.getURLData on the target window URL
 	 * @returns A function that returns a void promise when all is done
 	 */
-	private static createSpecialWindow(windowData: WindowData): (window: Electron.BrowserWindow) => Promise<void> {
+	private static createSpecialWindow(windowData: WindowData): ((window: Electron.BrowserWindow) => Promise<void>) | null {
 		switch (windowData.tab) {
 			case TABS.GAME:
 				return GameUtils.load;
 			default:
-				return async() => {};
+				return null;
 		}
 	}
 
