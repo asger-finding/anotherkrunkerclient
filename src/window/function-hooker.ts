@@ -1,4 +1,4 @@
-type Callback = (...args: never[]) => unknown;
+import { Callback } from '@client';
 
 export default class FunctionHook {
 

@@ -29,11 +29,7 @@ declare global {
 	}
 }
 
-export interface EventListener {
-	id: number;
-	message: string;
-	callback: () => unknown;
-}
+export type Callback = (...args: never[]) => unknown;
 
 interface GitHubResponse extends Response {
 	data?: {

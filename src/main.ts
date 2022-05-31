@@ -34,7 +34,7 @@ class Application {
 		info('Constructing initializer class');
 
 		SplashUtils.setFlags(app);
-		this.eventHandler.registerEventListeners();
+		this.eventHandler.registerAppEventListeners();
 	}
 
 	/**

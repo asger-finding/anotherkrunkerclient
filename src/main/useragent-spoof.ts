@@ -9,13 +9,13 @@ const storeSchema = 'userAgentSpoof';
  */
 function getCurrentUAOS(): string {
 	switch (process.platform) {
-		default:
-		case 'win32':
-			return 'Win';
 		case 'darwin':
 			return 'Mac';
 		case 'linux':
 			return 'Linux';
+		case 'win32':
+		default:
+			return 'Win';
 	}
 }
 
