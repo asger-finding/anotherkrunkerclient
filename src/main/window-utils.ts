@@ -17,6 +17,7 @@ export const openDevtools = (window: Electron.BrowserWindow, mode: Electron.Open
 	let openMode = mode;
 	if (process.platform === 'linux') {
 		const devtoolsWindow = new BrowserWindow();
+		devtoolsWindow.setMenuBarVisibility(false);
 		window.webContents.setDevToolsWebContents(devtoolsWindow.webContents);
 		openMode = 'detach';
 
