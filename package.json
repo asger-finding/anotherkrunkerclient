@@ -107,7 +107,7 @@
     "electron": "^19",
     "electron-builder": "^23.0.3",
     "eslint": "^8.10.0",
-    "eslint-config-airbnb-typescript": "^16.2.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-raven": "^1.0.3",
     "eslint-plugin-import": "^2.25.4",
     "gulp": "^4.0.2",
