@@ -105,7 +105,7 @@
     "@typescript-eslint/parser": "^5.14.0",
     "del": "^6.0.0",
     "electron": "^9",
-    "electron-builder": "^22.14.13",
+    "electron-builder": "^23.0.3",
     "eslint": "^8.10.0",
     "eslint-config-airbnb-typescript": "^16.2.0",
     "eslint-config-raven": "^1.0.3",
