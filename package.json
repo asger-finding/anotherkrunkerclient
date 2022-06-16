@@ -56,7 +56,7 @@
     "linux": {
       "target": [
         {
-          "target": "rpm",
+          "target": "appImage",
           "arch": [
             "x64"
           ]
@@ -66,7 +66,7 @@
       "category": "Games"
     },
     "appImage": {
-      "artifactName": "anotherkrunkerclient-Linux-${arch}.AppImage"
+      "artifactName": "anotherkrunkerclient-Linux-Portable-${arch}.AppImage"
     },
     "mac": {
       "target": [
