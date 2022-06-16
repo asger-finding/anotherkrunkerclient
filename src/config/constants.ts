@@ -105,7 +105,6 @@ export const getDefaultConstructorOptions = (windowName: string | null): Electro
 		resizable: true,
 		fullscreenable: true,
 		backgroundColor: '#1c1c1c',
-		icon: join(__dirname, '../renderer/assets/icon.png'),
 		webPreferences: {
 			nodeIntegration: false,
 			contextIsolation: true,
@@ -140,7 +139,6 @@ export const SPLASH_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOption
 	resizable: false,
 	fullscreenable: false,
 	darkTheme: true,
-	icon: join(__dirname, '../renderer/assets/icon.png'),
 	webPreferences: {
 		contextIsolation: true,
 		worldSafeExecuteJavaScript: true,
