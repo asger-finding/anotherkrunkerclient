@@ -14,7 +14,7 @@ import { info } from '@logger';
 import { register } from 'electron-localshortcut';
 
 export const openDevtools = (window: Electron.BrowserWindow, mode: Electron.OpenDevToolsOptions['mode'] = 'right'): void => {
-	// Fixes https://github.com/electron/electron/issues/20069 for electron < 13.5.0
+	// Addresses https://stackoverflow.com/q/69969658/11452298 for electron < 13.5.0
 	let openMode = mode;
 
 	if (process.platform === 'linux') {
