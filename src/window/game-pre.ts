@@ -5,21 +5,29 @@ import '@game-api';
 import FunctionHook from '@function-hooker';
 import { MESSAGE_EXIT_CLIENT } from '@constants';
 import { MapExport } from '../krunker';
+import { promises as fs } from 'fs';
 import { ipcRenderer } from 'electron';
+import { resolve } from 'path';
 import { toGrayscale } from '@color-utils';
+
+async function injectStyling() {
+	const css = await fs.readFile(resolve(__dirname, '../renderer/styles/main.css'), 'utf8');
+
+	function inject() {
+		const injectElement = document.createElement('style');
+		injectElement.innerHTML = css;
+		document.head.appendChild(injectElement);
+	}
+
+	if (document.readyState === 'interactive' || document.readyState === 'complete') inject();
+	else document.addEventListener('DOMContentLoaded', inject);
+}
+injectStyling();
 
 // When closeClient is called from the onclick, close the client. The game will attempt to override this.
 Object.defineProperty(window, 'closeClient', {
 	enumerable: false,
 	value(): void { return ipcRenderer.send(MESSAGE_EXIT_CLIENT); }
-});
-
-// Show the client exit button
-document.addEventListener('DOMContentLoaded', (): void => {
-	const showClientExit = document.createElement('style');
-	showClientExit.innerHTML = '#clientExit { display: flex; }';
-
-	document.head.appendChild(showClientExit);
 });
 
 const mapSettings: Partial<MapExport> = {
