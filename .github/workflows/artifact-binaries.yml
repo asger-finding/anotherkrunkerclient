@@ -37,6 +37,15 @@ jobs:
           sudo apt update
           sudo apt install libc6-dev-i386 gcc-multilib g++-multilib
 
+      - name: Install minification modules globally
+        run: yarn global add modclean minify-all node-prune
+
+      - name: Minify node_modules
+        run: |
+          modclean -n default:safe,default:caution -r
+          node-prune
+          minify-all
+
       - name: Build electron app binary
         uses: samuelmeuli/action-electron-builder@v1
         with:
