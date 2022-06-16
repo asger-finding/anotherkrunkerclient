@@ -1,8 +1,7 @@
-appId: com.electron.akc
-copyright: Copyright © 2022 Asger Finding
-publish: github
-asar: true
-compression: maximum
+appId: "com.electron.akc"
+copyright: "Copyright © 2022 Asger Finding"
+publish: "github"
+compression: "maximum"
 files:
   - "build/**/*"
   - "package.json"
@@ -13,39 +12,42 @@ files:
   - "!node_modules/**/*.ts.map"
   - "!**/node_modules/**/{CHANGELOG.md,README.md,README,readme.md,readme}"
 directories:
-  output: dist
+  output: "dist"
 forceCodeSigning: false
-artifactName: 'anotherkrunkerclient-${os}-${arch}.${ext}'
+artifactName: "anotherkrunkerclient-${os}-${arch}.${ext}"
+
 win:
   target:
     - target: nsis
-      arch:
-        - x64
-  publisherName: Asger Finding
-  icon: media/icon.ico
+      arch: [x64]
+  publisherName: "Asger Finding"
+  icon: "media/icon.ico"
 nsis:
-  artifactName: 'anotherkrunkerclient-Windows-${arch}.exe'
-  installerSidebar: media/installerSidebar.bmp
+  artifactName: "anotherkrunkerclient-Windows-${arch}.${ext}"
+  installerSidebar: "media/installerSidebar.bmp"
   differentialPackage: false
   oneClick: false
   allowToChangeInstallationDirectory: true
   deleteAppDataOnUninstall: true
-  license: LICENSE
+  license: "LICENSE"
+
 linux:
   target:
     - target: appImage
-      arch:
-        - x64
-  icon: media/icon.png
-  category: Games
+      arch: [x64]
+  icon: "media/icon.icns"
+  category: "Games"
+  executableName: "anotherkrunkerclient"
+  description: "The be-all and end-all Krunker client"
 appImage:
-  artifactName: 'anotherkrunkerclient-Linux-Portable-${arch}.AppImage'
+  artifactName: "anotherkrunkerclient-Linux-Portable-${arch}.${ext}"
+
 mac:
   target:
     - target: dmg
-      arch:
-        - x64
-  category: public.app-category.games
-  icon: media/icon.icns
+      arch: [x64, arm64]
+  category: "public.app-category.games"
+  icon: "media/icon.icns"
+
 dmg:
-  artifactName: 'anotherkrunkerclient-macOS-${arch}.dmg'
+  artifactName: "anotherkrunkerclient-macOS-${arch}.${ext}"
