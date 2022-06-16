@@ -1,4 +1,5 @@
-import { BrowserWindow, app, shell } from 'electron';
+import * as openExternal from 'open';
+import { BrowserWindow, app } from 'electron';
 import {
 	TABS,
 	getDefaultConstructorOptions,
@@ -123,7 +124,7 @@ export default class {
 				if (frameName === '_self') browserWindow.loadURL(newWindowURL);
 				else this.createWindow(getDefaultConstructorOptions(newWindowData.tab), newWindowURL);
 			} else {
-				shell.openExternal(newWindowURL);
+				openExternal(newWindowURL);
 			}
 		});
 
@@ -131,7 +132,7 @@ export default class {
 			evt.preventDefault();
 
 			const newWindowData = getURLData(newWindowURL);
-			if (!newWindowData.isKrunker) shell.openExternal(newWindowURL);
+			if (!newWindowData.isKrunker) openExternal(newWindowURL);
 			else if (!newWindowData.invalid) browserWindow.loadURL(newWindowURL);
 		});
 

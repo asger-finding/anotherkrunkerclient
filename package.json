@@ -92,6 +92,7 @@
     "electron-store": "^8.0.1",
     "electron-updater": "4.6.5",
     "module-alias": "^2.2.2",
+    "open": "^8.4.0",
     "semver": "^7.3.6",
     "top-user-agents": "^1.0.43"
   },
