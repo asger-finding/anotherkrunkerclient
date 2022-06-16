@@ -1,9 +1,7 @@
-import { BrowserWindow as AcrylicBrowserWindow, setVibrancy } from 'electron-acrylic-window';
 import {
 	CLIENT_REPO,
 	CLIENT_VERSION,
 	ELECTRON_FLAGS,
-	IS_DEVELOPMENT,
 	MESSAGE_RELEASES_DATA,
 	MESSAGE_SPLASH_DONE
 } from '@constants';
@@ -24,11 +22,6 @@ export default class {
 	 * @returns Promise for when everything is done
 	 */
 	public static load(window: Electron.BrowserWindow): Promise<Electron.BrowserWindow> {
-		// Set the vibrancy of the splash window
-		setVibrancy((window as AcrylicBrowserWindow), {
-			theme: 'dark',
-			effect: 'blur'
-		});
 		window.loadFile(join(__dirname, '../renderer/html/splash.html'));
 
 		// Show the splash window when things have all loaded.
@@ -37,7 +30,6 @@ export default class {
 				info('ready-to-show reached on Splash window');
 
 				await this.emitReleaseData(window);
-				if (IS_DEVELOPMENT) window.webContents.openDevTools({ mode: 'detach' });
 				window.show();
 
 				// Resolve the promise when everything is done and dusted in the splash window.

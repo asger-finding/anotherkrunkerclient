@@ -1,4 +1,4 @@
-import { IS_DEVELOPMENT, MESSAGE_GAME_DONE, QUICKJOIN_URL_QUERY_PARAM, TARGET_GAME_URL } from '@constants';
+import { MESSAGE_GAME_DONE, QUICKJOIN_URL_QUERY_PARAM, TARGET_GAME_URL } from '@constants';
 import { info } from 'electron-log';
 import { ipcMain } from 'electron';
 import { register } from 'electron-localshortcut';
@@ -19,9 +19,6 @@ export default class {
 
 			window.once('ready-to-show', () => {
 				info('ready-to-show reached on Game window');
-
-				if (IS_DEVELOPMENT) window.webContents.openDevTools();
-
 				window.show();
 			});
 			window.webContents.once('did-finish-load', () => {
