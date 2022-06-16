@@ -5,7 +5,7 @@ import { Hexadecimal } from './krunker';
  * @param hex Hexadecimal color code in the format 0xdeafbeef or '#deafbeef'
  * @returns Grayscale hex color
  */
-export function toGrayscale(hex: Hexadecimal) {
+export const toGrayscale = (hex: Hexadecimal) => {
 	if (typeof hex === 'string') {
 		hex = hex.replace('#', '');
 		hex = parseInt(hex, 16);
@@ -29,4 +29,4 @@ export function toGrayscale(hex: Hexadecimal) {
 
 	// Merge the grayscale value into a hex value and round to the nearest integer.
 	return (gray << 16) + (gray << 8) + (gray << 0);
-}
+};
