@@ -38,7 +38,10 @@ jobs:
           sudo apt install libc6-dev-i386 gcc-multilib g++-multilib
 
       - name: Install minification modules globally
-        run: npm install -g modclean minify-all node-prune
+        run: npm install modclean minify-all node-prune --location=global
+
+      - name: yarn install
+        run: yanr install
 
       - name: Minify node_modules
         run: |
@@ -46,13 +49,8 @@ jobs:
           node-prune
           minify-all
 
-      - name: Build electron app binary
-        uses: samuelmeuli/action-electron-builder@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-          # package.json script to call before electron-builder compiles
-          build_script_name: 'bundle:gh-actions'
+      - name: Build for OS
+        run: yarn bundle
 
       - uses: actions/upload-artifact@v3
         if: runner.os == 'Windows' && env.IS_RELEASE
