@@ -12,6 +12,22 @@ import { getSpoofedUA } from '@useragent-spoof';
 import { info } from 'electron-log';
 import { register } from 'electron-localshortcut';
 
+export const openDevtools = (window: Electron.BrowserWindow, mode: Electron.OpenDevToolsOptions['mode'] = 'right'): void => {
+	// Fixes https://github.com/electron/electron/issues/20069 for electron < 13.5.0
+	let openMode = mode;
+	if (process.platform === 'linux') {
+		const devtoolsWindow = new BrowserWindow();
+		window.webContents.setDevToolsWebContents(devtoolsWindow.webContents);
+		openMode = 'detach';
+
+		// Ensure that devtools closes when the parent is closed.
+		window.once('closed', () => devtoolsWindow.destroy());
+	}
+
+	// Check if devtools is already open
+	window.webContents.openDevTools({ mode: openMode });
+};
+
 export default class {
 
 	/**
@@ -23,24 +39,24 @@ export default class {
 	 * @returns Newly generated window instance
 	 */
 	public static async createWindow(constructorOptions: Electron.BrowserWindowConstructorOptions, windowURL?: string): Promise<Electron.BrowserWindow> {
-		const window = new BrowserWindow(constructorOptions);
+		const browserWindow = new BrowserWindow(constructorOptions);
 		const windowData = getURLData(windowURL);
 
-		if (windowURL) this.loadSpoofedURL(window, windowURL);
-		if (preferences.get(`window.${ windowData.tab }.maximized`)) window.maximize();
-		if (windowData.isKrunker) this.registerSwapper(window);
-		window.removeMenu();
+		if (windowURL) this.loadSpoofedURL(browserWindow, windowURL);
+		if (preferences.get(`window.${ windowData.tab }.maximized`)) browserWindow.maximize();
+		if (windowData.isKrunker) this.registerSwapper(browserWindow);
+		browserWindow.removeMenu();
 
-		this.registerEventListeners(constructorOptions, window, windowData);
+		this.registerEventListeners(constructorOptions, browserWindow, windowData);
 		const specialWindowCb = this.createSpecialWindow(windowData);
-		if (typeof specialWindowCb === 'function') await specialWindowCb(window);
+		if (typeof specialWindowCb === 'function') await specialWindowCb(browserWindow);
 
-		return window;
+		return browserWindow;
 	}
 
 	/**
 	 * Load a URL in the specified window with a spoofed user agent
-	 * @param window - The target window to spoof
+	 * @param browserWindow - The target window to spoof
 	 * @param url - URL to load
 	 */
 	private static async loadSpoofedURL(window: Electron.BrowserWindow, url: string): Promise<void> {
@@ -52,25 +68,25 @@ export default class {
 	 * Register global shortcuts for the window. Should be done before dom-ready
 	 * @param window - The window to register the event on
 	 */
-	private static registerShortcuts(window: Electron.BrowserWindow): void {
-		const { webContents } = window;
+	private static registerShortcuts(browserWindow: Electron.BrowserWindow): void {
+		const { webContents } = browserWindow;
 
-		info(`Registering shortcuts for window: ${ window.id }`);
+		info(`Registering shortcuts for window: ${ browserWindow.id }`);
 
-		register(window, 'Esc', () => webContents.executeJavaScript('document.exitPointerLock()', true));
-		register(window, 'Alt+F4', () => app.quit());
-		register(window, 'F11', () => window.setFullScreen(!window.isFullScreen()));
-		register(window, ['F5', 'Ctrl+R'], () => webContents.reload());
-		register(window, ['Ctrl+F5', 'Ctrl+Shift+R'], () => webContents.reloadIgnoringCache());
-		register(window, ['F12', 'Ctrl+Shift+I'], () => webContents.openDevTools());
+		register(browserWindow, 'Esc', () => webContents.executeJavaScript('document.exitPointerLock()', true));
+		register(browserWindow, 'Alt+F4', () => app.quit());
+		register(browserWindow, 'F11', () => browserWindow.setFullScreen(!browserWindow.isFullScreen()));
+		register(browserWindow, ['F5', 'Ctrl+R'], () => webContents.reload());
+		register(browserWindow, ['Ctrl+F5', 'Ctrl+Shift+R'], () => webContents.reloadIgnoringCache());
+		register(browserWindow, ['F12', 'Ctrl+Shift+I'], () => openDevtools(browserWindow));
 	}
 
 	/**
 	 * Register the resource swapper for the window. Should be done before dom-ready.
-	 * @param window - The window to register the event on
+	 * @param browserWindow - The window to register the event on
 	 */
-	private static registerSwapper(window: Electron.BrowserWindow): void {
-		const resourceSwapper = new ResourceSwapper(window);
+	private static registerSwapper(browserWindow: Electron.BrowserWindow): void {
+		const resourceSwapper = new ResourceSwapper(browserWindow);
 		return resourceSwapper.start();
 	}
 
@@ -78,20 +94,20 @@ export default class {
 	 * Create electron event listeners for the window.  
 	 * Some one-time events are triggered onces, some are triggered on every event.
 	 * @param constructorOptions - The parameters the window was created with
-	 * @param window - Target window
+	 * @param browserWindow - Target window
 	 * @param windowData - Data from Constants.getURLData on the target window URL
 	 */
-	private static registerEventListeners(constructorOptions: Electron.BrowserWindowConstructorOptions, window: Electron.BrowserWindow, windowData: WindowData): void {
-		const { webContents } = window;
+	private static registerEventListeners(constructorOptions: Electron.BrowserWindowConstructorOptions, browserWindow: Electron.BrowserWindow, windowData: WindowData): void {
+		const { webContents } = browserWindow;
 
 		// If the window is a Krunker tab, set the window scaling preferences.
 		if (windowData.isInTabs) {
-			window.once('close', () => {
+			browserWindow.once('close', () => {
 				// Save the window sizing and bounds to the store
 				const windowPreferences = {
-					...window.getBounds(),
-					fullscreen: window.isFullScreen(),
-					maximized: window.isMaximized()
+					...browserWindow.getBounds(),
+					fullscreen: browserWindow.isFullScreen(),
+					maximized: browserWindow.isMaximized()
 				};
 				for (const [key, value] of Object.entries(windowPreferences)) preferences.set(`window.${ windowData.tab }.${ key }`, value);
 			});
@@ -103,7 +119,7 @@ export default class {
 
 			const newWindowData = getURLData(newWindowURL);
 			if (newWindowData.isKrunker) {
-				if (frameName === '_self') window.loadURL(newWindowURL);
+				if (frameName === '_self') browserWindow.loadURL(newWindowURL);
 				else this.createWindow(getDefaultConstructorOptions(newWindowData.tab), newWindowURL);
 			} else {
 				shell.openExternal(newWindowURL);
@@ -115,20 +131,20 @@ export default class {
 
 			const newWindowData = getURLData(newWindowURL);
 			if (!newWindowData.isKrunker) shell.openExternal(newWindowURL);
-			else if (!newWindowData.invalid) window.loadURL(newWindowURL);
+			else if (!newWindowData.invalid) browserWindow.loadURL(newWindowURL);
 		});
 
 		// Don't allow the target website to set the window title.
-		window.on('page-title-updated', evt => evt.preventDefault());
+		browserWindow.on('page-title-updated', evt => evt.preventDefault());
 
 		// If constructorOptions have an explicit show true value, show the window.
-		window.once('ready-to-show', () => { if (typeof constructorOptions.show === 'undefined' ? true : constructorOptions.show) window.show(); });
+		browserWindow.once('ready-to-show', () => { if (typeof constructorOptions.show === 'undefined' ? true : constructorOptions.show) browserWindow.show(); });
 
 		// Set the window title and register shortcuts for the window.
 		webContents.once('did-finish-load', () => {
-			if (windowData.tab) window.setTitle(`${ windowData.tab } — ${ app.getName() }`);
+			if (windowData.tab) browserWindow.setTitle(`${ windowData.tab } — ${ app.getName() }`);
 
-			this.registerShortcuts(window);
+			this.registerShortcuts(browserWindow);
 		});
 	}
 
@@ -137,7 +153,7 @@ export default class {
 	 * @param windowData - Data from Constants.getURLData on the target window URL
 	 * @returns A function that returns a void promise when all is done
 	 */
-	private static createSpecialWindow(windowData: WindowData): ((window: Electron.BrowserWindow) => Promise<void>) | null {
+	private static createSpecialWindow(windowData: WindowData): ((browserWindow: Electron.BrowserWindow) => Promise<void>) | null {
 		switch (windowData.tab) {
 			case TABS.GAME:
 				return GameUtils.load;
@@ -148,14 +164,14 @@ export default class {
 
 	/**
 	 * Destroy the splash window.
-	 * @param window - The window to destroy
+	 * @param browserWindow - The window to destroy
 	 */
-	public static destroyWindow(window: Electron.BrowserWindow): void {
+	public static destroyWindow(browserWindow: Electron.BrowserWindow): void {
 		info('Destroying a window instance');
-		if (window.webContents.isDevToolsOpened()) window.webContents.closeDevTools();
+		if (browserWindow.webContents.isDevToolsOpened()) browserWindow.webContents.closeDevTools();
 
-		window.hide();
-		window.destroy();
+		browserWindow.hide();
+		browserWindow.destroy();
 	}
 
 }
