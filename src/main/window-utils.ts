@@ -15,19 +15,19 @@ import { register } from 'electron-localshortcut';
 
 export const openDevtools = (window: Electron.BrowserWindow, mode: Electron.OpenDevToolsOptions['mode'] = 'right'): void => {
 	// Addresses https://stackoverflow.com/q/69969658/11452298 for electron < 13.5.0
-	let openMode = mode;
+	window.webContents.openDevTools({ mode });
 
-	if (process.platform === 'linux') {
+	// Fallback if openDevTools fails
+	if (!window.webContents.isDevToolsOpened()) {
+		window.webContents.closeDevTools();
+
 		const devtoolsWindow = new BrowserWindow();
 		devtoolsWindow.setMenuBarVisibility(false);
 
 		window.webContents.setDevToolsWebContents(devtoolsWindow.webContents);
+		window.webContents.openDevTools({ mode: 'detach' });
 		window.once('closed', () => devtoolsWindow.destroy());
-
-		openMode = 'detach';
 	}
-
-	window.webContents.openDevTools({ mode: openMode });
 };
 
 export default class {
