@@ -2,6 +2,7 @@ import {
 	CLIENT_REPO,
 	CLIENT_VERSION,
 	ELECTRON_FLAGS,
+	IS_DEVELOPMENT,
 	MESSAGE_RELEASES_DATA,
 	MESSAGE_SPLASH_DONE
 } from '@constants';
@@ -63,18 +64,23 @@ export default class {
 	private static async getReleaseData(): Promise<ReleaseData> {
 		info('Getting latest GitHub release...');
 
-		const response: GitHubResponse = await fetch(`https://api.github.com/repos/${ CLIENT_REPO }/releases/latest`);
+		if (!IS_DEVELOPMENT) {
+			const response: GitHubResponse = await fetch(`https://api.github.com/repos/${ CLIENT_REPO }/releases/latest`);
 
-		const { data } = await response.json();
-		if (response.ok) {
-			return <ReleaseData>{
-				clientVersion: CLIENT_VERSION,
-				releaseVersion: data.tag_name,
-				releaseUrl: data.html_url
-			};
+			const { data } = await response.json();
+			if (response.ok) {
+				return <ReleaseData>{
+					clientVersion: CLIENT_VERSION,
+					releaseVersion: data.tag_name,
+					releaseUrl: data.html_url
+				};
+			}
+
+			warn(`Bad response getting latest release: ${ response.status } ${ response.statusText }`);
+		} else {
+			info('Development mode, skipping release check');
 		}
 
-		warn(`Bad response getting latest release: ${ response.status } ${ response.statusText }`);
 		return <ReleaseData>{
 			clientVersion: CLIENT_VERSION,
 			releaseVersion: '0.0.0',
