@@ -16,17 +16,17 @@ import { register } from 'electron-localshortcut';
 export const openDevtools = (window: Electron.BrowserWindow, mode: Electron.OpenDevToolsOptions['mode'] = 'right'): void => {
 	// Fixes https://github.com/electron/electron/issues/20069 for electron < 13.5.0
 	let openMode = mode;
+
 	if (process.platform === 'linux') {
 		const devtoolsWindow = new BrowserWindow();
 		devtoolsWindow.setMenuBarVisibility(false);
-		window.webContents.setDevToolsWebContents(devtoolsWindow.webContents);
-		openMode = 'detach';
 
-		// Ensure that devtools closes when the parent is closed.
+		window.webContents.setDevToolsWebContents(devtoolsWindow.webContents);
 		window.once('closed', () => devtoolsWindow.destroy());
+
+		openMode = 'detach';
 	}
 
-	// Check if devtools is already open
 	window.webContents.openDevTools({ mode: openMode });
 };
 
