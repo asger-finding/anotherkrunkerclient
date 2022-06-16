@@ -41,7 +41,7 @@ jobs:
         run: npm install modclean minify-all node-prune --location=global
 
       - name: yarn install
-        run: yanr install
+        run: yarn install
 
       - name: Minify node_modules
         run: |
@@ -53,21 +53,21 @@ jobs:
         run: yarn bundle
 
       - uses: actions/upload-artifact@v3
-        if: runner.os == 'Windows' && env.IS_RELEASE
+        if: runner.os == 'Windows'
         with:
           name: Windows-Installer
           path: dist/*.exe
           if-no-files-found: error
 
       - uses: actions/upload-artifact@v3
-        if: runner.os == 'Linux' && env.IS_RELEASE
+        if: runner.os == 'Linux'
         with:
           name: Linux-AppImage
           path: dist/*.AppImage
           if-no-files-found: error
 
       - uses: actions/upload-artifact@v3
-        if: runner.os == 'macOS' && env.IS_RELEASE
+        if: runner.os == 'macOS'
         with:
           name: macOS-Image
           path: dist/*.dmg
