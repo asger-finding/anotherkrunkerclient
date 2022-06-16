@@ -10,7 +10,7 @@ import { ipcRenderer } from 'electron';
 import { resolve } from 'path';
 import { toGrayscale } from '@color-utils';
 
-async function injectStyling() {
+(async function() {
 	const css = await fs.readFile(resolve(__dirname, '../renderer/styles/main.css'), 'utf8');
 
 	function inject() {
@@ -21,8 +21,7 @@ async function injectStyling() {
 
 	if (document.readyState === 'interactive' || document.readyState === 'complete') inject();
 	else document.addEventListener('DOMContentLoaded', inject);
-}
-injectStyling();
+}());
 
 // When closeClient is called from the onclick, close the client. The game will attempt to override this.
 Object.defineProperty(window, 'closeClient', {
