@@ -19,12 +19,41 @@ function getCurrentUAOS(): string {
 	}
 }
 
+/**
+ * Get the saved user agent.
+ * 
+ * If its time to refresh the user agent, reset it in preferences and return null.
+ * @returns The spoofed user agent, if any
+ */
 function getCurrentUA(): string | null {
-	// If it's been more than 30 days since the last user agent change, generate a new one.
 	const lastSet = preferences.get(`${ storeSchema }.set`, Date.now());
 	if (Date.now() - Number(lastSet) > USERAGENT_LIFETIME) preferences.reset(`${ storeSchema }.userAgent`);
 
 	return preferences.get(`${ storeSchema }.userAgent`, null) as string | null;
+}
+
+/**
+ * Iterate over an array of top user agents and get the best match for the current OS.
+ * @param userAgents - The user agents to choose from
+ * @returns User agent to use
+ */
+function iterateOverUAs(userAgents: unknown): string {
+	if (Array.isArray(userAgents)) {
+		let [bestUserAgent] = userAgents as string[];
+		const currentOS = getCurrentUAOS();
+
+		for (const userAgent of userAgents) {
+			if (userAgent.includes(currentOS) && userAgent.includes('Chrome')) {
+				bestUserAgent = userAgent;
+				break;
+			}
+		}
+
+		return bestUserAgent;
+	}
+
+	// Fallback user agent
+	return 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36';
 }
 
 /**
@@ -39,30 +68,14 @@ export async function getSpoofedUA(): Promise<(string | null)> {
 	if (!currentUA) {
 		info('Generating a new spoofed user agent');
 
-		// Get the top user agents. This is a pretty large task, so it's cached and only used when strictly necessary.
+		// Get the top user agents.
 		const UserAgents = await import('top-user-agents');
-		const currentOS = getCurrentUAOS();
+		const bestUserAgent = iterateOverUAs(UserAgents);
 
-		if (Array.isArray(UserAgents)) {
-			let [bestUserAgent] = UserAgents;
-
-			// Loop through the user agents and find the top scoring one for the current OS.
-			for (const userAgent of UserAgents) {
-				if (userAgent.includes(currentOS)) {
-					// Found the top scoring UA.
-					bestUserAgent = userAgent;
-					break;
-				}
-			}
-
-			// Cache in preferences
-			preferences.set(`${ storeSchema }.userAgent`, bestUserAgent);
-			preferences.set(`${ storeSchema }.set`, Date.now());
-			return bestUserAgent;
-		}
-
-		// Fallback that should never happen.
-		return null;
+		// Cache in preferences
+		preferences.set(`${ storeSchema }.userAgent`, bestUserAgent);
+		preferences.set(`${ storeSchema }.set`, Date.now());
+		return bestUserAgent;
 	}
 
 	return String(currentUA);
