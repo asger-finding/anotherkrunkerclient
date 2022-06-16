@@ -1,0 +1,51 @@
+appId: com.electron.akc
+copyright: Copyright © 2022 Asger Finding
+publish: github
+asar: true
+compression: maximum
+files:
+  - "build/**/*"
+  - "package.json"
+  # Don't bundle these files
+  - "!node_modules/**/*.js.map"
+  - "!node_modules/**/*.cjs.map"
+  - "!node_modules/**/*.mjs.map"
+  - "!node_modules/**/*.ts.map"
+  - "!**/node_modules/**/{CHANGELOG.md,README.md,README,readme.md,readme}"
+directories:
+  output: dist
+forceCodeSigning: false
+artifactName: 'anotherkrunkerclient-${os}-${arch}.${ext}'
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  publisherName: Asger Finding
+  icon: media/icon.ico
+nsis:
+  artifactName: 'anotherkrunkerclient-Windows-${arch}.exe'
+  installerSidebar: media/installerSidebar.bmp
+  differentialPackage: false
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: true
+  license: LICENSE
+linux:
+  target:
+    - target: appImage
+      arch:
+        - x64
+  icon: media/icon.png
+  category: Games
+appImage:
+  artifactName: 'anotherkrunkerclient-Linux-Portable-${arch}.AppImage'
+mac:
+  target:
+    - target: dmg
+      arch:
+        - x64
+  category: public.app-category.games
+  icon: media/icon.icns
+dmg:
+  artifactName: 'anotherkrunkerclient-macOS-${arch}.dmg'
