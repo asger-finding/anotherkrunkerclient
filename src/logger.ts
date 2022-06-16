@@ -12,14 +12,14 @@ function newTimestamp(): string {
 	return `${ HH }:${ MM }:${ SS }.${ mmm }`;
 }
 
-export function info(text: string): void {
-	if (IS_DEVELOPMENT) console.log('\x1b[36m', newTimestamp(), '\x1b[0m', `› ${ text }`);
+export function info(text: unknown): void {
+	if (IS_DEVELOPMENT) console.log('\x1b[36m%s\x1b[0m', newTimestamp(), `› ${ text }`);
 }
 
-export function warn(text: string): void {
-	if (IS_DEVELOPMENT) console.log('\x1b[33m', newTimestamp(), '\x1b[0m', `› ${ text }`);
+export function warn(text: unknown): void {
+	if (IS_DEVELOPMENT) console.log('\x1b[33m%s\x1b[0m', newTimestamp(), `› ${ text }`);
 }
 
-export function error(text: string): void {
-	if (IS_DEVELOPMENT) console.log('\x1b[31m', newTimestamp(), '\x1b[0m', `› ${ text }`);
+export function error(text: unknown): void {
+	if (IS_DEVELOPMENT) console.log('\x1b[31m%s\x1b[0m', newTimestamp(), `› ${ text }`);
 }
