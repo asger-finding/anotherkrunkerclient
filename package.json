@@ -3,7 +3,7 @@
   "productName": "anotherkrunkerclient",
   "version": "0.1.0",
   "description": "Another damn Krunker client",
-  "author": "Asger Finding",
+  "author": "Asger Finding <asger.finding@gmail.com>",
   "license": "GPLV3",
   "private": true,
   "repository": "asger-finding/anotherkrunkerclient",
@@ -56,7 +56,7 @@
     "linux": {
       "target": [
         {
-          "target": "appImage",
+          "target": "rpm",
           "arch": [
             "x64"
           ]
@@ -87,7 +87,6 @@
   "dependencies": {
     "axios": "^0.26.1",
     "cross-fetch": "^3.1.5",
-    "electron-acrylic-window": "^0.5.11",
     "electron-localshortcut": "^3.2.1",
     "electron-log": "^4.4.6",
     "electron-store": "^8.0.1",
@@ -104,7 +103,7 @@
     "@typescript-eslint/eslint-plugin": "^5.14.0",
     "@typescript-eslint/parser": "^5.14.0",
     "del": "^6.0.0",
-    "electron": "^9.4.4",
+    "electron": "^9",
     "electron-builder": "^22.14.13",
     "eslint": "^8.10.0",
     "eslint-config-airbnb-typescript": "^16.2.0",
