@@ -1,5 +1,5 @@
-import * as fs from 'fs';
 import { CLIENT_NAME, TARGET_GAME_DOMAIN } from '@constants';
+import { existsSync, mkdirSync, readdirSync } from 'fs';
 import { error } from 'electron-log';
 import { join } from 'path';
 
@@ -25,7 +25,7 @@ export default class {
 	/** Initialize the resource swapper for the target window.*/
 	public start(): void {
 		// If the target directory doesn't exist, create it.
-		if (!fs.existsSync(global.resourceswapProtocolSource)) fs.mkdirSync(global.resourceswapProtocolSource, { recursive: true });
+		if (!existsSync(global.resourceswapProtocolSource)) mkdirSync(global.resourceswapProtocolSource, { recursive: true });
 
 		this.recursiveSwap('');
 		if (this.urls.length) {
@@ -65,7 +65,7 @@ export default class {
 	 */
 	private recursiveSwap(prefix: string): void {
 		try {
-			for (const dirent of fs.readdirSync(join(this.target, prefix), { withFileTypes: true })) {
+			for (const dirent of readdirSync(join(this.target, prefix), { withFileTypes: true })) {
 				const name = `${ prefix }/${ dirent.name }`;
 
 				// If the file is a directory, swap it recursively.
