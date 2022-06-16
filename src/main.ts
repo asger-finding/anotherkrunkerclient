@@ -12,7 +12,7 @@ import { app, protocol } from 'electron';
 import EventHandler from '@event-handler';
 import SplashUtils from '@splash-utils';
 import WindowUtils from '@window-utils';
-import { info } from 'electron-log';
+import { info } from '@logger';
 import { join } from 'path';
 
 // eslint-disable-next-line no-console
