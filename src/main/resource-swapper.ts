@@ -88,7 +88,7 @@ export default class {
 				}
 			}
 		} catch (err) {
-			error('Failed to resource-swap', err, prefix);
+			error(`Failed to resource-swap with prefix: ${ prefix }`);
 		}
 	}
 
