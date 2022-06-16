@@ -10,7 +10,7 @@ import GameUtils from '@game-utils';
 import ResourceSwapper from '@resource-swapper';
 import { WindowData } from '@client';
 import { getSpoofedUA } from '@useragent-spoof';
-import { info } from 'electron-log';
+import { info } from '@logger';
 import { register } from 'electron-localshortcut';
 
 export const openDevtools = (window: Electron.BrowserWindow, mode: Electron.OpenDevToolsOptions['mode'] = 'right'): void => {

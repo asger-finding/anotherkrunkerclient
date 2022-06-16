@@ -1,5 +1,5 @@
 import { MESSAGE_GAME_DONE, QUICKJOIN_URL_QUERY_PARAM, TARGET_GAME_URL } from '@constants';
-import { info } from 'electron-log';
+import { info } from '@logger';
 import { ipcMain } from 'electron';
 import { register } from 'electron-localshortcut';
 

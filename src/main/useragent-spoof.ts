@@ -1,5 +1,5 @@
 import { USERAGENT_LIFETIME, preferences } from '@constants';
-import { info } from 'electron-log';
+import { info } from '@logger';
 
 const storeSchema = 'userAgentSpoof';
 

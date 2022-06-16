@@ -1,6 +1,6 @@
 import { CLIENT_NAME, TARGET_GAME_DOMAIN } from '@constants';
 import { existsSync, mkdirSync, readdirSync } from 'fs';
-import { error } from 'electron-log';
+import { error } from '@logger';
 import { join } from 'path';
 
 export default class {

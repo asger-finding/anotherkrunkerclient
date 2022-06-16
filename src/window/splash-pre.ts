@@ -5,7 +5,7 @@ import { ipcRenderer, shell } from 'electron';
 import { diff as versionDifference, gt as versionGreater } from 'semver';
 import { ReleaseData } from '@client';
 import SplashPreloadUtils from '@splash-pre-utils';
-import { info } from 'electron-log';
+import { info } from '@logger';
 
 function transformSplash(rel: ReleaseData): void {
 	const { clientVersionElement, clientUpdateElement } = SplashPreloadUtils;

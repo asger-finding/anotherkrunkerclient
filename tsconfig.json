@@ -18,6 +18,7 @@
 
             // src top-level
             "@color-utils": ["src/color-utils"],
+            "@logger": ["src/logger"],
 
             // config
             "@constants": ["src/config/constants"],

@@ -7,7 +7,7 @@ import {
 	MESSAGE_SPLASH_DONE
 } from '@constants';
 import { GitHubResponse, ReleaseData } from '@client';
-import { info, warn } from 'electron-log';
+import { info, warn } from '@logger';
 import WindowUtils from '@window-utils';
 import { fetch } from 'cross-fetch';
 import { ipcMain } from 'electron';

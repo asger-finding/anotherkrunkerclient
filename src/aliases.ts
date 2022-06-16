@@ -5,6 +5,7 @@ import { resolve } from 'path';
 addAliases({
 	// src top-level
 	'@color-utils': resolve(__dirname, './color-utils'),
+	'@logger': resolve(__dirname, './logger'),
 
 	// config
 	'@constants': resolve(__dirname, './config/constants'),
