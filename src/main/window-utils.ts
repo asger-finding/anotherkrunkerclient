@@ -13,12 +13,13 @@ import { getSpoofedUA } from '@useragent-spoof';
 import { info } from '@logger';
 import { register } from 'electron-localshortcut';
 
-export const openDevtools = (window: Electron.BrowserWindow, mode: Electron.OpenDevToolsOptions['mode'] = 'right'): void => {
+export const openDevtools = (window: Electron.BrowserWindow, mode?: Electron.OpenDevToolsOptions): void => {
 	// Addresses https://stackoverflow.com/q/69969658/11452298 for electron < 13.5.0
-	window.webContents.openDevTools({ mode });
+	window.webContents.openDevTools(mode);
 
-	// Fallback if openDevTools fails
-	if (!window.webContents.isDevToolsOpened()) {
+	// Checking for devToolsWebContents is more reliable than WebContents.isDevToolsOpened()
+	if (!window.webContents.devToolsWebContents) {
+		// Fallback if openDevTools fails
 		window.webContents.closeDevTools();
 
 		const devtoolsWindow = new BrowserWindow();
