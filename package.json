@@ -51,7 +51,7 @@
     "gulp-swc": "^1.2.3",
     "postcss": "^8.4.12",
     "sass": "^1.49.11",
-    "typescript": "^4.6.3",
+    "typescript": "^4.7.4",
     "yargs": "^17.4.0"
   }
 }
