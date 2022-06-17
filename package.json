@@ -32,7 +32,7 @@
     "@swc/core": "^1.2.163",
     "@types/electron-localshortcut": "^3.1.0",
     "@types/module-alias": "^2.0.1",
-    "@types/node": "12.12.21",
+    "@types/node": "17.0.45",
     "@typescript-eslint/eslint-plugin": "^5.14.0",
     "@typescript-eslint/parser": "^5.14.0",
     "del": "^6.0.0",
