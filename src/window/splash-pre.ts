@@ -9,16 +9,17 @@ import { info } from '@logger';
 
 function transformSplash(rel: ReleaseData): void {
 	const { clientVersionElement, clientUpdateElement } = SplashPreloadUtils;
-	if (clientVersionElement instanceof HTMLSpanElement) clientVersionElement.innerText = rel.clientVersion;
+	const { releaseVersion, clientVersion, releaseUrl } = rel;
 
-	if (clientUpdateElement instanceof HTMLSpanElement && versionGreater(rel.releaseVersion, rel.clientVersion)) {
-		info(`Client update available: ${ rel.releaseVersion }`);
+	if (clientVersionElement instanceof HTMLSpanElement) clientVersionElement.innerText = clientVersion;
+	if (clientUpdateElement instanceof HTMLSpanElement && versionGreater(releaseVersion, clientVersion)) {
+		info(`Client update available: ${ releaseVersion }`);
 
-		clientUpdateElement.innerText += `new ${ versionDifference(rel.clientVersion, rel.releaseVersion) } release available: `;
+		clientUpdateElement.innerText += `new ${ versionDifference(rel.clientVersion, releaseVersion) } release available: `;
 		clientUpdateElement.append(Object.assign(document.createElement('a'), {
 			href: '#',
-			innerText: rel.releaseVersion,
-			onclick: () => shell.openExternal(rel.releaseUrl)
+			innerText: releaseVersion,
+			onclick: () => shell.openExternal(releaseUrl)
 		}));
 	} else {
 		info('Client is up to date');
