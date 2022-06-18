@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 import { IS_DEVELOPMENT } from '@constants';
 
+const separator = process.platform === 'win32' ? '>' : '›';
+
 function newTimestamp(): string {
 	// Return date formatted as HH:MM:SS.mmm
 	const date = new Date();
@@ -13,13 +15,13 @@ function newTimestamp(): string {
 }
 
 export function info(...args: unknown[]): void {
-	if (IS_DEVELOPMENT) console.log('\x1b[36m%s\x1b[0m', newTimestamp(), '›', ...args);
+	if (IS_DEVELOPMENT) console.log('\x1b[36m%s\x1b[0m', newTimestamp(), separator, ...args);
 }
 
 export function warn(...args: unknown[]): void {
-	if (IS_DEVELOPMENT) console.log('\x1b[33m%s\x1b[0m', newTimestamp(), '›', ...args);
+	if (IS_DEVELOPMENT) console.log('\x1b[33m%s\x1b[0m', newTimestamp(), separator, ...args);
 }
 
 export function error(...args: unknown[]): void {
-	if (IS_DEVELOPMENT) console.log('\x1b[31m%s\x1b[0m', newTimestamp(), '›', ...args);
+	if (IS_DEVELOPMENT) console.log('\x1b[31m%s\x1b[0m', newTimestamp(), separator, ...args);
 }
