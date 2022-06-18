@@ -13,28 +13,6 @@ import { getSpoofedUA } from '@useragent-spoof';
 import { info } from '@logger';
 import { register } from 'electron-localshortcut';
 
-export const openDevToolsWithFallback = (window: Electron.BrowserWindow, mode?: Electron.OpenDevToolsOptions): void => {
-	// Addresses https://stackoverflow.com/q/69969658/11452298 for electron < 13.5.0
-	let assumeFallback = true;
-	window.webContents.openDevTools(mode);
-	window.webContents.once('devtools-opened', () => { assumeFallback = false; });
-
-	// devtools-opened takes about 300 ms to fire on a Windows 10 VirtualBox VM with 8 gb of ram and 8 threads.
-	setTimeout(() => {
-		if (assumeFallback) {
-			// Fallback if openDevTools fails
-			window.webContents.closeDevTools();
-
-			const devtoolsWindow = new BrowserWindow();
-			devtoolsWindow.setMenuBarVisibility(false);
-
-			window.webContents.setDevToolsWebContents(devtoolsWindow.webContents);
-			window.webContents.openDevTools({ mode: 'detach' });
-			window.once('closed', () => devtoolsWindow.destroy());
-		}
-	}, 500);
-};
-
 export default class {
 
 	/**
@@ -85,7 +63,7 @@ export default class {
 		register(browserWindow, 'F11', () => browserWindow.setFullScreen(!browserWindow.isFullScreen()));
 		register(browserWindow, ['F5', 'Ctrl+R'], () => webContents.reload());
 		register(browserWindow, ['Ctrl+F5', 'Ctrl+Shift+R'], () => webContents.reloadIgnoringCache());
-		register(browserWindow, ['F12', 'Ctrl+Shift+I'], () => openDevToolsWithFallback(browserWindow));
+		register(browserWindow, ['F12', 'Ctrl+Shift+I'], () => this.openDevToolsWithFallback(browserWindow));
 	}
 
 	/**
@@ -167,6 +145,34 @@ export default class {
 			default:
 				return null;
 		}
+	}
+
+	/**
+	 * Attempt to open the DevTools for the window.
+	 * If it refuses to open after 500 ms, use a fallback method.
+	 * @param window - The window to open the DevTools in
+	 * @param mode - The mode to open the DevTools in
+	 */
+	public static openDevToolsWithFallback(window: Electron.BrowserWindow, mode?: Electron.OpenDevToolsOptions): void {
+		// Addresses https://stackoverflow.com/q/69969658/11452298 for electron < 13.5.0
+		let assumeFallback = true;
+		window.webContents.openDevTools(mode);
+		window.webContents.once('devtools-opened', () => { assumeFallback = false; });
+
+		// devtools-opened takes about 300 ms to fire on a Windows 10 VirtualBox VM with 8 gb of ram and 8 threads.
+		setTimeout(() => {
+			if (assumeFallback) {
+				// Fallback if openDevTools fails
+				window.webContents.closeDevTools();
+
+				const devtoolsWindow = new BrowserWindow();
+				devtoolsWindow.setMenuBarVisibility(false);
+
+				window.webContents.setDevToolsWebContents(devtoolsWindow.webContents);
+				window.webContents.openDevTools({ mode: 'detach' });
+				window.once('closed', () => devtoolsWindow.destroy());
+			}
+		}, 500);
 	}
 
 	/**
