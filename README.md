@@ -19,11 +19,9 @@ A full release (v1.xx) will be considered when everything in this feature tracki
 
 - [x] Windows 10
 - [x] Windows 11
+- [x] Linux (to some extent)
 
 ## Contributing
-
-Note: Use node &lt; 17, or electron-acrylic-window won't compile with electron-builder. This is an oversight on the their end, and is being adressed in an issue [here](https://github.com/Seo-Rii/electron-acrylic-window/issues/85).  
-<!-- Let's just drop the electron-acylic-window, shouldn't we? -->
 
 ### Getting started
 
