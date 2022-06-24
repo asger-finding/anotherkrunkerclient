@@ -89,7 +89,7 @@ app.on('web-contents-created', (_event, webContents) => {
 if (!app.requestSingleInstanceLock()) { app.quit(); } else {
 	const client = new Application();
 
-	app.whenReady().then(async(): Promise<void> => {
+	app.whenReady().then(async() => {
 		await client.init();
 
 		info('Client initialized');

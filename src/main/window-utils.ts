@@ -24,8 +24,8 @@ export default class {
 	 * @returns Newly generated window instance
 	 */
 	public static async createWindow(constructorOptions: Electron.BrowserWindowConstructorOptions, windowURL?: string): Promise<Electron.BrowserWindow> {
-		const browserWindow = new BrowserWindow(constructorOptions);
 		const windowData = getURLData(windowURL);
+		const browserWindow = new BrowserWindow(constructorOptions);
 
 		if (windowURL) this.loadSpoofedURL(browserWindow, windowURL);
 		if (preferences.get(`window.${ windowData.tab }.maximized`)) browserWindow.maximize();
@@ -155,24 +155,22 @@ export default class {
 	 */
 	public static openDevToolsWithFallback(window: Electron.BrowserWindow, mode?: Electron.OpenDevToolsOptions): void {
 		// Addresses https://stackoverflow.com/q/69969658/11452298 for electron < 13.5.0
-		let assumeFallback = true;
 		window.webContents.openDevTools(mode);
-		window.webContents.once('devtools-opened', () => { assumeFallback = false; });
 
 		// devtools-opened takes about 300 ms to fire on a Windows 10 VirtualBox VM with 8 gb of ram and 8 threads.
-		setTimeout(() => {
-			if (assumeFallback) {
-				// Fallback if openDevTools fails
-				window.webContents.closeDevTools();
+		const fallback = setTimeout(() => {
+			// Fallback if openDevTools fails
+			window.webContents.closeDevTools();
 
-				const devtoolsWindow = new BrowserWindow();
-				devtoolsWindow.setMenuBarVisibility(false);
+			const devtoolsWindow = new BrowserWindow();
+			devtoolsWindow.setMenuBarVisibility(false);
 
-				window.webContents.setDevToolsWebContents(devtoolsWindow.webContents);
-				window.webContents.openDevTools({ mode: 'detach' });
-				window.once('closed', () => devtoolsWindow.destroy());
-			}
+			window.webContents.setDevToolsWebContents(devtoolsWindow.webContents);
+			window.webContents.openDevTools({ mode: 'detach' });
+			window.once('closed', () => devtoolsWindow.destroy());
 		}, 500);
+
+		window.webContents.once('devtools-opened', () => clearTimeout(fallback));
 	}
 
 	/**
