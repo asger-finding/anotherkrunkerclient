@@ -1,4 +1,4 @@
-name: Package binaries and upload as artifacts
+name: Build and package binaries, and upload as artifacts
 
 on: workflow_dispatch
 
@@ -49,26 +49,59 @@ jobs:
           node-prune
           minify-all
 
-      - name: Build for OS
-        run: yarn bundle
+      # Stable
+      - name: Build stable binary
+        run: |
+          yarn bundle
 
-      - uses: actions/upload-artifact@v3
+      - name: Artifact stable Windows executable
+        uses: actions/upload-artifact@v3
         if: runner.os == 'Windows'
         with:
-          name: Windows-Installer
+          name: Windows-Installer-Stable
           path: dist/*.exe
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v3
+      - name: Artifact stable Linux AppImage
+        uses: actions/upload-artifact@v3
         if: runner.os == 'Linux'
         with:
-          name: Linux-AppImage
+          name: Linux-AppImage-Stable
           path: dist/*.AppImage
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v3
-        if: runner.os == 'macOS'
+      - name: Artifact stable macOS image
+        uses: actions/upload-artifact@v3
         with:
-          name: macOS-Image
-          path: dist/*.dmg
+          name: macOS-Image-Stable
+          path: dist/*.@(exe|AppImage|dmg)
+          if-no-files-found: error
+
+      # Latest
+      - name: Build latest binary
+        run: |
+          yarn add -D electron@^11
+          yarn bundle
+
+      - name: Artifact latest Windows executable
+        uses: actions/upload-artifact@v3
+        if: runner.os == 'Windows'
+        with:
+          name: Windows-Installer-Latest
+          path: dist/*.exe
+          if-no-files-found: error
+
+      - name: Artifact latest Linux AppImage
+        uses: actions/upload-artifact@v3
+        if: runner.os == 'Linux'
+        with:
+          name: Linux-AppImage-Latest
+          path: dist/*.AppImage
+          if-no-files-found: error
+
+      - name: Artifact latest macOS image
+        uses: actions/upload-artifact@v3
+        with:
+          name: macOS-Image-Latest
+          path: dist/*.@(exe|AppImage|dmg)
           if-no-files-found: error
