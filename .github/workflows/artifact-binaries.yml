@@ -72,6 +72,7 @@ jobs:
 
       - name: Artifact stable macOS image
         uses: actions/upload-artifact@v3
+        if: runner.os == 'macOS'
         with:
           name: macOS-Image-Stable
           path: dist/*.dmg
@@ -101,6 +102,7 @@ jobs:
 
       - name: Artifact latest macOS image
         uses: actions/upload-artifact@v3
+        if: runner.os == 'macOS'
         with:
           name: macOS-Image-Latest
           path: dist/*.dmg
