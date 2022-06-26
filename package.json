@@ -12,6 +12,7 @@
     "start": "gulp --state=development && electron ./build/main.js",
     "bundle": "electron-builder",
     "prebundle": "gulp --state=production",
+    "remove-dist-extras": "gulp removeDistExtras",
     "rebuild": "electron-builder install-app-deps",
     "postinstall": "yarn rebuild && gulp clean",
     "lint": "yarn eslint . --ext .ts,.js"

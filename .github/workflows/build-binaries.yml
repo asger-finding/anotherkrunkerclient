@@ -80,4 +80,5 @@ jobs:
       - name: Build “latest” release
         run: |
           yarn add -D electron@^11
-          yarn bundle
+          yarn remove-dist-extras
+          yarn electron-builder
