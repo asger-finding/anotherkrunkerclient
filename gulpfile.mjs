@@ -99,10 +99,5 @@ export function annihilation() {
 	return del(['./build', './dist'], { force: true });
 }
 
-export function removeDistExtras() {
-	// Remove all files in dist folder that dont end in .AppImage or .exe.
-	return del(['./dist/*.!(AppImage|exe|dmg|pkg|rpm|deb)'], { force: true });
-}
-
 export const build = gulp.series((state.prod ? annihilation : clean), gulp.parallel(typescript, sass, html, images));
 export default build;

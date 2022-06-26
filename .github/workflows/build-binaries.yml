@@ -65,20 +65,5 @@ jobs:
 
       - name: Build for OS
         run: |
-          yarn
+          yarn install
           yarn bundle
-
-      - name: Update values.yaml
-        uses: fjogeleit/yaml-update-action@main
-        with:
-          valueFile: 'electron-builder.yml'
-          propertyPath: 'appImage.artifactName'
-          value: 'anotherkrunkerclient-Linux-Portable-Latest-${arch}.${ext}'
-          commitChange: false
-          updateFile: true
-
-      - name: Build “latest” release
-        run: |
-          yarn add -D electron@^11
-          yarn remove-dist-extras
-          yarn electron-builder
