@@ -63,10 +63,21 @@ jobs:
           path: ${{ env.LOCALAPPDATA }}\electron-builder\cache
           key: ${{ runner.os }}-electron-builder-cache-v2-${{ hashFiles(format('{0}{1}', github.workspace, '\yarn.lock')) }}
 
-      - name: Build electron app binary
-        uses: samuelmeuli/action-electron-builder@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build for OS
+        run: |
+          yarn
+          yarn bundle
 
-          # package.json script to call before electron-builder compiles
-          build_script_name: 'bundle:gh-actions'
+      - name: Update values.yaml
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'electron-builder.yml'
+          propertyPath: 'file.appImage.artifactName'
+          value: 'anotherkrunkerclient-Linux-Portable-Latest-${arch}.${ext}'
+          commitChange: false
+          updateFile: true
+
+      - name: Build “latest” release
+        run: |
+          yarn add -D electron@^11
+          yarn electron-builder
