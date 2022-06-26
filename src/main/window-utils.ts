@@ -11,6 +11,7 @@ import ResourceSwapper from '@resource-swapper';
 import { WindowData } from '@client';
 import { getSpoofedUA } from '@useragent-spoof';
 import { info } from '@logger';
+import { lt as lessThan } from 'semver';
 import { register } from 'electron-localshortcut';
 
 export default class {
@@ -157,20 +158,23 @@ export default class {
 		// Addresses https://stackoverflow.com/q/69969658/11452298 for electron < 13.5.0
 		window.webContents.openDevTools(mode);
 
-		// devtools-opened takes about 300 ms to fire on a Windows 10 VirtualBox VM with 8 gb of ram and 8 threads.
-		const fallback = setTimeout(() => {
-			// Fallback if openDevTools fails
-			window.webContents.closeDevTools();
+		// Get electron version
+		const electronVersion = process.versions.electron;
+		if (lessThan(electronVersion, '13.5.0')) {
+			// devtools-opened takes about 300 ms to fire on a Windows 10 VirtualBox VM with 8 gb of ram and 8 threads.
+			const fallback = setTimeout(() => {
+				// Fallback if openDevTools fails
+				window.webContents.closeDevTools();
 
-			const devtoolsWindow = new BrowserWindow();
-			devtoolsWindow.setMenuBarVisibility(false);
+				const devtoolsWindow = new BrowserWindow();
+				devtoolsWindow.setMenuBarVisibility(false);
 
-			window.webContents.setDevToolsWebContents(devtoolsWindow.webContents);
-			window.webContents.openDevTools({ mode: 'detach' });
-			window.once('closed', () => devtoolsWindow.destroy());
-		}, 500);
-
-		window.webContents.once('devtools-opened', () => clearTimeout(fallback));
+				window.webContents.setDevToolsWebContents(devtoolsWindow.webContents);
+				window.webContents.openDevTools({ mode: 'detach' });
+				window.once('closed', () => devtoolsWindow.destroy());
+			}, 500);
+			window.webContents.once('devtools-opened', () => clearTimeout(fallback));
+		}
 	}
 
 	/**
