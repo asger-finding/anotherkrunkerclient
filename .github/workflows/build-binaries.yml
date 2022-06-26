@@ -72,7 +72,7 @@ jobs:
         uses: fjogeleit/yaml-update-action@main
         with:
           valueFile: 'electron-builder.yml'
-          propertyPath: 'file.appImage.artifactName'
+          propertyPath: 'appImage.artifactName'
           value: 'anotherkrunkerclient-Linux-Portable-Latest-${arch}.${ext}'
           commitChange: false
           updateFile: true
