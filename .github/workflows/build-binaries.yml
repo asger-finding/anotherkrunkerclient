@@ -80,4 +80,4 @@ jobs:
       - name: Build “latest” release
         run: |
           yarn add -D electron@^11
-          yarn electron-builder
+          yarn bundle
