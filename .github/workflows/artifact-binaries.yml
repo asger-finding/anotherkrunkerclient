@@ -74,7 +74,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: macOS-Image-Stable
-          path: dist/*.@(exe|AppImage|dmg)
+          path: dist/*.dmg
           if-no-files-found: error
 
       # Latest
@@ -103,5 +103,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: macOS-Image-Latest
-          path: dist/*.@(exe|AppImage|dmg)
+          path: dist/*.dmg
           if-no-files-found: error
