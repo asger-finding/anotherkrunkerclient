@@ -1201,10 +1201,10 @@ cheerio-select@^2.1.0:
     domhandler "^5.0.3"
     domutils "^3.0.1"
 
-cheerio@~1.0.0-rc.5:
-  version "1.0.0-rc.11"
-  resolved "https://registry.yarnpkg.com/cheerio/-/cheerio-1.0.0-rc.11.tgz#1be84be1a126958366bcc57a11648cd9b30a60c2"
-  integrity sha512-bQwNaDIBKID5ts/DsdhxrjqFXYfLw4ste+wMKqWA8DyKcS4qwsPP4Bk8ZNaTJjvpiX/qW3BT4sU7d6Bh5i+dag==
+cheerio@~1.0.0-rc.12:
+  version "1.0.0-rc.12"
+  resolved "https://registry.yarnpkg.com/cheerio/-/cheerio-1.0.0-rc.12.tgz#788bf7466506b1c6bf5fae51d24a2c4d62e47683"
+  integrity sha512-VqR8m68vM46BNnuZ5NtnGBKIE/DfN0cRIzg9n40EIq9NOv90ayxLBXA8fXC5gquFRGJSTRqBq25Jt2ECLR431Q==
   dependencies:
     cheerio-select "^2.1.0"
     dom-serializer "^2.0.0"
@@ -1213,7 +1213,6 @@ cheerio@~1.0.0-rc.5:
     htmlparser2 "^8.0.1"
     parse5 "^7.0.0"
     parse5-htmlparser2-tree-adapter "^7.0.0"
-    tslib "^2.4.0"
 
 "chokidar@>=3.0.0 <4.0.0":
   version "3.5.3"
@@ -3300,7 +3299,7 @@ got@^9.6.0:
     to-readable-stream "^1.0.0"
     url-parse-lax "^3.0.0"
 
-got@~11.8.2:
+got@~11.8.5:
   version "11.8.5"
   resolved "https://registry.yarnpkg.com/got/-/got-11.8.5.tgz#ce77d045136de56e8f024bebb82ea349bc730046"
   integrity sha512-o0Je4NvQObAuZPHLFoRSkdG2lTgtcynqymzg2Vupdx6PorhaT5MCbIyXG6d4D94kk8ZG57QeosgdiqfJWhEhlQ==
@@ -6443,13 +6442,13 @@ token-types@^4.1.1:
     "@tokenizer/token" "^0.3.0"
     ieee754 "^1.2.1"
 
-top-user-agents@^1.0.43:
-  version "1.0.45"
-  resolved "https://registry.yarnpkg.com/top-user-agents/-/top-user-agents-1.0.45.tgz#75ca773b1a37b052b609aec883b135b1c1abf6d2"
-  integrity sha512-W1JzPlng2DD3N75fAxamhcsU+l0mcFj0jwep1QQIMiPgE3lN31EOgb4A1hSziuZqiG3X66qQ/POyKuoB2+LPiA==
+top-user-agents@^1.0.46:
+  version "1.0.46"
+  resolved "https://registry.yarnpkg.com/top-user-agents/-/top-user-agents-1.0.46.tgz#31b1b8b6af6d8ce586213e8cc79f578dd1088a9f"
+  integrity sha512-qbH/N84vNX/w6sMFV1V3Rk6JD4TI15gjGtc0k18GQSiVs822mIw4ZSX/cF4216Y5phOBdIuUtvOAIMYdf8SKlQ==
   dependencies:
-    cheerio "~1.0.0-rc.5"
-    got "~11.8.2"
+    cheerio "~1.0.0-rc.12"
+    got "~11.8.5"
     write-json-file "~4.3.0"
 
 tr46@~0.0.3:
@@ -6485,11 +6484,6 @@ tslib@^1.8.1:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
-
-tslib@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
-  integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
 
 tsutils@^3.21.0:
   version "3.21.0"
