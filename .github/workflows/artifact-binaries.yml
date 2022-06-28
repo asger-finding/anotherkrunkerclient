@@ -31,7 +31,7 @@ jobs:
           cache-dependency-path: yarn.lock
 
       - name: Run build script
-        run: node make.mjs
+        run: node .github/macos-build-binaries.mjs
 
       - name: Artifact latest builds
         uses: actions/upload-artifact@v3
