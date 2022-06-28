@@ -11,6 +11,7 @@ ignorePatterns:
   - node_modules/
   - build/
   - gulpfile.mjs
+  - make.mjs
 
 extends:
   - raven

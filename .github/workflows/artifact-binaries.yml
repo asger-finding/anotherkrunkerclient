@@ -1,4 +1,4 @@
-name: Build and package binaries, and upload as artifacts
+name: Build binaries and upload as artifacts
 
 on: workflow_dispatch
 
@@ -30,45 +30,15 @@ jobs:
           cache: yarn
           cache-dependency-path: yarn.lock
 
-      - name: Install minification modules globally
-        run: npm install -g modclean minify-all node-prune
-
-      - name: yarn install
-        run: yarn install
-
-      - name: Minify node_modules
-        run: |
-          modclean -n default:safe,default:caution -r
-          node-prune
-          minify-all
-
-      # Stable
-      - name: Build stable binary
-        run: |
-          yarn bundle:all
-
-      - name: Artifact stable builds
-        uses: actions/upload-artifact@v3
-        with:
-          name: binaries-stable
-          path: |
-            dist/*.exe
-            dist/*.AppImage
-            dist/*.dmg
-          if-no-files-found: error
-
-      # Latest
-      - name: Build latest binary
-        run: |
-          yarn add -D electron@^11
-          yarn bundle:all
+      - name: Run build script
+        run: node make.mjs
 
       - name: Artifact latest builds
         uses: actions/upload-artifact@v3
         with:
           name: binaries-latest
           path: |
-            dist/*.exe
-            dist/*.AppImage
-            dist/*.dmg
+            binaries/*.exe
+            binaries/*.AppImage
+            binaries/*.dmg
           if-no-files-found: error

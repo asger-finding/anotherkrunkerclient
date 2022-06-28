@@ -70,5 +70,5 @@ jobs:
 
       - name: Build latest binary
         run: |
-          yarn add -D electron@^11
+          yarn add -D electron@^12
           yarn bundle
