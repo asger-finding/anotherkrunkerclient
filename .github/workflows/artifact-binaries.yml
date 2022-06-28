@@ -31,7 +31,7 @@ jobs:
           cache-dependency-path: yarn.lock
 
       - name: Install minification modules globally
-        run: npm install modclean minify-all node-prune --location=global
+        run: npm install -g modclean minify-all node-prune
 
       - name: yarn install
         run: yarn install
