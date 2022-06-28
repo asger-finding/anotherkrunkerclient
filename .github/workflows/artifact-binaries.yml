@@ -36,7 +36,7 @@ jobs:
       - name: Artifact latest builds
         uses: actions/upload-artifact@v3
         with:
-          name: binaries-latest
+          name: binaries
           path: |
             binaries/*.exe
             binaries/*.AppImage
