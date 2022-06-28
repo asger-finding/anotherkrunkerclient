@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [macos-latest]
         node-version: [16.x]
 
     env:
@@ -29,13 +29,6 @@ jobs:
           check-latest: true
           cache: yarn
           cache-dependency-path: yarn.lock
-      
-      # Install necessary system dependencies to compile on Linux
-      - name: Install system dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt update
-          sudo apt install libc6-dev-i386 gcc-multilib g++-multilib
 
       - name: Install minification modules globally
         run: npm install modclean minify-all node-prune --location=global
@@ -52,58 +45,24 @@ jobs:
       # Stable
       - name: Build stable binary
         run: |
-          yarn bundle
+          yarn bundle:all
 
-      - name: Artifact stable Windows executable
+      - name: Artifact stable builds
         uses: actions/upload-artifact@v3
-        if: runner.os == 'Windows'
         with:
-          name: Windows-Installer-Stable
-          path: dist/*.exe
-          if-no-files-found: error
-
-      - name: Artifact stable Linux AppImage
-        uses: actions/upload-artifact@v3
-        if: runner.os == 'Linux'
-        with:
-          name: Linux-AppImage-Stable
-          path: dist/*.AppImage
-          if-no-files-found: error
-
-      - name: Artifact stable macOS image
-        uses: actions/upload-artifact@v3
-        if: runner.os == 'macOS'
-        with:
-          name: macOS-Image-Stable
-          path: dist/*.dmg
+          name: binaries-stable
+          path: dist/*(.exe|.AppImage|.dmg)
           if-no-files-found: error
 
       # Latest
       - name: Build latest binary
         run: |
           yarn add -D electron@^11
-          yarn bundle
+          yarn bundle:all
 
-      - name: Artifact latest Windows executable
+      - name: Artifact latest builds
         uses: actions/upload-artifact@v3
-        if: runner.os == 'Windows'
         with:
-          name: Windows-Installer-Latest
-          path: dist/*.exe
-          if-no-files-found: error
-
-      - name: Artifact latest Linux AppImage
-        uses: actions/upload-artifact@v3
-        if: runner.os == 'Linux'
-        with:
-          name: Linux-AppImage-Latest
-          path: dist/*.AppImage
-          if-no-files-found: error
-
-      - name: Artifact latest macOS image
-        uses: actions/upload-artifact@v3
-        if: runner.os == 'macOS'
-        with:
-          name: macOS-Image-Latest
-          path: dist/*.dmg
+          name: binaries-latest
+          path: dist/*(.exe|.AppImage|.dmg)
           if-no-files-found: error

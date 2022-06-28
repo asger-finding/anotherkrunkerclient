@@ -11,6 +11,7 @@
   "scripts": {
     "start": "gulp --state=development && electron ./build/main.js",
     "bundle": "electron-builder",
+    "bundle:all": "yarn prebundle && electron-builder -mwl",
     "prebundle": "gulp --state=production",
     "rebuild": "electron-builder install-app-deps",
     "postinstall": "yarn rebuild && gulp clean",
