@@ -1,8 +1,8 @@
 // This script compiles for all major platforms, but to build for mac, you need to be in a darwin environment.
-if (process.platform !== 'darwin') throw new Error('This script must be run on macOS');
+// if (process.platform !== 'darwin') throw new Error('This script must be run on macOS');
 
 import { mkdir, readFile, readdir, writeFile, rename, rm } from 'fs/promises';
-import packageJson from './package.json' assert { type: 'json' };
+import packageJson from '../package.json' assert { type: 'json' };
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
@@ -93,4 +93,4 @@ async function postbuild() {
 
 bundleStable()
 .then(bundleLatest)
-.then(postbuild);
+//.then(postbuild);
