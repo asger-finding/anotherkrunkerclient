@@ -51,7 +51,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: binaries-stable
-          path: dist/*(.exe|.AppImage|.dmg)
+          path: |
+            dist/*.exe
+            dist/*.AppImage
+            dist/*.dmg
           if-no-files-found: error
 
       # Latest
@@ -64,5 +67,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: binaries-latest
-          path: dist/*(.exe|.AppImage|.dmg)
+          path: |
+            dist/*.exe
+            dist/*.AppImage
+            dist/*.dmg
           if-no-files-found: error
