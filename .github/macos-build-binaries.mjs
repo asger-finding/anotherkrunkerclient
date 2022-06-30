@@ -14,7 +14,7 @@ const ELECTRON_BUILDER = './electron-builder.yml';
 const CLIENT_NAME = packageJson.productName;
 const ELECTRON_VERSION = packageJson.devDependencies['electron'];
 
-await asyncExec('yarn && yarn add -D js-yaml modclean minify-all node-prune');
+await asyncExec('yarn && yarn add -D js-yaml modclean minify-all-js node-prune');
 await rm(binaryFolder, { force: true, recursive: true });
 
 const { dump, load } = await import('js-yaml');
@@ -55,7 +55,7 @@ async function changeForLatest() {
 
 async function buildBinary() {
     await asyncExec('yarn prebundle');
-    await asyncExec('yarn node-prune && yarn modclean -n default:safe,default:caution -r && yarn minify-all');
+    await asyncExec('yarn node-prune && yarn modclean -n default:safe,default:caution -r && yarn minify-all-js ./node_modules -j -m -M -p -a');
     await asyncExec('yarn electron-builder -mwl');
     return asyncExec('yarn postinstall');
 }
@@ -86,7 +86,7 @@ async function bundleLatest() {
 async function postbuild() {
     // Return package.json packages
     await asyncExec(`yarn add -D electron@${ ELECTRON_VERSION }`);
-    await asyncExec('yarn remove modclean minify-all node-prune js-yaml');
+    await asyncExec('yarn remove modclean minify-all-js node-prune js-yaml');
 
     // Return electron-builder.yml to its original state
     await writeFile(ELECTRON_BUILDER, electronBuilder);
