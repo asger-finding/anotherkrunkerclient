@@ -55,6 +55,7 @@ async function changeForLatest() {
 
 async function buildBinary() {
     await asyncExec('yarn prebundle');
+    await asyncExec('yarn node-prune && yarn modclean -n default:safe,default:caution -r && yarn minify-all');
     await asyncExec('yarn electron-builder -mwl');
     return asyncExec('yarn postinstall');
 }
