@@ -14,7 +14,7 @@ const ELECTRON_BUILDER = './electron-builder.yml';
 const CLIENT_NAME = packageJson.productName;
 const ELECTRON_VERSION = packageJson.devDependencies['electron'];
 
-await asyncExec('yarn && yarn add -D js-yaml modclean@^3 minify-all-js@^0 node-prune@^1');
+await asyncExec('yarn && yarn add -D js-yaml modclean minify-all-js node-prune');
 await rm(binaryFolder, { force: true, recursive: true });
 
 const { dump, load } = await import('js-yaml');
