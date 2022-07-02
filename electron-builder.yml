@@ -22,7 +22,7 @@ win:
   publisherName: Asger Finding
   icon: media/icon.ico
 nsis:
-  artifactName: anotherkrunkerclient-win-latest-${arch}.${ext}
+  artifactName: anotherkrunkerclient-win-${arch}.${ext}
   installerSidebar: media/installerSidebar.bmp
   differentialPackage: false
   oneClick: false
@@ -39,7 +39,7 @@ linux:
   executableName: anotherkrunkerclient
   description: The be-all and end-all Krunker client
 appImage:
-  artifactName: anotherkrunkerclient-linux-latest-${arch}.${ext}
+  artifactName: anotherkrunkerclient-linux-${arch}.${ext}
 mac:
   target:
     - target: dmg
@@ -48,4 +48,4 @@ mac:
   category: public.app-category.games
   icon: media/icon.icns
 dmg:
-  artifactName: anotherkrunkerclient-macOS-latest-${arch}.${ext}
+  artifactName: anotherkrunkerclient-macOS-${arch}.${ext}
