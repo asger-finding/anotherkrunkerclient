@@ -5,13 +5,16 @@ import {
 	CLIENT_LICENSE_PERMALINK,
 	CLIENT_NAME,
 	GAME_CONSTRUCTOR_OPTIONS,
+	IS_DEVELOPMENT,
 	SPLASH_CONSTRUCTOR_OPTIONS,
 	TARGET_GAME_URL
 } from '@constants';
-import { app, protocol } from 'electron';
+import { app, protocol, session } from 'electron';
+import { ElectronBlocker } from '@cliqz/adblocker-electron';
 import EventHandler from '@event-handler';
 import SplashUtils from '@splash-utils';
 import WindowUtils from '@window-utils';
+import { promises as fs } from 'fs';
 import { info } from '@logger';
 import { join } from 'path';
 
@@ -42,12 +45,9 @@ class Application {
 	 * Create the splash window, followed by the game window.
 	 */
 	public async init(): Promise<void> {
-		app.setName(CLIENT_NAME);
-
-		// Register resource swapper file protocols. TODO: Dynamic protocol source.
-		const protocolRegex = new RegExp(`^${ CLIENT_NAME }:`, 'u');
-		const protocolSource = global.resourceswapProtocolSource;
-		protocol.registerFileProtocol(CLIENT_NAME, (request, callback) => callback(decodeURI(`${ protocolSource }${ request.url.replace(protocolRegex, '') }`)));
+		Application.setAppName();
+		Application.registerFileProtocols();
+		const trackingPromise = Application.enableTrackerBlocking();
 
 		info('Initializing splash window');
 		const splashLoadTime = Date.now();
@@ -58,7 +58,38 @@ class Application {
 		info(`Splash window done after ${ Date.now() - splashLoadTime } ms`);
 		info('Initializing game window');
 
+		await trackingPromise;
 		this.gameWindow = await WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
+	}
+
+	/** Set the app name and the userdata path properly under development. */
+	private static setAppName(): void {
+		if (IS_DEVELOPMENT) {
+			app.setName(CLIENT_NAME);
+			app.setPath('userData', join(app.getPath('appData'), CLIENT_NAME));
+		}
+	}
+
+	/** Register resource swapper file protocols */
+	private static registerFileProtocols(): void {
+		// Register resource swapper file protocols. TODO: Dynamic protocol source.
+		const protocolRegex = new RegExp(`^${ CLIENT_NAME }:`, 'u');
+		const protocolSource = global.resourceswapProtocolSource;
+
+		protocol.registerFileProtocol(CLIENT_NAME, (request, callback) => {
+			const url = request.url.replace(protocolRegex, '');
+			callback(decodeURI(`${ protocolSource }${ url }`));
+		});
+	}
+
+	/** Enable ad and tracker blocking */
+	private static async enableTrackerBlocking(): Promise<void> {
+		const blocker = await ElectronBlocker.fromPrebuiltAdsAndTracking((await import('cross-fetch')).fetch, {
+			path: `${ app.getPath('userData') }/Cache/engine.bin`,
+			read: fs.readFile,
+			write: fs.writeFile
+		});
+		blocker.enableBlockingInSession(session.defaultSession);
 	}
 
 }

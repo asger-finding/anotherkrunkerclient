@@ -22,7 +22,7 @@ export default class {
 	 * @param window - The target window to load onto
 	 * @returns Promise for when everything is done
 	 */
-	public static load(window: Electron.BrowserWindow): Promise<Electron.BrowserWindow> {
+	public static load(window: Electron.BrowserWindow): Promise<void> {
 		window.loadFile(join(__dirname, '../renderer/html/splash.html'));
 
 		// Show the splash window when things have all loaded.
@@ -42,7 +42,7 @@ export default class {
 						WindowUtils.destroyWindow(window);
 					}, 1);
 
-					return resolve(window);
+					resolve();
 				});
 			});
 		});
