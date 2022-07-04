@@ -1,5 +1,5 @@
 import * as openExternal from 'open';
-import { BrowserWindow, app } from 'electron';
+import { BrowserWindow, app, dialog } from 'electron';
 import {
 	TABS,
 	getDefaultConstructorOptions,
@@ -119,6 +119,17 @@ export default class {
 			if (!newWindowData.isKrunker) openExternal(newWindowURL);
 			else if (!newWindowData.invalid) browserWindow.loadURL(newWindowURL);
 		});
+
+		webContents.on('will-prevent-unload', event => {
+			if (!dialog.showMessageBoxSync({
+				buttons: ['Leave', 'Cancel'],
+				title: 'Leave site?',
+				message: 'Changes you made may not be saved.',
+				type: 'question',
+				noLink: true
+			})) event.preventDefault();
+		});
+
 
 		// Don't allow the target website to set the window title.
 		browserWindow.on('page-title-updated', evt => evt.preventDefault());
