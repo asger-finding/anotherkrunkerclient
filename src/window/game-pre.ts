@@ -8,7 +8,6 @@ import { MapExport } from '../krunker';
 import { promises as fs } from 'fs';
 import { ipcRenderer } from 'electron';
 import { resolve } from 'path';
-import { toGrayscale } from '@color-utils';
 
 (async function() {
 	const css = await fs.readFile(resolve(__dirname, '../renderer/styles/main.css'), 'utf8');
@@ -48,7 +47,6 @@ functionHook.hook('JSON.parse', (object: MapExport) => {
 		 * Proxy the map settings so whenever they're accessed,
 		 * we can pass values and reference mapSettings.
 		 */
-		for (const index in object.colors) object.colors[index] = toGrayscale(object.colors[index]);
 		return new Proxy({ ...object, ...mapSettings }, {
 			get(target: MapExport, key: keyof MapExport) {
 				return mapSettings[key] ?? target[key];
