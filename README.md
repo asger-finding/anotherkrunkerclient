@@ -29,7 +29,7 @@ A full release (v1.xx) will be considered when everything in this feature tracki
 - [x] Windows 10
 - [x] Windows 11
 - [x] Linux
-- [] MacOS (untested)
+- [ ] MacOS (untested)
 
 ## Contributing
 
