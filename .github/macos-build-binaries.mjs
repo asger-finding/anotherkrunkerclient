@@ -32,9 +32,9 @@ async function changeForStable() {
     const doc = load(electronBuilder);
     const stableArtifactNames = createArtifactNames('stable');
 
-    doc.appImage.artifactName = stableArtifactNames.linux;
-    doc.nsis.artifactName = stableArtifactNames.win;
-    doc.dmg.artifactName = stableArtifactNames.macOS;
+    doc.linux.artifactName = stableArtifactNames.linux;
+    doc.win.artifactName = stableArtifactNames.win;
+    doc.mac.artifactName = stableArtifactNames.macOS;
 
     return writeFile(ELECTRON_BUILDER, dump(doc));
 }
@@ -43,9 +43,9 @@ async function changeForLatest() {
     const doc = load(electronBuilder);
     const latestArtifactNames = createArtifactNames('latest');
 
-    doc.appImage.artifactName = latestArtifactNames.linux;
-    doc.nsis.artifactName = latestArtifactNames.win;
-    doc.dmg.artifactName = latestArtifactNames.macOS;
+    doc.linux.artifactName = latestArtifactNames.linux;
+    doc.win.artifactName = latestArtifactNames.win;
+    doc.mac.artifactName = latestArtifactNames.macOS;
 
     await writeFile(ELECTRON_BUILDER, dump(doc));
 
@@ -67,7 +67,7 @@ async function moveToBinaries() {
     await mkdir(binaryFolder, { recursive: true });
 
     for (const file of files) {
-        if (/\.(exe|appimage|dmg)$/.test(file.toLowerCase())) rename(`${ distFolder }/${ file }`, `${ binaryFolder }/${ file }`);
+        if (/\.(exe|appimage|dmg|rpm)$/.test(file.toLowerCase())) rename(`${ distFolder }/${ file }`, `${ binaryFolder }/${ file }`);
     }
 }
 
