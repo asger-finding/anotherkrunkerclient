@@ -1,3 +1,9 @@
+[![Latest version](https://img.shields.io/github/v/release/asger-finding/anotherkrunkerclient?style=for-the-badge&display_name=tag&labelColor=202225&color=006699&label=Latest%20Release)](https://github.com/asger-finding/anotherkrunkerclient/releases/latest)
+[![Discord server](https://img.shields.io/discord/971394904821485608.svg?style=for-the-badge&label=&logo=discord&logoColor=ffffff&color=202225&labelColor=006699)](https://discord.gg/etxNkUuTru)
+![Lines of code](https://img.shields.io/tokei/lines/github/asger-finding/anotherkrunkerclient?style=for-the-badge&display_name=tag&labelColor=202225&color=006699)
+
+---
+
 <!-- markdownlint-disable MD033 MD041 -->
 <div align="center">
   <img width="50%" src="https://github.com/asger-finding/anotherkrunkerclient/raw/main/.github/banner-light.svg#gh-light-mode-only">
@@ -36,10 +42,6 @@ To compile the app, run `yarn bundle` (node_modules minification only happens fo
 ### Notes for development
 
 Ensure that ESLint is enabled. Avoid all warnings and errors. kebab-case is used for file names. Make sure you respect the folder system of main, window, renderer and config.
-
-[![Latest version](https://img.shields.io/github/v/release/asger-finding/anotherkrunkerclient?style=for-the-badge&display_name=tag&labelColor=202225&color=006699&label=Latest%20Release)](https://github.com/asger-finding/anotherkrunkerclient/releases/latest)
-[![Discord server](https://img.shields.io/discord/971394904821485608.svg?style=for-the-badge&label=&logo=discord&logoColor=ffffff&color=202225&labelColor=006699)](https://discord.gg/etxNkUuTru)
-![Lines of code](https://img.shields.io/tokei/lines/github/asger-finding/anotherkrunkerclient?style=for-the-badge&display_name=tag&labelColor=202225&color=006699)
 
 ## License
 
