@@ -38,3 +38,4 @@ Use ESLint and avoid having any warnings or errors unless strictly necessary! Us
 
 [![Latest version](https://img.shields.io/github/v/release/asger-finding/anotherkrunkerclient?style=for-the-badge&display_name=tag&labelColor=202225&color=006699&label=Latest%20Release)](https://github.com/asger-finding/anotherkrunkerclient/releases/latest)
 [![Discord server](https://img.shields.io/discord/971394904821485608.svg?style=for-the-badge&label=&logo=discord&logoColor=ffffff&color=202225&labelColor=006699)](https://discord.gg/etxNkUuTru)
+![Lines of code](https://img.shields.io/tokei/lines/github/asger-finding/anotherkrunkerclient?style=for-the-badge&display_name=tag&labelColor=202225&color=006699)
