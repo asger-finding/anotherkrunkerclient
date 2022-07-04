@@ -60,7 +60,7 @@ export default class {
 		info(`Registering shortcuts for window: ${ browserWindow.id }`);
 
 		register(browserWindow, 'Esc', () => webContents.executeJavaScript('document.exitPointerLock()', true));
-		register(browserWindow, 'Alt+F4', () => app.quit());
+		register(browserWindow, 'Alt+F4', () => browserWindow.close());
 		register(browserWindow, 'F11', () => browserWindow.setFullScreen(!browserWindow.isFullScreen()));
 		register(browserWindow, ['F5', 'Ctrl+R'], () => webContents.reload());
 		register(browserWindow, ['Ctrl+F5', 'Ctrl+Shift+R'], () => webContents.reloadIgnoringCache());
