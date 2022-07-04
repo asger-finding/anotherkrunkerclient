@@ -9,7 +9,7 @@
 <!-- necessary evil to have a cool header -->
 
 The be-all and end-all Krunker client.  
-All good features from other clients crammed into one neat, fast package. Built with boilerplate in mind so you can base your client off of akc.
+All good features from other clients crammed into one neat, fast package. Built with boilerplate in mind so you may fork this project to create your own client.
 
 ## Work-in-progress
 
@@ -19,23 +19,28 @@ A full release (v1.xx) will be considered when everything in this feature tracki
 
 - [x] Windows 10
 - [x] Windows 11
-- [x] Linux (to some extent)
+- [x] Linux
+- [] MacOS (untested)
 
 ## Contributing
 
 ### Getting started
 
 - Install [yarn](https://yarnpkg.com/) package manager
-- Run `yarn install` to install the dependencies
+- Run `yarn` or `yarn install` to install the dependencies
 - To start the app, run `yarn start`
 
 To lint, run `yarn lint`  
-To compile the app, run `yarn deploy`
+To compile the app, run `yarn bundle` (node_modules minification only happens for GitHub actions)
 
-### Notes for developing
+### Notes for development
 
-Use ESLint and avoid having any warnings or errors unless strictly necessary! Use kebab-case for file names and put them in their appropiate folders (main, renderer, window, config)  
+Ensure that ESLint is enabled. Avoid all warnings and errors. kebab-case is used for file names. Make sure you respect the folder system of main, window, renderer and config.
 
 [![Latest version](https://img.shields.io/github/v/release/asger-finding/anotherkrunkerclient?style=for-the-badge&display_name=tag&labelColor=202225&color=006699&label=Latest%20Release)](https://github.com/asger-finding/anotherkrunkerclient/releases/latest)
 [![Discord server](https://img.shields.io/discord/971394904821485608.svg?style=for-the-badge&label=&logo=discord&logoColor=ffffff&color=202225&labelColor=006699)](https://discord.gg/etxNkUuTru)
 ![Lines of code](https://img.shields.io/tokei/lines/github/asger-finding/anotherkrunkerclient?style=for-the-badge&display_name=tag&labelColor=202225&color=006699)
+
+## License
+
+[GPLv3](https://github.com/asger-finding/anotherkrunkerclient/blob/main/LICENSE).
