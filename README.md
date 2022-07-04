@@ -17,6 +17,8 @@
 The be-all and end-all Krunker client.  
 All good features from other clients crammed into one neat, fast package. Built with boilerplate in mind so you may fork this project to create your own client.
 
+---
+
 ## Work-in-progress
 
 A full release (v1.xx) will be considered when everything in this feature tracking [issue](https://github.com/asger-finding/anotherkrunkerclient/issues/1#issue-1167443624) has been addressed.
