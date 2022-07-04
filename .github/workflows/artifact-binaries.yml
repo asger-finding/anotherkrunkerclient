@@ -39,6 +39,11 @@ jobs:
           name: binaries
           path: |
             binaries/*.exe
-            binaries/*.AppImage
+            
             binaries/*.dmg
+            binaries/*.pkg
+
+            binaries/*.AppImage
+            binaries/*.deb
+            binaries/*.rpm
           if-no-files-found: error
