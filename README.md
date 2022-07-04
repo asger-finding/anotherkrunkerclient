@@ -1,7 +1,7 @@
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/gorhill/uBlock/blob/master/LICENSE.txt)
 [![Latest version](https://img.shields.io/github/v/release/asger-finding/anotherkrunkerclient?label=Latest%20Release)](https://github.com/asger-finding/anotherkrunkerclient/releases/latest)
-[![Discord server](https://img.shields.io/discord/971394904821485608.svg?label=discord)](https://discord.gg/etxNkUuTru)
-![Lines of code](https://img.shields.io/tokei/lines/github/asger-finding/anotherkrunkerclient)
+[![Discord server](https://img.shields.io/discord/971394904821485608.svg?label=Discord)](https://discord.gg/etxNkUuTru)
+![Lines of code](https://img.shields.io/tokei/lines/github/asger-finding/anotherkrunkerclient?label=Total%20Lines)
 
 ---
 
