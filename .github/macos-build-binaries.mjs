@@ -1,5 +1,5 @@
 // This script compiles for all major platforms, but to build for mac, you need to be in a darwin environment.
-if (process.platform !== 'darwin') throw new Error('This script must be run on macOS');
+if (process.platform !== 'darwin') throw new Error('This script must be run on macOS'); else await asyncExec('brew install rpm');
 
 import { mkdir, readFile, readdir, writeFile, rename, rm } from 'fs/promises';
 import packageJson from '../package.json' assert { type: 'json' };
