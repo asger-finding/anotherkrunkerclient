@@ -71,6 +71,9 @@ export const ELECTRON_FLAGS = [
 // How long the splash window should be visible before entering the game
 export const SPLASH_ALIVE_TIME = 1500;
 
+// How long before the client ends the electron process after all windows are closed
+export const WINDOW_ALL_CLOSED_BUFFER_TIME = 200;
+
 // 14 days in milliseconds
 export const USERAGENT_LIFETIME = 14 * 24 * 60 * 60 * 1000;
 

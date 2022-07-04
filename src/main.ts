@@ -1,5 +1,6 @@
 import './aliases';
 
+import { BrowserWindow, app, protocol, session } from 'electron';
 import {
 	CLIENT_AUTHOR,
 	CLIENT_LICENSE_PERMALINK,
@@ -7,9 +8,9 @@ import {
 	GAME_CONSTRUCTOR_OPTIONS,
 	IS_DEVELOPMENT,
 	SPLASH_CONSTRUCTOR_OPTIONS,
-	TARGET_GAME_URL
+	TARGET_GAME_URL,
+	WINDOW_ALL_CLOSED_BUFFER_TIME
 } from '@constants';
-import { app, protocol, session } from 'electron';
 import { ElectronBlocker } from '@cliqz/adblocker-electron';
 import EventHandler from '@event-handler';
 import SplashUtils from '@splash-utils';
@@ -84,8 +85,8 @@ class Application {
 
 	/** Enable ad and tracker blocking */
 	private static async enableTrackerBlocking(): Promise<void> {
-		const blocker = await ElectronBlocker.fromPrebuiltAdsAndTracking((await import('cross-fetch')).fetch, {
-			path: `${ app.getPath('userData') }/Cache/engine.bin`,
+		const blocker = await ElectronBlocker.fromPrebuiltFull((await import('cross-fetch')).fetch, {
+			path: `${ app.getPath('userData') }/electronblocker-cache.bin`,
 			read: fs.readFile,
 			write: fs.writeFile
 		});
@@ -105,7 +106,14 @@ protocol.registerSchemesAsPrivileged([
 
 app.on('quit', () => app.quit());
 app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') return app.quit();
+	if (process.platform !== 'darwin') {
+		// Allow some buffer time where one window may close so another one can open.
+		return setTimeout(() => {
+			const windowCount = BrowserWindow.getAllWindows().length;
+			if (windowCount === 0) app.quit();
+		}, WINDOW_ALL_CLOSED_BUFFER_TIME);
+	}
+
 	return null;
 });
 app.on('web-contents-created', (_event, webContents) => {

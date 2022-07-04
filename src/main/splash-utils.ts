@@ -36,11 +36,7 @@ export default class {
 				// Resolve the promise when everything is done and dusted in the splash window.
 				ipcMain.once(MESSAGE_SPLASH_DONE, () => {
 					info(`${ MESSAGE_SPLASH_DONE } received`);
-
-					// Hack to close the splash window without ending the electron process. TODO: Find better method.
-					setTimeout(() => {
-						WindowUtils.destroyWindow(window);
-					}, 1);
+					WindowUtils.destroyWindow(window);
 
 					resolve();
 				});
