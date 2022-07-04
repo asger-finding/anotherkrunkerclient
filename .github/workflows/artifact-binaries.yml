@@ -33,13 +33,13 @@ jobs:
       - name: Run build script
         run: node .github/macos-build-binaries.mjs
 
-      - name: Artifact latest builds
+      - name: Artifact binaries
         uses: actions/upload-artifact@v3
         with:
           name: binaries
           path: |
             binaries/*.exe
-            
+
             binaries/*.dmg
             binaries/*.pkg
 
