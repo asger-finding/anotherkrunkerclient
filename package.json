@@ -33,7 +33,7 @@
     "@types/module-alias": "^2.0.1",
     "@types/node": "12.12.21",
     "@typescript-eslint/eslint-plugin": "^5.30.0",
-    "@typescript-eslint/parser": "^5.30.0",
+    "@typescript-eslint/parser": "^5.30.5",
     "del": "^6.0.0",
     "electron": "^9",
     "electron-builder": "^23.1.0",
