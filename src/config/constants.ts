@@ -1,8 +1,8 @@
 import {
-	author as CLIENT_AUTHOR,
 	productName as CLIENT_NAME,
 	repository as CLIENT_REPO,
-	version as CLIENT_VERSION
+	version as CLIENT_VERSION,
+	author as _CLIENT_AUTHOR
 } from '../../package.json';
 import { DefaultConstructorOptions, WindowData, WindowSaveData } from '@client';
 import Store from 'electron-store';
@@ -10,6 +10,13 @@ import { app } from 'electron';
 import { resolve } from 'path';
 
 export const preferences = new Store();
+
+// The author field in package.json may appear as either a string or an object. Transform it to a string.
+let CLIENT_AUTHOR: string | Partial<{
+	name: string;
+	email: string;
+}> = _CLIENT_AUTHOR;
+if (CLIENT_AUTHOR instanceof Object) CLIENT_AUTHOR = `${ CLIENT_AUTHOR.name ?? '---' } <${ CLIENT_AUTHOR.email ?? '---' }>`;
 
 export { CLIENT_NAME, CLIENT_AUTHOR, CLIENT_VERSION, CLIENT_REPO };
 
