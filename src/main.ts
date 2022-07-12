@@ -73,7 +73,8 @@ class Application {
 
 	/** Register resource swapper file protocols */
 	private static registerFileProtocols(): void {
-		// Register resource swapper file protocols. TODO: Dynamic protocol source.
+		// Register resource swapper file protocols.
+		// TODO: Dynamic protocol source.
 		const protocolRegex = new RegExp(`^${ CLIENT_NAME }:`, 'u');
 		const protocolSource = global.resourceswapProtocolSource;
 
@@ -95,7 +96,8 @@ class Application {
 
 }
 
-// Register the protocol source for the resource swapper. TODO: User-specified protocol source in settings.
+// Register the protocol source for the resource swapper.
+// TODO: User-specified protocol source in settings.
 global.resourceswapProtocolSource = join(app.getPath('documents'), `/${ CLIENT_NAME }`);
 protocol.registerSchemesAsPrivileged([
 	{

@@ -11,7 +11,8 @@ import { resolve } from 'path';
 
 export const preferences = new Store();
 
-// The author field in package.json may appear as either a string or an object. Transform it to a string.
+// The author field in package.json may appear as either a string or an object.
+// Transform it to a string.
 let CLIENT_AUTHOR: string | Partial<{
 	name: string;
 	email: string;
@@ -41,7 +42,8 @@ export const ELECTRON_FLAGS = [
 	// Don't require user gesture for autoplay
 	['autoplay-policy', 'no-user-gesture-required'],
 
-	// Performance optimization flags. TODO: client setting for these
+	// Performance optimization flags.
+	// TODO: client setting for these
 	['enable-highres-timer'],
 	['enable-webgl'],
 	['enable-gpu-rasterization'],
