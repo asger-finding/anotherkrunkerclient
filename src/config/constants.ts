@@ -13,11 +13,11 @@ export const preferences = new Store();
 
 // The author field in package.json may appear as either a string or an object.
 // Transform it to a string.
-let CLIENT_AUTHOR: string | Partial<{
+let CLIENT_AUTHOR: string | {
 	name: string;
-	email: string;
-}> = _CLIENT_AUTHOR;
-if (CLIENT_AUTHOR instanceof Object) CLIENT_AUTHOR = `${ CLIENT_AUTHOR.name ?? '---' } <${ CLIENT_AUTHOR.email ?? '---' }>`;
+	email?: string;
+} = _CLIENT_AUTHOR;
+if (CLIENT_AUTHOR instanceof Object) CLIENT_AUTHOR = `${ CLIENT_AUTHOR.name } <${ CLIENT_AUTHOR.email ?? '---' }>`;
 
 export { CLIENT_NAME, CLIENT_AUTHOR, CLIENT_VERSION, CLIENT_REPO };
 
