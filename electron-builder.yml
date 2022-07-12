@@ -75,3 +75,5 @@ mac:
   category: public.app-category.games
   icon: media/icon.icns
   artifactName: anotherkrunkerclient-mac-${arch}.${ext}
+dmg:
+  writeUpdateInfo: false
