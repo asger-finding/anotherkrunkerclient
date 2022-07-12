@@ -13,7 +13,7 @@
     "bundle": "electron-builder",
     "prebundle": "gulp --state=production",
     "rebuild": "electron-builder install-app-deps",
-    "postinstall": "yarn rebuild && gulp clean",
+    "postinstall": "yarn rebuild",
     "lint": "yarn eslint . --ext .ts,.js"
   },
   "dependencies": {
