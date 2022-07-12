@@ -1,3 +1,5 @@
+[![Commit rate](https://img.shields.io/github/commit-activity/m/asger-finding/anotherkrunkerclient?label=Commits)](https://github.com/asger-finding/anotherkrunkerclient/commits/main)
+[![Issues](https://img.shields.io/github/issues/asger-finding/anotherkrunkerclient)](https://github.com/asger-finding/anotherkrunkerclient/issues)
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/asger-finding/anotherkrunkerclient/blob/main/LICENSE)
 [![Latest version](https://img.shields.io/github/v/release/asger-finding/anotherkrunkerclient?label=Latest%20Release)](https://github.com/asger-finding/anotherkrunkerclient/releases/latest)
 [![Discord server](https://img.shields.io/discord/971394904821485608.svg?label=Discord)](https://discord.gg/etxNkUuTru)
