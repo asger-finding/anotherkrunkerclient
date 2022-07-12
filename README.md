@@ -12,7 +12,7 @@
   <h1>anotherkrunkerclient</h1>
 </div>
 
-The be-all and end-all Krunker client.  
+The be-all and end-all of Krunker client.  
 All good features from other clients crammed into one neat, fast package. Built with boilerplate in mind so you may fork this project to create your own client.
 
 ---

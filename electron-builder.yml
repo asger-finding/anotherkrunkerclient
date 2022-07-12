@@ -15,6 +15,8 @@ directories:
   output: dist
 
 forceCodeSigning: false
+# artifactName is set programatically in .github/build-binaries when artifacting distribution builds.
+# Client name is pulled from productName in package.json.
 artifactName: anotherkrunkerclient-${os}-${arch}.${ext}
 
 win:
@@ -39,11 +41,27 @@ linux:
       arch: [x64]
     - target: rpm
       arch: [x64]
+    - target: deb
+      arch: [x64]
   icon: media/icon.icns
   category: Games
   executableName: anotherkrunkerclient
-  description: The be-all and end-all Krunker client
+  synopsis: The be-all and end-all of Krunker clients
+  description: |
+    anotherkrunkerclient is a super lightweight, easy-to-install krunker client. Built with boilerplate in mind.
+    This client aims to support all platforms, bug-free.
+    ㅤ
+    Philosophy and ambitions:
+     • Bug-free experience
+     • Privacy-respecting
+     • Easy to install
+     • Solid framework for customizability
+     • Extremely lightweight and fast
+     • Feature-heavy
   artifactName: anotherkrunkerclient-linux-${arch}.${ext}
+  desktop:
+    StartupNotify: 'false'
+    Encoding: UTF-8
 
 mac:
   target:

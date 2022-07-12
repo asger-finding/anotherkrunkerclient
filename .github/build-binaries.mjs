@@ -1,20 +1,19 @@
 import { mkdir, readFile, readdir, writeFile, rename, rm } from 'fs/promises';
 import packageJson from '../package.json' assert { type: 'json' };
-import { exec } from 'child_process';
+import { exec as syncExec } from 'child_process';
 import { promisify } from 'util';
-const asyncExec = promisify(exec);
+const exec = promisify(syncExec);
 
 // This script compiles for all major platforms, but to build for mac, you need to be in a darwin environment.
-if (process.platform !== 'darwin') throw new Error('This script must be run on macOS'); else await asyncExec('brew install rpm');
+if (process.platform === 'darwin') await exec('brew install rpm');
 
 const distFolder = 'dist';
 const binaryFolder = 'binaries';
 
 const ELECTRON_BUILDER = './electron-builder.yml';
 const CLIENT_NAME = packageJson.productName;
-const ELECTRON_VERSION = packageJson.devDependencies['electron'];
 
-await asyncExec('yarn && yarn add -D js-yaml modclean minify-all-js node-prune');
+await exec('yarn && yarn add -D js-yaml modclean minify-all-js node-prune');
 await rm(binaryFolder, { force: true, recursive: true });
 
 const { dump, load } = await import('js-yaml');
@@ -50,14 +49,14 @@ async function changeForLatest() {
     await writeFile(ELECTRON_BUILDER, dump(doc));
 
     // Bump electron version
-    return asyncExec('yarn add -D electron@^12');
+    return exec('yarn add -D electron@^12');
 }
 
 async function buildBinary() {
-    await asyncExec('yarn prebundle');
-    await asyncExec('yarn minify-all-js ./node_modules -j -M && yarn modclean -r -n default:safe && yarn node-prune');
-    await asyncExec('yarn electron-builder -mwl');
-    return asyncExec('yarn postinstall');
+    await exec('yarn prebundle');
+    await exec('yarn minify-all-js ./node_modules -j -M && yarn modclean -r -n default:safe && yarn node-prune');
+    await exec(`yarn electron-builder --win --linux ${ process.platform === 'darwin' ? '--mac' : '' }`);
+    return exec('yarn postinstall');
 }
 
 async function moveToBinaries() {
@@ -83,15 +82,5 @@ async function bundleLatest() {
     await moveToBinaries();
 }
 
-async function postbuild() {
-    // Return package.json packages
-    await asyncExec(`yarn add -D electron@${ ELECTRON_VERSION }`);
-    await asyncExec('yarn remove modclean minify-all-js node-prune js-yaml');
-
-    // Return electron-builder.yml to its original state
-    await writeFile(ELECTRON_BUILDER, electronBuilder);
-}
-
 bundleStable()
-.then(bundleLatest)
-//.then(postbuild);
+.then(bundleLatest);

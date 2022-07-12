@@ -11,6 +11,7 @@ jobs:
 
     strategy:
       matrix:
+        # This is all run on macos so artifacting is contained to one folder
         os: [macos-latest]
         node-version: [16.x]
 
@@ -31,7 +32,7 @@ jobs:
           cache-dependency-path: yarn.lock
 
       - name: Run build script
-        run: node .github/macos-build-binaries.mjs
+        run: node .github/build-binaries.mjs
 
       - name: Artifact binaries
         uses: actions/upload-artifact@v3

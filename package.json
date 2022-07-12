@@ -2,7 +2,7 @@
   "name": "anotherkrunkerclient",
   "productName": "anotherkrunkerclient",
   "version": "0.1.0",
-  "description": "Another damn Krunker client",
+  "description": "The be-all and end-all of Krunker clients",
   "author": "Asger Finding <asger.finding@gmail.com>",
   "license": "GPLV3",
   "private": true,
