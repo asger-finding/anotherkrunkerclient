@@ -1,4 +1,3 @@
-import * as openExternal from 'open';
 import { BrowserWindow, app, dialog } from 'electron';
 import {
 	TABS,
@@ -13,6 +12,7 @@ import { getSpoofedUA } from '@useragent-spoof';
 import { info } from '@logger';
 import { lt as lessThan } from 'semver';
 import { register } from 'electron-localshortcut';
+import { spawn } from 'child_process';
 
 export default class {
 
@@ -48,6 +48,14 @@ export default class {
 	private static async loadSpoofedURL(window: Electron.BrowserWindow, url: string): Promise<void> {
 		const spoofedUserAgent = await getSpoofedUA();
 		window.loadURL(url, spoofedUserAgent ? { userAgent: spoofedUserAgent } : {});
+	}
+
+	private static openExternal(url: string): void {
+		let command = 'xdg-open';
+		if (process.platform === 'darwin') command = 'open';
+		if (process.platform === 'win32') command = 'start';
+
+		spawn(command, [url]);
 	}
 
 	/**
@@ -108,7 +116,7 @@ export default class {
 				if (frameName === '_self') browserWindow.loadURL(newWindowURL);
 				else this.createWindow(getDefaultConstructorOptions(newWindowData.tab), newWindowURL);
 			} else {
-				openExternal(newWindowURL);
+				this.openExternal(newWindowURL);
 			}
 		});
 
@@ -116,7 +124,7 @@ export default class {
 			evt.preventDefault();
 
 			const newWindowData = getURLData(newWindowURL);
-			if (!newWindowData.isKrunker) openExternal(newWindowURL);
+			if (!newWindowData.isKrunker) this.openExternal(newWindowURL);
 			else if (!newWindowData.invalid) browserWindow.loadURL(newWindowURL);
 		});
 

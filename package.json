@@ -3,7 +3,10 @@
   "productName": "anotherkrunkerclient",
   "version": "0.1.0",
   "description": "The be-all and end-all of Krunker clients",
-  "author": "Asger Finding <asger.finding@gmail.com>",
+  "author": {
+    "name": "Asger Finding",
+    "email": "asger.finding@gmail.com"
+  },
   "license": "GPLV3",
   "private": true,
   "repository": "asger-finding/anotherkrunkerclient",
@@ -23,7 +26,6 @@
     "electron-store": "^8.0.1",
     "electron-updater": "5.0.5",
     "module-alias": "^2.2.2",
-    "open": "^8.4.0",
     "semver": "^7.3.6",
     "top-user-agents": "^1.0.46"
   },
