@@ -49,17 +49,17 @@ linux:
   category: Games
   executableName: anotherkrunkerclient
   synopsis: The be-all and end-all of Krunker clients
-  description: |
-    anotherkrunkerclient is a super lightweight, easy-to-install krunker client. Built with boilerplate in mind.
-    This client aims to support all platforms, bug-free.
-    ㅤ
-    Philosophy and ambitions:
-     • Bug-free experience
-     • Privacy-respecting
-     • Easy to install
-     • Solid framework for customizability
-     • Extremely lightweight and fast
-     • Feature-heavy
+  description:
+    "anotherkrunkerclient is a super lightweight, easy-to-install krunker client. Built with boilerplate in mind.\r
+    This client aims to support all platforms, bug-free.\r
+    \r
+    Philosophy and ambitions:\r
+     • Bug-free experience\r
+     • Privacy-respecting\r
+     • Easy to install\r
+     • Solid framework for heavy customizability\r
+     • Extremely lightweight and reasonably fast\r
+     • Feature-heavy"
   artifactName: anotherkrunkerclient-linux-${arch}.${ext}
   desktop:
     StartupNotify: 'false'
