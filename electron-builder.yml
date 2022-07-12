@@ -47,6 +47,7 @@ linux:
       arch: [x64]
   icon: media/icon.icns
   category: Games
+  packageCategory: Games
   executableName: anotherkrunkerclient
   synopsis: The be-all and end-all of Krunker clients
   description:
