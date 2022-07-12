@@ -4,10 +4,10 @@ import {
 	repository as CLIENT_REPO,
 	version as CLIENT_VERSION
 } from '../../package.json';
+import { DefaultConstructorOptions, WindowData, WindowSaveData } from '@client';
 import Store from 'electron-store';
-import { WindowData } from '@client';
 import { app } from 'electron';
-import { join } from 'path';
+import { resolve } from 'path';
 
 export const preferences = new Store();
 
@@ -97,24 +97,24 @@ export const MESSAGE_RELEASES_DATA = 'releases-data';
  * Returns the default window options, with sizing for the given tab.
  * @param name - The name of the tab to get sizing data for.
  */
-export const getDefaultConstructorOptions = (windowName: string | null): Electron.BrowserWindowConstructorOptions => {
-	const existsInTabs = Object.values(TABS).includes(windowName ?? '');
-
-	return <Electron.BrowserWindowConstructorOptions>{
-		width: existsInTabs ? preferences.get(`window.${ windowName }.width`, 1280) : 1280,
-		height: existsInTabs ? preferences.get(`window.${ windowName }.height`, 720) : 720,
-		fullscreen: existsInTabs ? preferences.get(`window.${ windowName }.fullscreen`, false) : false,
-		movable: true,
-		resizable: true,
-		fullscreenable: true,
-		backgroundColor: '#1c1c1c',
-		webPreferences: {
-			nodeIntegration: false,
-			contextIsolation: true,
-			worldSafeExecuteJavaScript: true,
-			enableRemoteModule: false
-		}
-	};
+export const getDefaultConstructorOptions = (windowName: string | null): DefaultConstructorOptions => <DefaultConstructorOptions>{
+	movable: true,
+	resizable: true,
+	fullscreenable: true,
+	backgroundColor: '#1c1c1c',
+	icon: resolve(__dirname, '../static/icon96x96.png'),
+	webPreferences: {
+		nodeIntegration: false,
+		contextIsolation: true,
+		worldSafeExecuteJavaScript: true,
+		enableRemoteModule: false
+	},
+	...preferences.get(`window.${ windowName }`, {
+		width: 1280,
+		height: 720,
+		fullscreen: false,
+		maximized: false
+	}) as WindowSaveData
 };
 
 // Returns the options for the primary game window.
@@ -123,7 +123,7 @@ export const GAME_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions 
 	show: false,
 	webPreferences: {
 		...getDefaultConstructorOptions(TABS.GAME).webPreferences,
-		preload: join(__dirname, '../window/game-pre'),
+		preload: resolve(__dirname, '../window/game-pre'),
 		contextIsolation: false
 	}
 };
@@ -142,11 +142,12 @@ export const SPLASH_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOption
 	resizable: false,
 	fullscreenable: false,
 	darkTheme: true,
+	icon: resolve(__dirname, '../static/icon96x96.png'),
 	webPreferences: {
 		contextIsolation: true,
 		worldSafeExecuteJavaScript: true,
 		enableRemoteModule: false,
-		preload: join(__dirname, '../window/splash-pre')
+		preload: resolve(__dirname, '../window/splash-pre')
 	}
 };
 

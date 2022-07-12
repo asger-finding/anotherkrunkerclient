@@ -52,3 +52,14 @@ export interface WindowData {
 	quickJoin: boolean,
 	invalid: boolean
 }
+
+export interface WindowSaveData {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	maximized: boolean;
+	fullscreen: boolean;
+}
+
+export type DefaultConstructorOptions = Electron.BrowserWindowConstructorOptions & WindowSaveData;

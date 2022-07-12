@@ -6,9 +6,9 @@ import {
 	getURLData,
 	preferences
 } from '@constants';
+import { WindowData, WindowSaveData } from '@client';
 import GameUtils from '@game-utils';
 import ResourceSwapper from '@resource-swapper';
-import { WindowData } from '@client';
 import { getSpoofedUA } from '@useragent-spoof';
 import { info } from '@logger';
 import { lt as lessThan } from 'semver';
@@ -90,7 +90,7 @@ export default class {
 		if (windowData.isInTabs) {
 			browserWindow.once('close', () => {
 				// Save the window sizing and bounds to the store
-				const windowPreferences = {
+				const windowPreferences: WindowSaveData = {
 					...browserWindow.getBounds(),
 					fullscreen: browserWindow.isFullScreen(),
 					maximized: browserWindow.isMaximized()
