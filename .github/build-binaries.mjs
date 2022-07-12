@@ -23,7 +23,7 @@ function createArtifactNames(state) {
     return {
         linux: `${ CLIENT_NAME }-linux-${ state ? state + '-' : '' }\${arch}.\${ext}`,
         win: `${ CLIENT_NAME }-win-${ state ? state + '-' : '' }\${arch}.\${ext}`,
-        macOS: `${ CLIENT_NAME }-macOS-${ state ? state + '-' : '' }\${arch}.\${ext}`
+        macOS: `${ CLIENT_NAME }-mac-${ state ? state + '-' : '' }\${arch}.\${ext}`
     }
 }
 

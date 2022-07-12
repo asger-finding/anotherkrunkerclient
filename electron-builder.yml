@@ -70,4 +70,4 @@ mac:
         - x64
   category: public.app-category.games
   icon: media/icon.icns
-  artifactName: anotherkrunkerclient-macOS-${arch}.${ext}
+  artifactName: anotherkrunkerclient-mac-${arch}.${ext}
