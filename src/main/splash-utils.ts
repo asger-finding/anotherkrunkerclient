@@ -49,7 +49,7 @@ export default class {
 		info('Setting Electron flags');
 
 		const { appendSwitch } = app.commandLine;
-		for (const flag of ELECTRON_FLAGS) appendSwitch(flag[0], flag[1]);
+		for (const [flag, value] of ELECTRON_FLAGS) appendSwitch(flag, value);
 	}
 
 	/**

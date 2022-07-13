@@ -32,7 +32,7 @@ export const QUICKJOIN_URL_QUERY_PARAM = 'quickjoin';
 // If not contained, it will throw an error whenever Constants is referenced outside the main process.
 export const IS_DEVELOPMENT = process.type === 'browser' ? !app.isPackaged : null;
 
-export const ELECTRON_FLAGS = [
+export const ELECTRON_FLAGS: Array<[string, string?]> = [
 
 	// Unlock the frame rate
 	['disable-frame-rate-limit'],
