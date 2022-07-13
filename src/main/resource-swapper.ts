@@ -77,7 +77,7 @@ export default class {
 						`*://*.${ TARGET_GAME_DOMAIN }/assets${ name }`,
 						`*://*.${ TARGET_GAME_DOMAIN }/assets${ name }?*`
 					];
-					this.urls.push(...(/^\/(?:models|textures|sound|scares)(?:$|\/)/u.test(name)
+					this.urls.push(...(/^\/(?:models|textures|sound|scares|videos)(?:$|\/)/u.test(name)
 						? tests
 						: [
 							...tests,
