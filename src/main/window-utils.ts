@@ -53,7 +53,7 @@ export default class {
 	private static openExternal(url: string): void {
 		let command = 'xdg-open';
 		if (process.platform === 'darwin') command = 'open';
-		if (process.platform === 'win32') command = 'start';
+		if (process.platform === 'win32') command = 'explorer';
 
 		spawn(command, [url]);
 	}
