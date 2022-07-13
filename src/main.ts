@@ -75,11 +75,10 @@ class Application {
 	private static registerFileProtocols(): void {
 		// Register resource swapper file protocols.
 		// TODO: Dynamic protocol source.
-		const protocolRegex = new RegExp(`^${ CLIENT_NAME }:`, 'u');
 		const protocolSource = global.resourceswapProtocolSource;
 
 		protocol.registerFileProtocol(CLIENT_NAME, (request, callback) => {
-			const url = request.url.replace(protocolRegex, '');
+			const url = request.url.replace(`${ CLIENT_NAME }:`, '');
 			callback(decodeURI(`${ protocolSource }${ url }`));
 		});
 	}
