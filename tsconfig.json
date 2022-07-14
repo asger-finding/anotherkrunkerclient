@@ -14,8 +14,6 @@
         "outDir": "build",
         "baseUrl": ".",
         "paths": {
-            "*": ["node_modules/*"],
-
             // src top-level
             "@color-utils": ["src/color-utils"],
             "@logger": ["src/logger"],

@@ -1,5 +1,3 @@
-import './aliases';
-
 import { BrowserWindow, app, protocol, session } from 'electron';
 import {
 	CLIENT_AUTHOR,
