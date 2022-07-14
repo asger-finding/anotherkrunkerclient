@@ -14,71 +14,53 @@ const ignore = require('gulp-ignore');
 const { argv } = yargs(process.argv.slice(2));
 const { map } = require('event-stream');
 const { parse } = require('acorn');
+const { simple } = require("acorn-walk")
 const { relative, resolve } = require('path');
 
-const { compilerOptions: { paths: tsAliases } } = require('./tsconfig.json');
+const { compilerOptions: { paths: tsPaths } } = require('./tsconfig.json');
 
-function detectRequire(node) {
-	return node.type === 'CallExpression' && node.callee.type === 'Identifier' && node.callee.name === 'require';
-}
-function transformArgument(node) {
-	if (node.type !== 'Literal') return;
-	return {
-		start: node.start,
-		end: node.end,
-		value: node.value
-	}
-}
 
 // TODO: Fix loop hell
 function moduleAlias() {
 	return map((file, callback) => {
-		let fileContent = file.contents.toString();
+		const requireAliases = [];
 		const filePath = file.path;
-		const ast = parse(fileContent, {
+		let fileContent = file.contents.toString();
+
+		simple(parse(fileContent, {
 			ecmaVersion: 'latest',
 			sourceType: 'module'
-		});
-		const requireAliases = [];
+		}), {
+			CallExpression(node) {
+				if (!node.callee) return;
+				if (node.callee.name === 'require') {
+					const [alias] = node.arguments;
 
-		for (const node of ast.body) {
-			if (node.type === 'ExpressionStatement' && detectRequire(node.expression)) {
-				requireAliases.push(transformArgument(node.expression.arguments[0]));
-			} else if (node.type === 'VariableDeclaration') {
-				for (const declaration of node.declarations) {
-					if (declaration.type === 'VariableDeclarator' && detectRequire(declaration.init)) {
-						requireAliases.push(transformArgument(declaration.init.arguments[0]));
+					if (alias.type === 'Literal' && tsPaths[alias.value]) {
+						requireAliases.push({
+							start: alias.start,
+							end: alias.end,
+							value: alias.value,
+							tsPath: tsPaths[alias.value][0]
+						});
 					}
 				}
 			}
-		}
-		for (const requireAlias of requireAliases) {
-			// requirePath may be undefined if node type is not 'Literal'
-			if (requireAlias) {
-				// Check if TypeScript has an alias for this module.
-				const tsPaths = tsAliases[requireAlias.value];
-				if (tsPaths instanceof Array) {
-					const [tsPath] = tsPaths;
-					const resolvedTsPath = resolve(__dirname, tsPath);
-					const path = './' + (relative(filePath, resolvedTsPath)).replace('../', '') + '.js';
+		});
 
-					// Get the diff between the alias and the file path.
-					const diff = path.length - requireAlias.value.length;
+		for (const alias of requireAliases) {
+			const resolvedTsPath = resolve(__dirname, alias.tsPath);
+			let path = './' + relative(resolve(__dirname, filePath), resolvedTsPath).substring(3);
 
-					// Strip the require call of its first parameter.
-					fileContent = fileContent.slice(0, requireAlias.start) + fileContent.slice(requireAlias.end);
+			const diff = path.length - alias.value.length;
 
-					// Insert tsPath into fileContent at requirePath.start.
-					fileContent = fileContent.slice(0, requireAlias.start) + `"${ path }"` + fileContent.slice(requireAlias.start);
+			fileContent = fileContent.slice(0, alias.start) + fileContent.slice(alias.end);
+			fileContent = fileContent.slice(0, alias.start) + `"${ path }"` + fileContent.slice(alias.start);
 
-					// Resolve the string length difference.
-					for (const node of requireAliases) {
-						if (!node) return;
-
-						node.start += diff;
-						node.end += diff;
-					}
-				}
+			// Shift all following aliases by the difference in length.
+			for (const node of requireAliases) {
+				node.start += diff;
+				node.end += diff;
 			}
 		}
 
@@ -140,7 +122,7 @@ function typescript() {
 			}
 		}))
 		.pipe(moduleAlias())
-		.pipe(ignore.exclude((file) => file.contents.length <= 12))
+		.pipe(ignore.exclude((file) => file.contents.length <= 14))
 		.pipe(gulp.dest(paths.build));
 }
 
