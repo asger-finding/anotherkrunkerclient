@@ -27,15 +27,11 @@ conditions; read ${ CLIENT_LICENSE_PERMALINK } for more details.\n`);
 
 class Application {
 
-	private splashWindow: Electron.BrowserWindow;
-
-	private gameWindow: Electron.BrowserWindow;
-
 	private eventHandler = new EventHandler();
 
 	/** Set flags, event listeners before the app is ready. */
 	public constructor() {
-		info('Constructing initializer class');
+		info('Constructing Application class');
 
 		SplashUtils.setFlags(app);
 		this.eventHandler.registerAppEventListeners();
@@ -48,19 +44,12 @@ class Application {
 	public async init(): Promise<void> {
 		Application.setAppName();
 		Application.registerFileProtocols();
-		const trackingPromise = Application.enableTrackerBlocking();
 
-		info('Initializing splash window');
-		const splashLoadTime = Date.now();
-
-		this.splashWindow = await WindowUtils.createWindow(SPLASH_CONSTRUCTOR_OPTIONS);
-		await SplashUtils.load(this.splashWindow);
-
-		info(`Splash window done after ${ Date.now() - splashLoadTime } ms`);
-		info('Initializing game window');
-
-		await trackingPromise;
-		this.gameWindow = await WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
+		await Promise.all([
+			WindowUtils.createWindow(SPLASH_CONSTRUCTOR_OPTIONS).then(window => SplashUtils.load(window)),
+			Application.enableTrackerBlocking()
+		]);
+		WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
 	}
 
 	/** Set the app name and the userdata path properly under development. */
@@ -77,20 +66,20 @@ class Application {
 		// TODO: Dynamic protocol source.
 		const protocolSource = global.resourceswapProtocolSource;
 
-		protocol.registerFileProtocol(CLIENT_NAME, (request, callback) => {
-			const url = request.url.replace(`${ CLIENT_NAME }:`, '');
-			callback(decodeURI(`${ protocolSource }${ url }`));
+		protocol.registerFileProtocol(CLIENT_NAME, ({ url }, callback) => {
+			callback(decodeURI(`${ protocolSource }${
+				url.replace(`${ CLIENT_NAME }:`, '')
+			}`));
 		});
 	}
 
 	/** Enable ad and tracker blocking */
-	private static async enableTrackerBlocking(): Promise<void> {
-		const blocker = await ElectronBlocker.fromPrebuiltFull((await import('cross-fetch')).fetch, {
+	private static async enableTrackerBlocking(): Promise<unknown> {
+		return ElectronBlocker.fromPrebuiltFull((await import('cross-fetch')).fetch, {
 			path: `${ app.getPath('userData') }/electronblocker-cache.bin`,
 			read: fs.readFile,
 			write: fs.writeFile
-		});
-		blocker.enableBlockingInSession(session.defaultSession);
+		}).then(blocker => blocker.enableBlockingInSession(session.defaultSession));
 	}
 
 }
