@@ -1,7 +1,6 @@
 import {
 	CLIENT_REPO,
 	CLIENT_VERSION,
-	ELECTRON_FLAGS,
 	IS_DEVELOPMENT,
 	MESSAGE_RELEASES_DATA,
 	MESSAGE_SPLASH_DONE
@@ -42,14 +41,6 @@ export default class {
 				});
 			});
 		});
-	}
-
-	/** Get Electron flags from Constants and set them in the app. */
-	public static setFlags(app: Electron.App): void {
-		info('Setting Electron flags');
-
-		const { appendSwitch } = app.commandLine;
-		for (const [flag, value] of ELECTRON_FLAGS) appendSwitch(flag, value);
 	}
 
 	/**

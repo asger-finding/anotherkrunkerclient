@@ -7,7 +7,7 @@ export default class {
 	private eventListeners: Map<string, Callback> = new Map();
 
 	/** Set up event listeners between main and renderer processes. */
-	public registerAppEventListeners(): void {
+	public registerEventListeners(): void {
 		// Close the client when MESSAGE_EXIT_CLIENT is called from the renderer process
 		this.registerEventListener(MESSAGE_EXIT_CLIENT, () => app.quit());
 	}

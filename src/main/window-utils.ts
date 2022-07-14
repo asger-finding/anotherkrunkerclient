@@ -128,14 +128,14 @@ export default class {
 			else if (!newWindowData.invalid) browserWindow.loadURL(newWindowURL);
 		});
 
-		webContents.on('will-prevent-unload', event => {
+		webContents.on('will-prevent-unload', evt => {
 			if (!dialog.showMessageBoxSync({
 				buttons: ['Leave', 'Cancel'],
 				title: 'Leave site?',
 				message: 'Changes you made may not be saved.',
 				type: 'question',
 				noLink: true
-			})) event.preventDefault();
+			})) evt.preventDefault();
 		});
 
 

@@ -5,6 +5,7 @@ import {
 	CLIENT_AUTHOR,
 	CLIENT_LICENSE_PERMALINK,
 	CLIENT_NAME,
+	ELECTRON_FLAGS,
 	GAME_CONSTRUCTOR_OPTIONS,
 	IS_DEVELOPMENT,
 	SPLASH_CONSTRUCTOR_OPTIONS,
@@ -27,21 +28,17 @@ conditions; read ${ CLIENT_LICENSE_PERMALINK } for more details.\n`);
 
 class Application {
 
-	private eventHandler = new EventHandler();
-
-	/** Set flags, event listeners before the app is ready. */
-	public constructor() {
-		info('Constructing Application class');
-
-		SplashUtils.setFlags(app);
-		this.eventHandler.registerAppEventListeners();
+	public static preAppReady(): void {
+		Application.registerAppEventListeners();
+		Application.setAppFlags();
+		new EventHandler().registerEventListeners();
 	}
 
 	/**
 	 * Initialize the app, register protocols.  
 	 * Create the splash window, followed by the game window.
 	 */
-	public async init(): Promise<void> {
+	public static async init(): Promise<void> {
 		Application.setAppName();
 		Application.registerFileProtocols();
 
@@ -52,12 +49,45 @@ class Application {
 		WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
 	}
 
+	private static registerAppEventListeners(): void {
+		info('Registering app event listeners');
+
+		app.on('quit', () => app.quit());
+		app.on('window-all-closed', () => {
+			if (process.platform !== 'darwin') {
+				// Allow some buffer time where one window may close so another one can open.
+				return setTimeout(() => {
+					const windowCount = BrowserWindow.getAllWindows().length;
+					if (windowCount === 0) app.quit();
+				}, WINDOW_ALL_CLOSED_BUFFER_TIME);
+			}
+
+			return null;
+		});
+		app.on('web-contents-created', (_evt, webContents) => {
+			webContents.on('select-bluetooth-device', (evt, _devices, callback) => {
+				evt.preventDefault();
+
+				// Cancel the request
+				callback('');
+			});
+		});
+	}
+
 	/** Set the app name and the userdata path properly under development. */
 	private static setAppName(): void {
 		if (IS_DEVELOPMENT) {
 			app.setName(CLIENT_NAME);
 			app.setPath('userData', join(app.getPath('appData'), CLIENT_NAME));
 		}
+	}
+
+	/** Get Electron flags and append them. */
+	private static setAppFlags(): void {
+		info('Setting Electron flags');
+
+		const { appendSwitch } = app.commandLine;
+		for (const [flag, value] of ELECTRON_FLAGS) appendSwitch(flag, value);
 	}
 
 	/** Register resource swapper file protocols */
@@ -94,32 +124,11 @@ protocol.registerSchemesAsPrivileged([
 	}
 ]);
 
-app.on('quit', () => app.quit());
-app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') {
-		// Allow some buffer time where one window may close so another one can open.
-		return setTimeout(() => {
-			const windowCount = BrowserWindow.getAllWindows().length;
-			if (windowCount === 0) app.quit();
-		}, WINDOW_ALL_CLOSED_BUFFER_TIME);
-	}
-
-	return null;
-});
-app.on('web-contents-created', (_event, webContents) => {
-	webContents.on('select-bluetooth-device', (evt, _devices, callback) => {
-		evt.preventDefault();
-
-		// Cancel the request
-		callback('');
-	});
-});
-
 if (!app.requestSingleInstanceLock()) { app.quit(); } else {
-	const client = new Application();
+	Application.preAppReady();
 
 	app.whenReady().then(async() => {
-		await client.init();
+		await Application.init();
 
 		info('Client initialized');
 	});
