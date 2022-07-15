@@ -43,3 +43,8 @@ To compile the app, run `yarn bundle` (node_modules minification only happens fo
 ### Notes for development
 
 Ensure that ESLint is enabled. Avoid all warnings and errors. kebab-case is used for file names. Make sure you respect the folder system of main, window, renderer and config.
+
+### Module aliasing
+
+anotherkrunkerclient uses a homebrew solution for module aliasing in Electron. The `_moduleAliases` field in package.json is for defining aliases and their targets.  
+When building the application in gulp, the TypeScript files are converted to JavaScript, then run through the homemade module aliasing function that finds `require` calls, takes the first string parameter (only works with literal strings), looks it up in `_moduleAliases` and if found, replaces it with a relative path to the module.
