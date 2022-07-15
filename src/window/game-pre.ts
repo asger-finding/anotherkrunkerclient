@@ -1,4 +1,3 @@
-import '../aliases';
 import '@game-settings';
 import '@game-api';
 

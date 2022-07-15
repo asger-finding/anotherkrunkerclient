@@ -10,7 +10,7 @@ plugins:
 ignorePatterns:
   - node_modules/
   - build/
-  - gulpfile.mjs
+  - gulpfile.js
   - make.mjs
 
 extends:
@@ -27,7 +27,7 @@ rules:
   '@typescript-eslint/comma-dangle': [error, never]
   '@typescript-eslint/space-before-function-paren': [error, never]
   no-trailing-spaces: [error, { ignoreComments: true }]
-  multiline-comment-style: ["error", "separate-lines"]
+  multiline-comment-style: [error, separate-lines]
   linebreak-style: 0
   sort-keys: 0
 

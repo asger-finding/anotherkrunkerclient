@@ -1,5 +1,3 @@
-import '../aliases';
-
 import { MESSAGE_SPLASH_DONE, SPLASH_ALIVE_TIME } from '@constants';
 import { ipcRenderer, shell } from 'electron';
 import { diff as versionDifference, gt as versionGreater } from 'semver';
