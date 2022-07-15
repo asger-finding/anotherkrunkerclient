@@ -14,6 +14,7 @@ import { ElectronBlocker } from '@cliqz/adblocker-electron';
 import EventHandler from '@event-handler';
 import SplashUtils from '@splash-utils';
 import WindowUtils from '@window-utils';
+import fetch from 'node-fetch';
 import { promises as fs } from 'fs';
 import { info } from '@logger';
 import { join } from 'path';
@@ -103,7 +104,7 @@ class Application {
 
 	/** Enable ad and tracker blocking */
 	private static async enableTrackerBlocking(): Promise<unknown> {
-		return ElectronBlocker.fromPrebuiltFull((await import('cross-fetch')).fetch, {
+		return ElectronBlocker.fromPrebuiltFull(fetch, {
 			path: `${ app.getPath('userData') }/electronblocker-cache.bin`,
 			read: fs.readFile,
 			write: fs.writeFile

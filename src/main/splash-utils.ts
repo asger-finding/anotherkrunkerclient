@@ -8,7 +8,7 @@ import {
 import { GitHubResponse, ReleaseData } from '@client';
 import { info, warn } from '@logger';
 import WindowUtils from '@window-utils';
-import { fetch } from 'cross-fetch';
+import fetch from 'node-fetch';
 import { ipcMain } from 'electron';
 import { join } from 'path';
 
