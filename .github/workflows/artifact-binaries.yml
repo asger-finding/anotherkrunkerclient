@@ -32,7 +32,7 @@ jobs:
           cache-dependency-path: yarn.lock
 
       - name: Run build script
-        run: node .github/build-binaries.mjs
+        run: node .github/build-binaries.js
 
       - name: Artifact binaries
         uses: actions/upload-artifact@v3
