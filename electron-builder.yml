@@ -45,7 +45,7 @@ linux:
       arch: [x64]
     - target: deb
       arch: [x64]
-  icon: media/icon.icns
+  icon: media/icon.svg
   category: Games
   packageCategory: Games
   executableName: anotherkrunkerclient
