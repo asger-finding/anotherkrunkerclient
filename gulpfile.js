@@ -31,14 +31,18 @@ function moduleAlias() {
 			CallExpression(node) {
 				if (!node.callee) return;
 				if (node.callee.name === 'require') {
-					const [alias] = node.arguments;
+					const [stringArg] = node.arguments;
+					const [before, ...rest] = stringArg.value.split('/');
+					rest.unshift('');
+					const after = rest.join('/');
 
-					if (alias.type === 'Literal' && alias.value in moduleAliases) {
+					if (stringArg.type === 'Literal' && before in moduleAliases) {
 						requireAliases.push({
-							start: alias.start,
-							end: alias.end,
-							alias: alias.value,
-							target: moduleAliases[alias.value]
+							start: stringArg.start,
+							end: stringArg.end,
+							alias: before,
+							target: moduleAliases[before],
+							optionalPath: after
 						});
 					}
 				}
@@ -47,9 +51,10 @@ function moduleAlias() {
 
 		for (const instance of requireAliases) {
 			const resolvedTarget = resolve(__dirname, instance.target);
-			const path = `./${ relative(resolve(__dirname, filePath), resolvedTarget).substring(3) }`;
+			const path = `./${ relative(resolve(__dirname, filePath), resolvedTarget).substring(3) }` + instance.optionalPath;
 
-			const diff = path.length - instance.alias.length;
+			console.log(instance.alias.length, instance.optionalPath.length);
+			const diff = path.length - (instance.alias.length + instance.optionalPath.length);
 
 			fileContent = fileContent.slice(0, instance.start) + fileContent.slice(instance.end);
 			fileContent = `${ fileContent.slice(0, instance.start) }"${ path }"${ fileContent.slice(instance.start) }`;
