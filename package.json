@@ -22,15 +22,12 @@
   "_moduleAliases": {
     "@color-utils": "src/color-utils",
     "@logger": "src/logger",
-
     "@constants": "src/config/constants",
     "@client": "src/config/client",
-
     "@splash-pre-utils": "src/window/splash-pre-utils",
     "@game-api": "src/window/game-api",
     "@game-settings": "src/window/game-settings",
     "@function-hooker": "src/window/function-hooker",
-
     "@splash-utils": "src/main/splash-utils",
     "@game-utils": "src/main/game-utils",
     "@window-utils": "src/main/window-utils",
@@ -72,7 +69,6 @@
     "gulp-sass": "^5.1.0",
     "gulp-swc": "^1.2.3",
     "postcss": "^8.4.12",
-    "require-json5": "^1.3.0",
     "sass": "^1.53.0",
     "typescript": "^4.7.4",
     "yargs": "^17.4.0"
