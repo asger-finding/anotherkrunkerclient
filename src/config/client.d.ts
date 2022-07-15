@@ -46,7 +46,7 @@ export interface ReleaseData {
 
 export interface WindowData {
 	url: string | undefined,
-	tab: string | null,
+	tab?: string,
 	isInTabs: boolean,
 	isKrunker: boolean,
 	quickJoin: boolean,
@@ -63,3 +63,26 @@ export interface WindowSaveData {
 }
 
 export type DefaultConstructorOptions = Electron.BrowserWindowConstructorOptions & WindowSaveData;
+
+interface BrowserWindowCalls extends Record<keyof Electron.BrowserWindowConstructorOptions, keyof Electron.BrowserWindow> {
+	width: 'setSize',
+	height: 'setSize',
+	x: 'setPosition',
+	y: 'setPosition',
+	minWidth: 'setMinimumSize',
+	minHeight: 'setMinimumSize',
+	maxWidth: 'setMaximumSize',
+	maxHeight: 'setMaximumSize',
+	title: 'setTitle',
+	resizable: 'setResizable',
+	movable: 'setMovable',
+	alwaysOnTop: 'setAlwaysOnTop',
+	fullscreen: 'setFullScreen',
+	fullscreenable: 'setFullScreenable',
+	simpleFullscreen: 'setSimpleFullScreen',
+	skipTaskbar: 'setSkipTaskbar',
+	kiosk: 'setKiosk',
+	show: 'show',
+	maximizable: 'setMaximizable',
+	minimizable: 'setMinimizable'
+}

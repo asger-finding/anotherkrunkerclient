@@ -106,10 +106,11 @@ export const MESSAGE_RELEASES_DATA = 'releases-data';
  * Returns the default window options, with sizing for the given tab.
  * @param name - The name of the tab to get sizing data for.
  */
-export const getDefaultConstructorOptions = (windowName: string | null): DefaultConstructorOptions => <DefaultConstructorOptions>{
+export const getDefaultConstructorOptions = (windowName?: string): DefaultConstructorOptions => <DefaultConstructorOptions>{
 	movable: true,
 	resizable: true,
 	fullscreenable: true,
+	darkTheme: true,
 	backgroundColor: '#1c1c1c',
 	icon: resolve(__dirname, '../static/icon96x96.png'),
 	webPreferences: {
@@ -142,6 +143,7 @@ export const GAME_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions 
  * @returns Splash window constructor options
  */
 export const SPLASH_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions = {
+	...getDefaultConstructorOptions(),
 	width: 640,
 	height: 320,
 	show: false,
@@ -149,13 +151,11 @@ export const SPLASH_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOption
 	movable: false,
 	center: true,
 	resizable: false,
+	skipTaskbar: true,
+	alwaysOnTop: true,
 	fullscreenable: false,
-	darkTheme: true,
-	icon: resolve(__dirname, '../static/icon96x96.png'),
 	webPreferences: {
-		contextIsolation: true,
-		worldSafeExecuteJavaScript: true,
-		enableRemoteModule: false,
+		...getDefaultConstructorOptions().webPreferences,
 		preload: resolve(__dirname, '../window/splash-pre')
 	}
 };
@@ -189,7 +189,6 @@ export const getURLData = (baseURL?: string): WindowData => {
 		return {
 			url: baseURL,
 			invalid: true,
-			tab: null,
 			isInTabs: false,
 			isKrunker: false,
 			quickJoin: false

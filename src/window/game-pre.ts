@@ -38,7 +38,7 @@ const mapSettings: Partial<MapExport> = {
 };
 
 const functionHook = new FunctionHook();
-functionHook.hook('JSON.parse', (object: MapExport) => {
+functionHook.hook('JSON.parse', (object: MapExport | Record<string, unknown>) => {
 	// Check if the parsed object is a map export.
 	if (object.name && object.spawns) {
 		/**
