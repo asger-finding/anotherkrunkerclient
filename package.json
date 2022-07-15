@@ -19,6 +19,25 @@
     "postinstall": "yarn rebuild",
     "lint": "yarn eslint . --ext .ts,.js"
   },
+  "_moduleAliases": {
+    "@color-utils": "src/color-utils",
+    "@logger": "src/logger",
+
+    "@constants": "src/config/constants",
+    "@client": "src/config/client",
+
+    "@splash-pre-utils": "src/window/splash-pre-utils",
+    "@game-api": "src/window/game-api",
+    "@game-settings": "src/window/game-settings",
+    "@function-hooker": "src/window/function-hooker",
+
+    "@splash-utils": "src/main/splash-utils",
+    "@game-utils": "src/main/game-utils",
+    "@window-utils": "src/main/window-utils",
+    "@event-handler": "src/main/event-handler",
+    "@resource-swapper": "src/main/resource-swapper",
+    "@useragent-spoof": "src/main/useragent-spoof"
+  },
   "dependencies": {
     "@cliqz/adblocker-electron": "^1.23.8",
     "cross-fetch": "^3.1.5",

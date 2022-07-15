@@ -1,7 +1,6 @@
 // TODO: Switch to a modern alternative such as rollup or webpack.
 // I am most comfortable with the gulp, but it is no longer a good choice.
 
-require('require-json5').replace();
 const gulp = require('gulp');
 const del = require('del');
 const yargs = require('yargs');
@@ -17,7 +16,7 @@ const { parse } = require('acorn');
 const { simple } = require('acorn-walk');
 const { relative, resolve } = require('path');
 
-const { compilerOptions: { paths: tsPaths } } = require('./tsconfig.json');
+const moduleAliases = require('./package.json')._moduleAliases ?? {};
 
 function moduleAlias() {
 	return map((file, callback) => {
@@ -34,31 +33,31 @@ function moduleAlias() {
 				if (node.callee.name === 'require') {
 					const [alias] = node.arguments;
 
-					if (alias.type === 'Literal' && tsPaths[alias.value]) {
+					if (alias.type === 'Literal' && alias.value in moduleAliases) {
 						requireAliases.push({
 							start: alias.start,
 							end: alias.end,
-							value: alias.value,
-							tsPath: tsPaths[alias.value][0]
+							alias: alias.value,
+							target: moduleAliases[alias.value]
 						});
 					}
 				}
 			}
 		});
 
-		for (const alias of requireAliases) {
-			const resolvedTsPath = resolve(__dirname, alias.tsPath);
-			const path = `./${ relative(resolve(__dirname, filePath), resolvedTsPath).substring(3) }`;
+		for (const instance of requireAliases) {
+			const resolvedTarget = resolve(__dirname, instance.target);
+			const path = `./${ relative(resolve(__dirname, filePath), resolvedTarget).substring(3) }`;
 
-			const diff = path.length - alias.value.length;
+			const diff = path.length - instance.alias.length;
 
-			fileContent = fileContent.slice(0, alias.start) + fileContent.slice(alias.end);
-			fileContent = `${ fileContent.slice(0, alias.start) }"${ path }"${ fileContent.slice(alias.start) }`;
+			fileContent = fileContent.slice(0, instance.start) + fileContent.slice(instance.end);
+			fileContent = `${ fileContent.slice(0, instance.start) }"${ path }"${ fileContent.slice(instance.start) }`;
 
 			// Shift all following aliases by the difference in length.
-			for (const node of requireAliases) {
-				node.start += diff;
-				node.end += diff;
+			for (const inst of requireAliases) {
+				inst.start += diff;
+				inst.end += diff;
 			}
 		}
 
