@@ -32,9 +32,9 @@ function moduleAlias() {
 				if (!node.callee) return;
 				if (node.callee.name === 'require') {
 					const [stringArg] = node.arguments;
-					const [before, ...rest] = stringArg.value.split('/');
-					rest.unshift('');
-					const after = rest.join('/');
+					const [before, ...afterSlash] = stringArg.value.split('/');
+					afterSlash.unshift('');
+					const after = afterSlash.join('/');
 
 					if (stringArg.type === 'Literal' && before in moduleAliases) {
 						requireAliases.push({
@@ -156,5 +156,4 @@ function annihilation() {
 }
 
 module.exports.clean = clean;
-module.exports.annihilation = annihilation;
 module.exports.default = module.exports.build = gulp.series(state.prod ? annihilation : clean, gulp.parallel(typescript, sass, html, images));
