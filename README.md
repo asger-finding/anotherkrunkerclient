@@ -46,5 +46,7 @@ Ensure that ESLint is enabled. Avoid all warnings and errors. kebab-case is used
 
 ### Module aliasing
 
-anotherkrunkerclient uses a homebrew solution for module aliasing in Electron. The `_moduleAliases` field in package.json is for defining aliases and their targets.  
+anotherkrunkerclient uses a homebrew solution for module aliasing in Electron. The `_moduleAliases` field in package.json is for defining aliases and their targets.
+
+
 When building the application in gulp, the TypeScript files are converted to JavaScript, then run through the homemade module aliasing function that finds `require` calls, takes the first string parameter (only works with literal strings), looks it up in `_moduleAliases` and if found, replaces it with a relative path to the module.
