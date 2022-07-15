@@ -14,13 +14,11 @@ const ignore = require('gulp-ignore');
 const { argv } = yargs(process.argv.slice(2));
 const { map } = require('event-stream');
 const { parse } = require('acorn');
-const { simple } = require("acorn-walk")
+const { simple } = require('acorn-walk');
 const { relative, resolve } = require('path');
 
 const { compilerOptions: { paths: tsPaths } } = require('./tsconfig.json');
 
-
-// TODO: Fix loop hell
 function moduleAlias() {
 	return map((file, callback) => {
 		const requireAliases = [];
@@ -29,7 +27,7 @@ function moduleAlias() {
 
 		simple(parse(fileContent, {
 			ecmaVersion: 'latest',
-			sourceType: 'module'
+			sourceType: 'script'
 		}), {
 			CallExpression(node) {
 				if (!node.callee) return;
@@ -50,12 +48,12 @@ function moduleAlias() {
 
 		for (const alias of requireAliases) {
 			const resolvedTsPath = resolve(__dirname, alias.tsPath);
-			let path = './' + relative(resolve(__dirname, filePath), resolvedTsPath).substring(3);
+			const path = `./${ relative(resolve(__dirname, filePath), resolvedTsPath).substring(3) }`;
 
 			const diff = path.length - alias.value.length;
 
 			fileContent = fileContent.slice(0, alias.start) + fileContent.slice(alias.end);
-			fileContent = fileContent.slice(0, alias.start) + `"${ path }"` + fileContent.slice(alias.start);
+			fileContent = `${ fileContent.slice(0, alias.start) }"${ path }"${ fileContent.slice(alias.start) }`;
 
 			// Shift all following aliases by the difference in length.
 			for (const node of requireAliases) {
@@ -70,16 +68,17 @@ function moduleAlias() {
 	});
 }
 
-const origin = './src';
+const source = './src';
+const MIN_FILE_LENGTH = 14;
 const paths = {
 	files: {
-		typescript: `${ origin }/**/*.ts`,
-		css : `${ origin }/**/*.@(css|sass)`,
-		html: `${ origin }/**/*.html`,
-		images: `${ origin }/**/*.@(png|jpg|jpeg|gif|svg|ico)`
+		typescript: `${ source }/**/*.ts`,
+		css: `${ source }/**/*.@(css|sass)`,
+		html: `${ source }/**/*.html`,
+		images: `${ source }/**/*.@(png|jpg|jpeg|gif|svg|ico)`
 	},
 	build: './build'
-}
+};
 const state = {
 	DEV: 'development',
 	PRODUCTION: 'production',
@@ -90,7 +89,7 @@ const state = {
 	get prod() {
 		return this.current === this.PRODUCTION;
 	}
-}
+};
 
 function typescript() {
 	return gulp.src(paths.files.typescript)
@@ -104,14 +103,14 @@ function typescript() {
 					dynamicImport: true
 				},
 				target: 'es2022',
-				...(state.prod ? {
-					minify: {
-						mangle: true,
-						compress: {
-							unused: true
+				...state.prod
+					? {
+						minify: {
+							mangle: true,
+							compress: { unused: true }
 						}
 					}
-				}: {})
+					: {}
 			},
 			module: {
 				type: 'commonjs',
@@ -122,15 +121,13 @@ function typescript() {
 			}
 		}))
 		.pipe(moduleAlias())
-		.pipe(ignore.exclude((file) => file.contents.length <= 14))
+		.pipe(ignore.exclude(file => file.contents.length <= MIN_FILE_LENGTH))
 		.pipe(gulp.dest(paths.build));
 }
 
 function sass() {
 	return gulp.src(paths.files.css)
-		.pipe(gulpsass({
-			outputStyle: (state.prod ? 'compressed' : 'expanded' )
-		}))
+		.pipe(gulpsass({ outputStyle: state.prod ? 'compressed' : 'expanded' }))
 		.pipe(gulp.dest(paths.build));
 }
 
@@ -157,5 +154,5 @@ function annihilation() {
 }
 
 module.exports.clean = clean;
-module.exports.annihilation;
-module.exports.default = module.exports.build = gulp.series((state.prod ? annihilation : clean), gulp.parallel(typescript, sass, html, images));
+module.exports.annihilation = annihilation;
+module.exports.default = module.exports.build = gulp.series(state.prod ? annihilation : clean, gulp.parallel(typescript, sass, html, images));
