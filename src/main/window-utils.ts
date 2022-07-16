@@ -92,16 +92,17 @@ export default class {
 	 * @param browserWindow - The window to inject the css in
 	 */
 	private static hideCaptchaBar(browserWindow: Electron.BrowserWindow): void {
-		browserWindow.webContents.once('dom-ready', () => browserWindow.webContents.executeJavaScript(`
-			function inject() {
-				const injectElement = document.createElement('style');
-				injectElement.innerHTML = 'body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }';
-				document.head.appendChild(injectElement);
-			}
+		browserWindow.webContents.executeJavaScript(`
+			(() => {
+				function inject() {
+					const injectElement = document.createElement('style');
+					injectElement.innerHTML = 'body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }';
+					document.head.appendChild(injectElement);
+				}
 
-			if (document.readyState === 'interactive' || document.readyState === 'complete') inject();
-			else document.addEventListener('DOMContentLoaded', inject);
-		`));
+				if (document.readyState === 'interactive' || document.readyState === 'complete') inject();
+				else document.addEventListener('DOMContentLoaded', inject);
+			})();`);
 	}
 
 	/**
