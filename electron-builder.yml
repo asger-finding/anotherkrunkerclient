@@ -8,6 +8,7 @@ compression: maximum
 files:
   - build/**/*
   - package.json
+  - LICENSE
   - '!node_modules/**/*.js.map'
   - '!node_modules/**/*.cjs.map'
   - '!node_modules/**/*.mjs.map'
