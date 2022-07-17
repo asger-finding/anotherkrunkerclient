@@ -1,8 +1,20 @@
 const { mkdir, readFile, readdir, writeFile, rename, rm } = require('fs/promises');
 const { exec: syncExec } = require('child_process');
-const { promisify } = require('util');
 const packageJson = require('../package.json');
-const exec = promisify(syncExec);
+
+async function exec(command) {
+    const proc = syncExec(command);
+
+    return new Promise((resolve, reject) => {
+        proc.stdout.on('data', data => process.stdout.write(data));
+        proc.stderr.on('data', data => process.stderr.write(data));
+
+        proc.on('close', code => {
+            if (code === 0) resolve();
+            else reject(code);
+        });
+    });
+}
 
 (async() => {
     // This script compiles for all major platforms, but to build for mac, you need to be in a darwin environment.
