@@ -9,7 +9,7 @@ export default class {
 	private target: string = global.resourceswapProtocolSource;
 
 	/** Target window. */
-	private browswerWindow: Electron.BrowserWindow;
+	private browserWindow: Electron.BrowserWindow;
 
 	/** The list of URLs to swap. */
 	private urls: string[] = [];
@@ -20,10 +20,10 @@ export default class {
 	/**
 	 * Set the target window.
 	 *
-	 * @param browswerWindow - The target window.
+	 * @param browserWindow - The target window.
 	 */
-	public constructor(browswerWindow: Electron.BrowserWindow) {
-		this.browswerWindow = browswerWindow;
+	public constructor(browserWindow: Electron.BrowserWindow) {
+		this.browserWindow = browserWindow;
 	}
 
 	/** Initialize the resource swapper for the target window.*/
@@ -35,7 +35,7 @@ export default class {
 
 		this.readSwapDirectory();
 		if (this.urls.length) {
-			this.browswerWindow.webContents.session.webRequest.onBeforeRequest({ urls: this.urls }, (details, callback) => {
+			this.browserWindow.webContents.session.webRequest.onBeforeRequest({ urls: this.urls }, (details, callback) => {
 				const path = new URL(details.url).pathname;
 
 				// Redirect to the local resource.
@@ -44,7 +44,7 @@ export default class {
 		}
 
 		// Fix CORS problem with browserfps.com.
-		this.browswerWindow.webContents.session.webRequest.onHeadersReceived(({ responseHeaders }, callback) => {
+		this.browserWindow.webContents.session.webRequest.onHeadersReceived(({ responseHeaders }, callback) => {
 			for (const key in responseHeaders) {
 				const lowercase = key.toLowerCase();
 
