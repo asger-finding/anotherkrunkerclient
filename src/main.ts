@@ -1,4 +1,4 @@
-import { BrowserWindow, app, protocol, session } from 'electron';
+import { BrowserWindow, app, ipcMain, protocol, session } from 'electron';
 import {
 	CLIENT_AUTHOR,
 	CLIENT_LICENSE_PERMALINK,
@@ -6,12 +6,12 @@ import {
 	ELECTRON_FLAGS,
 	GAME_CONSTRUCTOR_OPTIONS,
 	IS_DEVELOPMENT,
+	MESSAGE_EXIT_CLIENT,
 	SPLASH_CONSTRUCTOR_OPTIONS,
 	TARGET_GAME_URL,
 	WINDOW_ALL_CLOSED_BUFFER_TIME
 } from '@constants';
 import { ElectronBlocker } from '@cliqz/adblocker-electron';
-import EventHandler from '@event-handler';
 import SplashUtils from '@splash-utils';
 import WindowUtils from '@window-utils';
 import fetch from 'node-fetch';
@@ -30,8 +30,8 @@ class Application {
 	/** Run the things possible before the app reaches the ready state. */
 	public static preAppReady(): void {
 		Application.registerAppEventListeners();
+		Application.registerIpcEventListeners();
 		Application.setAppFlags();
-		new EventHandler().registerEventListeners();
 	}
 
 	/**
@@ -73,6 +73,13 @@ class Application {
 				callback('');
 			});
 		});
+	}
+
+	/** Register the listeners between ipcMain and ipcRenderer */
+	private static registerIpcEventListeners(): void {
+		info('Registering ipc event listeners');
+
+		ipcMain.on(MESSAGE_EXIT_CLIENT, app.quit);
 	}
 
 	/** Set the app name and the userdata path properly under development. */

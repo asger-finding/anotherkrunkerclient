@@ -34,7 +34,7 @@ export function info(...args: unknown[]): void {
  * @param args - The arguments to log
  */
 export function warn(...args: unknown[]): void {
-	if (IS_DEVELOPMENT) console.log('\x1b[33m%s\x1b[0m', newTimestamp(), separator, ...args);
+	if (IS_DEVELOPMENT) console.warn('\x1b[33m%s\x1b[0m', newTimestamp(), separator, ...args);
 }
 
 /**
@@ -43,5 +43,5 @@ export function warn(...args: unknown[]): void {
  * @param args - The arguments to log
  */
 export function error(...args: unknown[]): void {
-	if (IS_DEVELOPMENT) console.log('\x1b[31m%s\x1b[0m', newTimestamp(), separator, ...args);
+	if (IS_DEVELOPMENT) console.error('\x1b[31m%s\x1b[0m', newTimestamp(), separator, ...args);
 }

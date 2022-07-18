@@ -19,7 +19,7 @@ function transformSplash(releaseData: ReleaseData): void {
 	if (clientUpdateElement instanceof HTMLSpanElement && versionGreater(releaseVersion, clientVersion)) {
 		info(`Client update available: ${ releaseVersion }`);
 
-		clientUpdateElement.innerText += `new ${ versionDifference(rel.clientVersion, releaseVersion) } release available: `;
+		clientUpdateElement.innerText += `new ${ versionDifference(clientVersion, releaseVersion) } release available: `;
 		clientUpdateElement.append(Object.assign(document.createElement('a'), {
 			href: '#',
 			innerText: releaseVersion,
@@ -39,6 +39,7 @@ function transformSplash(releaseData: ReleaseData): void {
 
 	setTimeout(() => {
 		info(`Invoking ${ MESSAGE_SPLASH_DONE }`);
+
 		ipcRenderer.send(MESSAGE_SPLASH_DONE);
 	}, SPLASH_ALIVE_TIME);
 }

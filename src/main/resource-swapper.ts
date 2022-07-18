@@ -33,7 +33,8 @@ export default class {
 		// If the target directory doesn't exist, create it.
 		if (!existsSync(global.resourceswapProtocolSource)) mkdirSync(global.resourceswapProtocolSource, { recursive: true });
 
-		this.readSwapDirectory();
+		this.recursiveSwap('');
+
 		if (this.urls.length) {
 			this.browserWindow.webContents.session.webRequest.onBeforeRequest({ urls: this.urls }, (details, callback) => {
 				const path = new URL(details.url).pathname;
@@ -69,15 +70,6 @@ export default class {
 		this.started = true;
 	}
 
-	/** Clear the urls array and read the target directory. */
-	public readSwapDirectory(): void {
-		// Clear the list of URLs.
-		this.urls = [];
-
-		// Read over 
-		this.recursiveSwap('');
-	}
-
 	/**
 	 * Recursively swap all files in the target directory.
 	 *
@@ -89,7 +81,9 @@ export default class {
 				const name = `${ prefix }/${ dirent.name }`;
 
 				// If the file is a directory, swap it recursively.
-				if (dirent.isDirectory()) { this.recursiveSwap(name); } else {
+				if (dirent.isDirectory()) {
+					this.recursiveSwap(name);
+				} else {
 					// browserfps.com has the server name as the subdomain instead of 'assets', so we must take that into account.
 					const tests = [
 						`*://*.${ TARGET_GAME_DOMAIN }${ name }`,

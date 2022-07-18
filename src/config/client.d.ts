@@ -33,7 +33,7 @@ export type Callback = (...args: never[]) => unknown;
 
 export type AsyncReturnType<Target extends (...args: unknown[]) => Promise<unknown>> = Awaited<ReturnType<Target>>;
 
-interface GitHubResponse extends Response {
+interface GitHubResponse {
 	data?: {
 		tag_name: string;
 		html_url: string;
@@ -65,26 +65,3 @@ export interface WindowSaveData {
 }
 
 export type DefaultConstructorOptions = Electron.BrowserWindowConstructorOptions & WindowSaveData;
-
-interface BrowserWindowCalls extends Record<keyof Electron.BrowserWindowConstructorOptions, keyof Electron.BrowserWindow> {
-	width: 'setSize',
-	height: 'setSize',
-	x: 'setPosition',
-	y: 'setPosition',
-	show: 'show',
-	title: 'setTitle',
-	resizable: 'setResizable',
-	alwaysOnTop: 'setAlwaysOnTop',
-	fullscreen: 'setFullScreen',
-	fullscreenable: 'setFullScreenable',
-	simpleFullscreen: 'setSimpleFullScreen',
-	skipTaskbar: 'setSkipTaskbar',
-	kiosk: 'setKiosk',
-	maximizable: 'setMaximizable',
-	minimizable: 'setMinimizable',
-	maxWidth: 'setMaximumSize',
-	maxHeight: 'setMaximumSize',
-	minWidth: 'setMinimumSize',
-	minHeight: 'setMinimumSize',
-	movable: 'setMovable',
-}
