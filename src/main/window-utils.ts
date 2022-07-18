@@ -1,3 +1,4 @@
+import { AsyncReturnType, WindowData, WindowSaveData } from '@client';
 import { BrowserWindow, app, dialog } from 'electron';
 import {
 	TABS,
@@ -5,7 +6,6 @@ import {
 	getURLData,
 	preferences
 } from '@constants';
-import { WindowData, WindowSaveData } from '@client';
 import GameUtils from '@game-utils';
 import ResourceSwapper from '@resource-swapper';
 import { getSpoofedUA } from '@useragent-spoof';
@@ -14,17 +14,34 @@ import { lt as lessThan } from 'semver';
 import { register } from 'electron-localshortcut';
 import { spawn } from 'child_process';
 
-export function krunkerNavigate(browserWindow: BrowserWindow & { resourceSwapper?: ResourceSwapper }, windowUrl?: string): void {
-	if (windowUrl) browserWindow.loadURL(windowUrl);
+/**
+ * Load a URL in the specified window with a spoofed user agent
+ * @param browserWindow - The target window to spoof
+ * @param url - URL to load
+ */
+async function loadSpoofedURL(browserWindow: Electron.BrowserWindow, windowUrl: string): Promise<void> {
+	let ua: AsyncReturnType<typeof getSpoofedUA> = '';
+	const windowUserAgent = browserWindow.webContents.getUserAgent();
+	const isElectron = windowUserAgent.includes('Electron');
 
-	// Hide the captcha bar in the window that krunker may spawn.
-	browserWindow.webContents.once('did-frame-finish-load', () => {
-		browserWindow.webContents.insertCSS('body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }');
-	});
+	if (isElectron) ua = await getSpoofedUA();
+	browserWindow.loadURL(windowUrl, { userAgent: ua || windowUserAgent });
+}
 
-	// Assign the BrowserWindow a ResourceSwapper.
-	if (!browserWindow.resourceSwapper) browserWindow.resourceSwapper = new ResourceSwapper(browserWindow);
-	browserWindow.resourceSwapper.start();
+export function navigate(browserWindow: BrowserWindow & { resourceSwapper?: ResourceSwapper }, windowUrl?: string): void {
+	if (windowUrl) loadSpoofedURL(browserWindow, windowUrl);
+	const { isKrunker } = getURLData(windowUrl ?? browserWindow.webContents.getURL());
+
+	if (isKrunker) {
+		// Hide the captcha bar in the window that krunker may spawn.
+		browserWindow.webContents.once('did-frame-finish-load', () => {
+			browserWindow.webContents.insertCSS('body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }');
+		});
+
+		// Assign the BrowserWindow a ResourceSwapper.
+		if (!browserWindow.resourceSwapper) browserWindow.resourceSwapper = new ResourceSwapper(browserWindow);
+		browserWindow.resourceSwapper.start();
+	}
 }
 
 export default class {
@@ -41,9 +58,8 @@ export default class {
 		const windowData = getURLData(windowURL);
 		const browserWindow = new BrowserWindow(constructorOptions);
 
-		if (windowURL) this.loadSpoofedURL(browserWindow, windowURL);
+		if (windowURL) navigate(browserWindow, windowURL);
 		if (preferences.get(`window.${ windowData.tab }.maximized`)) browserWindow.maximize();
-		if (windowData.isKrunker) krunkerNavigate(browserWindow);
 
 		browserWindow.removeMenu();
 
@@ -52,16 +68,6 @@ export default class {
 		if (typeof specialWindowCb === 'function') await specialWindowCb(browserWindow);
 
 		return browserWindow;
-	}
-
-	/**
-	 * Load a URL in the specified window with a spoofed user agent
-	 * @param browserWindow - The target window to spoof
-	 * @param url - URL to load
-	 */
-	private static async loadSpoofedURL(window: Electron.BrowserWindow, url: string): Promise<void> {
-		const spoofedUserAgent = await getSpoofedUA();
-		window.loadURL(url, spoofedUserAgent ? { userAgent: spoofedUserAgent } : {});
 	}
 
 	/**
@@ -133,7 +139,7 @@ export default class {
 
 			const newWindowData = getURLData(newWindowURL);
 			if (newWindowData.isKrunker) {
-				if (frameName === '_self') browserWindow.loadURL(newWindowURL);
+				if (frameName === '_self') navigate(browserWindow, newWindowURL);
 				else this.createWindow(getDefaultConstructorOptions(newWindowData.tab), newWindowURL);
 			} else {
 				this.openExternal(newWindowURL);
@@ -144,12 +150,9 @@ export default class {
 			evt.preventDefault();
 
 			const newWindowData = getURLData(newWindowURL);
-			if (!newWindowData.isKrunker) {
-				this.openExternal(newWindowURL);
-			} else if (!newWindowData.invalid) {
-				await browserWindow.loadURL(newWindowURL);
-				this.hideCaptchaBar(browserWindow);
-			}
+
+			if (!newWindowData.isKrunker) this.openExternal(newWindowURL);
+			else if (!newWindowData.invalid) navigate(browserWindow, newWindowURL);
 		});
 
 		webContents.on('will-prevent-unload', evt => {

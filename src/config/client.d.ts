@@ -31,6 +31,8 @@ declare global {
 
 export type Callback = (...args: never[]) => unknown;
 
+export type AsyncReturnType<Target extends (...args: unknown[]) => Promise<unknown>> = Awaited<ReturnType<Target>>;
+
 interface GitHubResponse extends Response {
 	data?: {
 		tag_name: string;
