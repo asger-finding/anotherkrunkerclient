@@ -14,6 +14,19 @@ import { lt as lessThan } from 'semver';
 import { register } from 'electron-localshortcut';
 import { spawn } from 'child_process';
 
+export function krunkerNavigate(browserWindow: BrowserWindow & { resourceSwapper?: ResourceSwapper }, windowUrl?: string): void {
+	if (windowUrl) browserWindow.loadURL(windowUrl);
+
+	// Hide the captcha bar in the window that krunker may spawn.
+	browserWindow.webContents.once('did-frame-finish-load', () => {
+		browserWindow.webContents.insertCSS('body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }');
+	});
+
+	// Assign the BrowserWindow a ResourceSwapper.
+	if (!browserWindow.resourceSwapper) browserWindow.resourceSwapper = new ResourceSwapper(browserWindow);
+	browserWindow.resourceSwapper.start();
+}
+
 export default class {
 
 	/**
@@ -30,10 +43,8 @@ export default class {
 
 		if (windowURL) this.loadSpoofedURL(browserWindow, windowURL);
 		if (preferences.get(`window.${ windowData.tab }.maximized`)) browserWindow.maximize();
-		if (windowData.isKrunker) {
-			this.registerSwapper(browserWindow);
-			this.hideCaptchaBar(browserWindow);
-		}
+		if (windowData.isKrunker) krunkerNavigate(browserWindow);
+
 		browserWindow.removeMenu();
 
 		this.registerEventListeners(constructorOptions, browserWindow, windowData);
@@ -53,6 +64,11 @@ export default class {
 		window.loadURL(url, spoofedUserAgent ? { userAgent: spoofedUserAgent } : {});
 	}
 
+	/**
+	 * Open an outlink in the default browser.
+	 * Fix for `shell.openExternal()` in some electron versions.
+	 * @param url - The URL to open externally
+	 */
 	private static openExternal(url: string): void {
 		let command = 'xdg-open';
 		if (process.platform === 'darwin') command = 'open';
@@ -76,15 +92,6 @@ export default class {
 		register(browserWindow, ['F5', 'Ctrl+R'], () => webContents.reload());
 		register(browserWindow, ['Ctrl+F5', 'Ctrl+Shift+R'], () => webContents.reloadIgnoringCache());
 		register(browserWindow, ['F12', 'Ctrl+Shift+I'], () => this.openDevToolsWithFallback(browserWindow));
-	}
-
-	/**
-	 * Register the resource swapper for the window. Should be done before dom-ready.
-	 * @param browserWindow - The window to register the event on
-	 */
-	private static registerSwapper(browserWindow: Electron.BrowserWindow): void {
-		const resourceSwapper = new ResourceSwapper(browserWindow);
-		return resourceSwapper.start();
 	}
 
 	/**
@@ -133,14 +140,15 @@ export default class {
 			}
 		});
 
-		webContents.on('will-navigate', (evt, newWindowURL) => {
+		webContents.on('will-navigate', async(evt, newWindowURL) => {
 			evt.preventDefault();
 
 			const newWindowData = getURLData(newWindowURL);
-			if (!newWindowData.isKrunker) this.openExternal(newWindowURL);
-			else if (!newWindowData.invalid) {
+			if (!newWindowData.isKrunker) {
+				this.openExternal(newWindowURL);
+			} else if (!newWindowData.invalid) {
+				await browserWindow.loadURL(newWindowURL);
 				this.hideCaptchaBar(browserWindow);
-				browserWindow.loadURL(newWindowURL);
 			}
 		});
 

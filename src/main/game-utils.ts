@@ -1,6 +1,7 @@
 import { MESSAGE_GAME_DONE, QUICKJOIN_URL_QUERY_PARAM, TARGET_GAME_URL } from '@constants';
 import { info } from '@logger';
 import { ipcMain } from 'electron';
+import { krunkerNavigate } from '@window-utils';
 import { register } from 'electron-localshortcut';
 
 export default class {
@@ -14,8 +15,8 @@ export default class {
 	public static load(window: Electron.BrowserWindow): Promise<void> {
 		// Show the game window when things have all loaded.
 		return new Promise<void>(resolve => {
-			register(window, 'F6', () => window.loadURL(TARGET_GAME_URL));
-			register(window, 'F4', () => window.loadURL(`${ TARGET_GAME_URL }?${ QUICKJOIN_URL_QUERY_PARAM }`));
+			register(window, 'F6', () => krunkerNavigate(window, TARGET_GAME_URL));
+			register(window, 'F4', () => krunkerNavigate(window, `${ TARGET_GAME_URL }?${ QUICKJOIN_URL_QUERY_PARAM }`));
 
 			window.once('ready-to-show', () => {
 				info('ready-to-show reached on Game window');

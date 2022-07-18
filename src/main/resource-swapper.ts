@@ -14,6 +14,9 @@ export default class {
 	/** The list of URLs to swap. */
 	private urls: string[] = [];
 
+	/** Has start() been called on the class? */
+	private started = false;
+
 	/**
 	 * Set the target window.
 	 * @param window - The target window.
@@ -24,6 +27,8 @@ export default class {
 
 	/** Initialize the resource swapper for the target window.*/
 	public start(): void {
+		if (this.started) return;
+
 		// If the target directory doesn't exist, create it.
 		if (!existsSync(global.resourceswapProtocolSource)) mkdirSync(global.resourceswapProtocolSource, { recursive: true });
 
@@ -59,6 +64,8 @@ export default class {
 				}
 			});
 		});
+
+		this.started = true;
 	}
 
 	public readSwapDirectory(): void {
