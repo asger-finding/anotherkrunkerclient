@@ -104,7 +104,9 @@ export const MESSAGE_RELEASES_DATA = 'releases-data';
 
 /**
  * Returns the default window options, with sizing for the given tab.
- * @param name - The name of the tab to get sizing data for.
+ *
+ * @param windowName - The name of the tab to get sizing data for.
+ * @returns The default window constructor options.
  */
 export const getDefaultConstructorOptions = (windowName?: string): DefaultConstructorOptions => <DefaultConstructorOptions>{
 	movable: true,
@@ -127,7 +129,7 @@ export const getDefaultConstructorOptions = (windowName?: string): DefaultConstr
 	}) as WindowSaveData
 };
 
-// Returns the options for the primary game window.
+/** The BrowserWindowConstructorOptions for the game window */
 export const GAME_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions = {
 	...getDefaultConstructorOptions(TABS.GAME),
 	show: false,
@@ -140,6 +142,7 @@ export const GAME_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions 
 
 /**
  * Get the window constructor options for the splash screen.
+ *
  * @returns Splash window constructor options
  */
 export const SPLASH_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions = {
@@ -162,6 +165,7 @@ export const SPLASH_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOption
 
 /**
  * Returns the current Krunker tab (if any), whether we're on Krunker, what Krunker tab we're on, and whether quickJoin is enabled
+ *
  * @param baseURL - The URL to analyze
  * @returns Analyzed URL
  */

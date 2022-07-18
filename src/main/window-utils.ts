@@ -16,8 +16,9 @@ import { spawn } from 'child_process';
 
 /**
  * Load a URL in the specified window with a spoofed user agent
+ *
  * @param browserWindow - The target window to spoof
- * @param url - URL to load
+ * @param windowUrl - URL to load
  */
 async function loadSpoofedURL(browserWindow: Electron.BrowserWindow, windowUrl: string): Promise<void> {
 	let ua: AsyncReturnType<typeof getSpoofedUA> = '';
@@ -28,6 +29,13 @@ async function loadSpoofedURL(browserWindow: Electron.BrowserWindow, windowUrl: 
 	browserWindow.loadURL(windowUrl, { userAgent: ua || windowUserAgent });
 }
 
+/**
+ * Run when navigated (exclude `windowUrl` param) or when navigating (include `windowUrl` param) to a new URL.
+ * Spoofs the user agent, loads the URL, and triggers site-specific behavior.
+ *
+ * @param browserWindow - The target window
+ * @param windowUrl - URL to load, if any
+ */
 export function navigate(browserWindow: BrowserWindow & { resourceSwapper?: ResourceSwapper }, windowUrl?: string): void {
 	if (windowUrl) loadSpoofedURL(browserWindow, windowUrl);
 	const { isKrunker } = getURLData(windowUrl ?? browserWindow.webContents.getURL());
@@ -44,12 +52,27 @@ export function navigate(browserWindow: BrowserWindow & { resourceSwapper?: Reso
 	}
 }
 
+/**
+ * Open an outlink in the default browser.
+ * Fix for `shell.openExternal()` in some electron versions.
+ *
+ * @param url - The URL to open externally
+ */
+export function openExternal(url: string): void {
+	let command = 'xdg-open';
+	if (process.platform === 'darwin') command = 'open';
+	if (process.platform === 'win32') command = 'explorer';
+
+	spawn(command, [url]);
+}
+
 export default class {
 
 	/**
 	 * Create a new window instance, load given URL (if any)  
 	 * Register shortcuts for the window. If show is true in parameters, show the window.  
 	 * If the window is a Krunker tab, set the window scaling preferences.
+	 *
 	 * @param constructorOptions - The options to pass to the window constructor
 	 * @param windowURL - The URL to load in the window
 	 * @returns Newly generated window instance
@@ -71,21 +94,9 @@ export default class {
 	}
 
 	/**
-	 * Open an outlink in the default browser.
-	 * Fix for `shell.openExternal()` in some electron versions.
-	 * @param url - The URL to open externally
-	 */
-	private static openExternal(url: string): void {
-		let command = 'xdg-open';
-		if (process.platform === 'darwin') command = 'open';
-		if (process.platform === 'win32') command = 'explorer';
-
-		spawn(command, [url]);
-	}
-
-	/**
 	 * Register global shortcuts for the window. Should be done before dom-ready
-	 * @param window - The window to register the event on
+	 *
+	 * @param browserWindow - The window to register the event on
 	 */
 	private static registerShortcuts(browserWindow: Electron.BrowserWindow): void {
 		const { webContents } = browserWindow;
@@ -101,18 +112,9 @@ export default class {
 	}
 
 	/**
-	 * Hide the captcha bar in the window that krunker may spawn.
-	 * @param browserWindow - The window to inject the css in
-	 */
-	private static hideCaptchaBar(browserWindow: Electron.BrowserWindow): void {
-		browserWindow.webContents.once('did-frame-finish-load', () => {
-			browserWindow.webContents.insertCSS('body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }');
-		});
-	}
-
-	/**
 	 * Create electron event listeners for the window.  
 	 * Some one-time events are triggered onces, some are triggered on every event.
+	 *
 	 * @param constructorOptions - The parameters the window was created with
 	 * @param browserWindow - Target window
 	 * @param windowData - Data from Constants.getURLData on the target window URL
@@ -142,7 +144,7 @@ export default class {
 				if (frameName === '_self') navigate(browserWindow, newWindowURL);
 				else this.createWindow(getDefaultConstructorOptions(newWindowData.tab), newWindowURL);
 			} else {
-				this.openExternal(newWindowURL);
+				openExternal(newWindowURL);
 			}
 		});
 
@@ -151,7 +153,7 @@ export default class {
 
 			const newWindowData = getURLData(newWindowURL);
 
-			if (!newWindowData.isKrunker) this.openExternal(newWindowURL);
+			if (!newWindowData.isKrunker) openExternal(newWindowURL);
 			else if (!newWindowData.invalid) navigate(browserWindow, newWindowURL);
 		});
 
@@ -182,6 +184,7 @@ export default class {
 
 	/**
 	 * If the tab matches the switch case, apply tab-specific methods to the window.
+	 *
 	 * @param windowData - Data from Constants.getURLData on the target window URL
 	 * @returns A function that returns a void promise when all is done
 	 */
@@ -197,6 +200,7 @@ export default class {
 	/**
 	 * Attempt to open the DevTools for the window.
 	 * If it refuses to open after 500 ms, use a fallback method.
+	 *
 	 * @param window - The window to open the DevTools in
 	 * @param mode - The mode to open the DevTools in
 	 */
@@ -225,6 +229,7 @@ export default class {
 
 	/**
 	 * Destroy the splash window.
+	 *
 	 * @param browserWindow - The window to destroy
 	 */
 	public static destroyWindow(browserWindow: Electron.BrowserWindow): void {

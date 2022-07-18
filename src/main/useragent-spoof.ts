@@ -5,6 +5,7 @@ const storeSchema = 'userAgentSpoof';
 
 /**
  * Get the current operating system and return it in a format matching a UA.
+ *
  * @returns The operating system as it would appear in a user agent string
  */
 function getCurrentUAOS(): string {
@@ -23,6 +24,7 @@ function getCurrentUAOS(): string {
  * Get the saved user agent.
  * 
  * If its time to refresh the user agent, reset it in preferences and return null.
+ *
  * @returns The spoofed user agent, if any
  */
 function getCurrentUA(): string | null {
@@ -34,6 +36,7 @@ function getCurrentUA(): string | null {
 
 /**
  * Iterate over an array of top user agents and get the best match for the current OS.
+ *
  * @param userAgents - The user agents to choose from
  * @returns User agent to use
  */
@@ -58,6 +61,7 @@ function iterateOverUAs(userAgents: unknown): string {
 
 /**
  * Get a spoofed user agent from the top-user-agents package corresponding to the user operating system.
+ *
  * @returns The spoofed user agent string or null if no spoofed user agent is found
  */
 export async function getSpoofedUA(): Promise<(string | null)> {

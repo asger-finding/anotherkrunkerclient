@@ -14,6 +14,7 @@ export default class {
 
 	/**
 	 * Register an event listener for a message and set an id and callback for it.
+	 *
 	 * @param message - The message to listen for
 	 * @param callback - The callback to run when the message is received
 	 */
@@ -25,6 +26,7 @@ export default class {
 
 	/**
 	 * Remove all event listeners for a message.
+	 *
 	 * @param message - The message to remove the eventlisteners for
 	 */
 	public destroyAllEventListenersForMessage(message: string): void {

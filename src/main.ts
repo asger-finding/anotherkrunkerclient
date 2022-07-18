@@ -27,6 +27,7 @@ conditions; read ${ CLIENT_LICENSE_PERMALINK } for more details.\n`);
 
 class Application {
 
+	/** Run the things possible before the app reaches the ready state. */
 	public static preAppReady(): void {
 		Application.registerAppEventListeners();
 		Application.setAppFlags();
@@ -48,6 +49,7 @@ class Application {
 		WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
 	}
 
+	/** Register the listeners for the app process (e.g. 'window-all-closed') */
 	private static registerAppEventListeners(): void {
 		info('Registering app event listeners');
 

@@ -2,6 +2,7 @@ import { Hexadecimal } from './krunker';
 
 /**
  * Get the grayscale value of a given color using the specified algorithm.
+ *
  * @param hex Hexadecimal color code in the format 0xdeafbeef or '#deafbeef'
  * @returns Grayscale hex color
  */

@@ -1,13 +1,19 @@
 import { MESSAGE_SPLASH_DONE, SPLASH_ALIVE_TIME } from '@constants';
-import { ipcRenderer, shell } from 'electron';
 import { diff as versionDifference, gt as versionGreater } from 'semver';
 import { ReleaseData } from '@client';
 import SplashPreloadUtils from '@splash-pre-utils';
 import { info } from '@logger';
+import { ipcRenderer } from 'electron';
+import { openExternal } from '@window-utils';
 
-function transformSplash(rel: ReleaseData): void {
+/**
+ * Transform the HTML of the splash window to show the release data and assign event listeners.
+ * 
+ * @param releaseData - Release data from GitHub API to display in the splash
+ */
+function transformSplash(releaseData: ReleaseData): void {
 	const { clientVersionElement, clientUpdateElement } = SplashPreloadUtils;
-	const { releaseVersion, clientVersion, releaseUrl } = rel;
+	const { releaseVersion, clientVersion, releaseUrl } = releaseData;
 
 	if (clientVersionElement instanceof HTMLSpanElement) clientVersionElement.innerText = clientVersion;
 	if (clientUpdateElement instanceof HTMLSpanElement && versionGreater(releaseVersion, clientVersion)) {
@@ -17,7 +23,13 @@ function transformSplash(rel: ReleaseData): void {
 		clientUpdateElement.append(Object.assign(document.createElement('a'), {
 			href: '#',
 			innerText: releaseVersion,
-			onclick: () => shell.openExternal(releaseUrl)
+
+			/**
+			 * Open the release page externally.
+			 *
+			 * @returns void
+			 */
+			onclick: () => openExternal(releaseUrl)
 		}));
 	} else {
 		info('Client is up to date');
@@ -31,12 +43,11 @@ function transformSplash(rel: ReleaseData): void {
 	}, SPLASH_ALIVE_TIME);
 }
 
-async function setupEventListeners() {
+(async function setupEventListeners() {
 	const releaseData = await SplashPreloadUtils.getReleaseDataFromEventListener();
 
 	document.addEventListener('DOMContentLoaded', () => {
 		transformSplash(releaseData);
 	});
 	if (document.readyState === 'complete') document.dispatchEvent(new Event('DOMContentLoaded'));
-}
-setupEventListeners();
+}());

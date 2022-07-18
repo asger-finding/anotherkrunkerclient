@@ -18,6 +18,7 @@ export default class {
 	 * Load the splash window with the splash.html file.  
 	 * Get the client release data and emit it to the splash window.  
 	 * Show the window on ready-to-show and callback.
+	 *
 	 * @param window - The target window to load onto
 	 * @returns Promise for when everything is done
 	 */
@@ -46,6 +47,7 @@ export default class {
 	/**
 	 * Get the latest release from GitHub.  
 	 * If none is found, return v0.0.0 to resolve with semver.
+	 *
 	 * @returns ReleaseData promise for current client version, latest client version, and (optional) url to update
 	 */
 	private static async getReleaseData(): Promise<ReleaseData> {
@@ -77,6 +79,7 @@ export default class {
 
 	/**
 	 * Emit the client release data to the splash window event listener.
+	 *
 	 * @param window - The target window to emit the release data to
 	 */
 	private static async emitReleaseData(window: Electron.BrowserWindow): Promise<void> {

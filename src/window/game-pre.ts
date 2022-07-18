@@ -1,5 +1,4 @@
 import '@game-settings';
-import '@game-api';
 
 import FunctionHook from '@function-hooker';
 import { MESSAGE_EXIT_CLIENT } from '@constants';
@@ -11,6 +10,9 @@ import { resolve } from 'path';
 (async function() {
 	const css = await fs.readFile(resolve(__dirname, '../renderer/styles/main.css'), 'utf8');
 
+	/**
+	 *
+	 */
 	function inject() {
 		const injectElement = document.createElement('style');
 		injectElement.innerHTML = css;

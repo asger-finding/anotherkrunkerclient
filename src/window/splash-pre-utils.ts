@@ -6,6 +6,7 @@ export default class {
 
 	/**
 	 * Get the client release data and emit it to the splash window event listener.
+	 *
 	 * @returns Promise for when MESSAGE_RELEASES_DATA is received
 	 */
 	public static getReleaseDataFromEventListener(): Promise<ReleaseData> {
@@ -16,6 +17,7 @@ export default class {
 
 	/**
 	 * Getter for the client info wrapper element
+	 *
 	 * @returns Client info wrapper element
 	 */
 	public static get clientInfoElement(): HTMLDivElement {
@@ -24,6 +26,7 @@ export default class {
 
 	/**
 	 * Getter for the version text element
+	 *
 	 * @returns Version text element
 	 */
 	public static get clientVersionElement(): HTMLSpanElement {
@@ -32,6 +35,7 @@ export default class {
 
 	/**
 	 * Getter for the update text element
+	 *
 	 * @returns Update text element
 	 */
 	public static get clientUpdateElement(): HTMLSpanElement {
