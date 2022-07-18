@@ -39,7 +39,7 @@
     "electron-localshortcut": "^3.2.1",
     "electron-store": "^8.0.1",
     "electron-updater": "5.0.5",
-    "node-fetch": "^2",
+    "node-fetch": "^3",
     "semver": "^7.3.6",
     "top-user-agents": "^1.0.46"
   },
