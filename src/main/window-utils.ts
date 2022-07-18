@@ -92,17 +92,9 @@ export default class {
 	 * @param browserWindow - The window to inject the css in
 	 */
 	private static hideCaptchaBar(browserWindow: Electron.BrowserWindow): void {
-		browserWindow.webContents.executeJavaScript(`
-			(() => {
-				function inject() {
-					const injectElement = document.createElement('style');
-					injectElement.innerHTML = 'body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }';
-					document.head.appendChild(injectElement);
-				}
-
-				if (document.readyState === 'interactive' || document.readyState === 'complete') inject();
-				else document.addEventListener('DOMContentLoaded', inject);
-			})();`);
+		browserWindow.webContents.once('did-frame-finish-load', () => {
+			browserWindow.webContents.insertCSS('body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }');
+		});
 	}
 
 	/**
@@ -146,7 +138,10 @@ export default class {
 
 			const newWindowData = getURLData(newWindowURL);
 			if (!newWindowData.isKrunker) this.openExternal(newWindowURL);
-			else if (!newWindowData.invalid) browserWindow.loadURL(newWindowURL);
+			else if (!newWindowData.invalid) {
+				this.hideCaptchaBar(browserWindow);
+				browserWindow.loadURL(newWindowURL);
+			}
 		});
 
 		webContents.on('will-prevent-unload', evt => {
