@@ -32,12 +32,12 @@ export const QUICKJOIN_URL_QUERY_PARAM = 'quickjoin';
 // If not contained, it will throw an error whenever Constants is referenced outside the main process.
 export const IS_DEVELOPMENT = process.type === 'browser' ? !app.isPackaged : null;
 
+// https://gist.github.com/dodying/34ea4760a699b47825a766051f47d43b
 export const ELECTRON_FLAGS: Array<[string, string?]> = [
 
 	// Unlock the frame rate
 	['disable-frame-rate-limit'],
 	['disable-gpu-vsync'],
-	['max-gum-fps', '9999'],
 
 	// Don't require user gesture for autoplay
 	['autoplay-policy', 'no-user-gesture-required'],
@@ -50,21 +50,13 @@ export const ELECTRON_FLAGS: Array<[string, string?]> = [
 	['enable-zero-copy'],
 	['enable-javascript-harmony'],
 	['enable-future-v8-vm-features'],
-	['enable-quic'],
 	['enable-webgl2-compute-context'],
 	['enable-accelerated-video-decode'],
 	['enable-native-gpu-memory-buffers'],
 	['enable-oop-rasterization'],
-	['disable-metrics'],
-	['disable-metrics-repo'],
-	['disable-logging'],
-	['disable-component-update'],
 	['disable-low-end-device-mode'],
 	['disable-dev-shm-usage'],
-	['disable-canvas-aa'],
-	['disable-2d-canvas-clip-aa'],
 	['disable-hang-monitor'],
-	['disable-breakpad'],
 	['disable-bundled-ppapi-flash'],
 	['ignore-gpu-blocklist'],
 	['canvas-oop-rasterization'],
@@ -72,9 +64,20 @@ export const ELECTRON_FLAGS: Array<[string, string?]> = [
 	['disable-background-timer-throttling'],
 	['disable-renderer-backgrounding'],
 	['disable-ipc-flooding-protection'],
-	['max-active-webgl-contexts', '100'],
-	['renderer-process-limit', '100'],
-	['webrtc-max-cpu-consumption-percentage', '100']
+	['no-first-run'],
+	['disable-setuid-sandbox'],
+	['disable-background-networking'],
+	['disable-sync'],
+	['metrics-recording-only'],
+	['disable-default-apps'],
+	['canvas-msaa-sample-count', '0'],
+	['gpu-rasterization-msaa-sample-count', '0'],
+	['ppapi-antialiased-text-enabled', 'false'],
+	['disable-canvas-aa'],
+	['disable-2d-canvas-clip-aa'],
+	['enable-gpu-async-worker-context'],
+	['enable-gpu-memory-buffer-compositor-resources'],
+	['enable-gpu-memory-buffer-video-frames']
 ];
 
 // How long the splash window should be visible before entering the game
