@@ -56,14 +56,14 @@ export function navigate(browserWindow: BrowserWindow & { resourceSwapper?: Reso
  * Open an outlink in the default browser.
  * Fix for `shell.openExternal()` in some electron versions.
  *
- * @param url - The URL to open externally
+ * @param externalUrl - The URL to open externally
  */
-export function openExternal(url: string): void {
+export function openExternal(externalUrl: string): void {
 	let command = 'xdg-open';
 	if (process.platform === 'darwin') command = 'open';
 	if (process.platform === 'win32') command = 'explorer';
 
-	spawn(command, [url]);
+	spawn(command, [externalUrl]);
 }
 
 export default class {
@@ -201,12 +201,12 @@ export default class {
 	 * Attempt to open the DevTools for the window.
 	 * If it refuses to open after 500 ms, use a fallback method.
 	 *
-	 * @param window - The window to open the DevTools in
+	 * @param browserWindow - The window to open the DevTools in
 	 * @param mode - The mode to open the DevTools in
 	 */
-	public static openDevToolsWithFallback(window: Electron.BrowserWindow, mode?: Electron.OpenDevToolsOptions): void {
+	public static openDevToolsWithFallback(browserWindow: Electron.BrowserWindow, mode?: Electron.OpenDevToolsOptions): void {
 		// Addresses https://stackoverflow.com/q/69969658/11452298 for electron < 13.5.0
-		window.webContents.openDevTools(mode);
+		browserWindow.webContents.openDevTools(mode);
 
 		// Get electron version
 		const electronVersion = process.versions.electron;
@@ -214,16 +214,16 @@ export default class {
 			// devtools-opened takes about 300 ms to fire on a Windows 10 VirtualBox VM with 8 gb of ram and 8 threads.
 			const fallback = setTimeout(() => {
 				// Fallback if openDevTools fails
-				window.webContents.closeDevTools();
+				browserWindow.webContents.closeDevTools();
 
 				const devtoolsWindow = new BrowserWindow();
 				devtoolsWindow.setMenuBarVisibility(false);
 
-				window.webContents.setDevToolsWebContents(devtoolsWindow.webContents);
-				window.webContents.openDevTools({ mode: 'detach' });
-				window.once('closed', () => devtoolsWindow.destroy());
+				browserWindow.webContents.setDevToolsWebContents(devtoolsWindow.webContents);
+				browserWindow.webContents.openDevTools({ mode: 'detach' });
+				browserWindow.once('closed', () => devtoolsWindow.destroy());
 			}, 500);
-			window.webContents.once('devtools-opened', () => clearTimeout(fallback));
+			browserWindow.webContents.once('devtools-opened', () => clearTimeout(fallback));
 		}
 	}
 

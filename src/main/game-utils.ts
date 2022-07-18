@@ -10,20 +10,20 @@ export default class {
 	 * Load the game window with the game URL.  
 	 * Show the window on ready-to-show and callback.
 	 *
-	 * @param window - The target window to load onto
+	 * @param browserWindow - The target window to load onto
 	 * @returns Promise for when everything is done
 	 */
-	public static load(window: Electron.BrowserWindow): Promise<void> {
+	public static load(browserWindow: Electron.BrowserWindow): Promise<void> {
 		// Show the game window when things have all loaded.
 		return new Promise<void>(resolve => {
-			register(window, 'F6', () => navigate(window, TARGET_GAME_URL));
-			register(window, 'F4', () => navigate(window, `${ TARGET_GAME_URL }?${ QUICKJOIN_URL_QUERY_PARAM }`));
+			register(browserWindow, 'F6', () => navigate(browserWindow, TARGET_GAME_URL));
+			register(browserWindow, 'F4', () => navigate(browserWindow, `${ TARGET_GAME_URL }?${ QUICKJOIN_URL_QUERY_PARAM }`));
 
-			window.once('ready-to-show', () => {
+			browserWindow.once('ready-to-show', () => {
 				info('ready-to-show reached on Game window');
-				window.show();
+				browserWindow.show();
 			});
-			window.webContents.once('did-finish-load', () => {
+			browserWindow.webContents.once('did-finish-load', () => {
 				info('did-finish-load reached on Game window');
 
 				// Resolve the promise when everything is done and dusted in the game window.

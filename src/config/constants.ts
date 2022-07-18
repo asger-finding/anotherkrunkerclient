@@ -105,10 +105,10 @@ export const MESSAGE_RELEASES_DATA = 'releases-data';
 /**
  * Returns the default window options, with sizing for the given tab.
  *
- * @param windowName - The name of the tab to get sizing data for.
+ * @param tabName - The name of the tab to get sizing data for.
  * @returns The default window constructor options.
  */
-export const getDefaultConstructorOptions = (windowName?: string): DefaultConstructorOptions => <DefaultConstructorOptions>{
+export const getDefaultConstructorOptions = (tabName?: string): DefaultConstructorOptions => <DefaultConstructorOptions>{
 	movable: true,
 	resizable: true,
 	fullscreenable: true,
@@ -121,7 +121,7 @@ export const getDefaultConstructorOptions = (windowName?: string): DefaultConstr
 		worldSafeExecuteJavaScript: true,
 		enableRemoteModule: false
 	},
-	...preferences.get(`window.${ windowName }`, {
+	...preferences.get(`window.${ tabName }`, {
 		width: 1280,
 		height: 720,
 		fullscreen: false,
