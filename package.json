@@ -38,9 +38,9 @@
     "@cliqz/adblocker-electron": "latest",
     "electron-localshortcut": "latest",
     "electron-store": "latest",
-    "electron-updater": "latest",
+    "electron-updater": "^4.0.0",
     "node-fetch": "^2",
-    "semver": "latest",
+    "semver": "^7.3.7",
     "top-user-agents": "latest"
   },
   "devDependencies": {
