@@ -1,16 +1,16 @@
-[![Commit rate](https://img.shields.io/github/commit-activity/m/asger-finding/anotherkrunkerclient?label=Commits)](https://github.com/asger-finding/anotherkrunkerclient/commits/main)
-[![Issues](https://img.shields.io/github/issues/asger-finding/anotherkrunkerclient)](https://github.com/asger-finding/anotherkrunkerclient/issues)
-[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/asger-finding/anotherkrunkerclient/blob/main/LICENSE)
-[![Latest release](https://img.shields.io/github/v/release/asger-finding/anotherkrunkerclient?label=Latest%20Release)](https://github.com/asger-finding/anotherkrunkerclient/releases/latest)
-[![Discord server](https://img.shields.io/discord/971394904821485608.svg?label=Chat%20on%20Discord)](https://discord.gg/etxNkUuTru)
-
----
 
 <div align="center">
   <img width="50%" src="https://github.com/asger-finding/anotherkrunkerclient/raw/main/.github/banner-light.svg#gh-light-mode-only">
   <img width="50%" src="https://github.com/asger-finding/anotherkrunkerclient/raw/main/.github/banner-dark.svg#gh-dark-mode-only">
 
   <h1>anotherkrunkerclient</h1>
+  
+  [![Commit rate](https://img.shields.io/github/commit-activity/m/asger-finding/anotherkrunkerclient?label=Commits)](https://github.com/asger-finding/anotherkrunkerclient/commits/main)
+[![Issues](https://img.shields.io/github/issues/asger-finding/anotherkrunkerclient)](https://github.com/asger-finding/anotherkrunkerclient/issues)
+[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/asger-finding/anotherkrunkerclient/blob/main/LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/asger-finding/anotherkrunkerclient?label=Latest%20Release)](https://github.com/asger-finding/anotherkrunkerclient/releases/latest)
+[![Discord server](https://img.shields.io/discord/971394904821485608.svg?label=Chat%20on%20Discord)](https://discord.gg/etxNkUuTru)
+  
 </div>
 
 The be-all and end-all of Krunker client.  
@@ -46,9 +46,9 @@ Ensure that ESLint is enabled. Avoid all warnings and errors. kebab-case is used
 
 ### Module aliasing
 
-anotherkrunkerclient uses a homebrew solution for module aliasing in Electron. The `_moduleAliases` field in package.json is for defining aliases and their targets.
+anotherkrunkerclient uses a homebrewed solution for module aliasing in Electron. The `_moduleAliases` field in package.json is for defining aliases and their targets.
 
-When building the application in gulp, the TypeScript files are converted to JavaScript, then run through the homemade module aliasing function that finds `require` calls, takes the first string parameter (only works with literal strings), looks it up in `_moduleAliases` and if found, replaces it with a relative path to the module.
+When the application is being built in gulp, the TypeScript files are converted to JavaScript, then run through the homemade module aliasing function that finds `require` calls, takes the first string parameter (only works with literal strings), looks it up in `_moduleAliases` and if found, replaces it with a relative path to the module.
 
 <!--
 TODO:
