@@ -10,9 +10,7 @@ import { resolve } from 'path';
 (async function() {
 	const css = await fs.readFile(resolve(__dirname, '../renderer/styles/main.css'), 'utf8');
 
-	/**
-	 *
-	 */
+	/** Inject the read css file into the DOM */
 	function inject() {
 		const injectElement = document.createElement('style');
 		injectElement.innerHTML = css;

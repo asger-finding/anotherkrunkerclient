@@ -93,7 +93,7 @@ const state = {
 	}
 };
 
-function typescript() {
+function scripts() {
 	return gulp.src(paths.files.typescript)
 		.pipe(swc({
 			minify: state.prod,
@@ -127,7 +127,7 @@ function typescript() {
 		.pipe(gulp.dest(paths.build));
 }
 
-function sass() {
+function styles() {
 	return gulp.src(paths.files.css)
 		.pipe(gulpsass({ outputStyle: state.prod ? 'compressed' : 'expanded' }))
 		.pipe(gulp.dest(paths.build));
@@ -156,4 +156,4 @@ function annihilation() {
 }
 
 module.exports.clean = clean;
-module.exports.default = module.exports.build = gulp.series(state.prod ? annihilation : clean, gulp.parallel(typescript, sass, html, images));
+module.exports.default = module.exports.build = gulp.series(state.prod ? annihilation : clean, gulp.parallel(scripts, styles, html, images));
