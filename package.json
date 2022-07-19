@@ -50,7 +50,7 @@
     "@types/node": "12.12.21",
     "@types/node-fetch": "^2.6.2",
     "@typescript-eslint/eslint-plugin": "^5.30.6",
-    "@typescript-eslint/parser": "^5.30.6",
+    "@typescript-eslint/parser": "^5.30.7",
     "acorn": "^8.7.1",
     "acorn-walk": "^8.2.0",
     "del": "^6.0.0",
