@@ -54,7 +54,7 @@
     "acorn": "latest",
     "acorn-walk": "latest",
     "del": "latest",
-    "electron": "^9",
+    "electron": "^10",
     "electron-builder": "latest",
     "eslint": "latest",
     "eslint-config-airbnb-typescript": "latest",
