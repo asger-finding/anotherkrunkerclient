@@ -1,11 +1,13 @@
 import {
+	TWITCH_MATERIAL_ICON,
 	TWITCH_MESSAGE_RECEIVE,
-	TWITCH_MESSAGE_SEND
+	TWITCH_MESSAGE_SEND,
+	preferences
 } from '@constants';
 import { TwitchMessage } from '@client';
 import { ipcRenderer } from 'electron';
 
-type AvailableStates = 'public' | 'groups' | 'live_tv';
+type AvailableStates = 'public' | 'groups' | typeof TWITCH_MATERIAL_ICON;
 type SwitchChat = (element: HTMLDivElement) => void;
 
 export default class {
@@ -28,9 +30,7 @@ export default class {
 
 	nativeSwitchChat: SwitchChat;
 
-	/**
-	 * Set up the event listener for the Twitch chat.
-	 */
+	/** Set up the event listener for the Twitch chat. */
 	constructor() {
 		ipcRenderer.on(TWITCH_MESSAGE_RECEIVE, (_evt, message: TwitchMessage) => {
 			if (!this.chatListClone) return this.enqueuedTwitchMessages.push(message);
@@ -38,26 +38,33 @@ export default class {
 		});
 	}
 
-	/**
-	 * Initialize the Twitch chat.
-	 */
+	/** Initialize the Twitch chat. */
 	init() {
-		const self = this;
+		/** @param chatSwitchElement - The element that triggered the chat tab switch. */
+		const switchChatHook: SwitchChat = chatSwitchElement => {
+			this.switchChat(chatSwitchElement);
+		};
 
-		// eslint-disable-next-line accessor-pairs
 		Reflect.defineProperty(window, 'switchChat', {
 			configurable: true,
 
-			set(nativeSwitchChat: SwitchChat) {
+			/**
+			 * Save the native switchChat function and replace it with a custom one. Save the chat elements to the class.
+			 * 
+			 * @param nativeSwitchChat - The native switchChat function.
+			 */
+			set: (nativeSwitchChat: SwitchChat) => {
 				// At this point, the chat has been initialized
-				self.saveElements();
-				self.nativeSwitchChat = nativeSwitchChat;
+				this.saveElements();
+				this.nativeSwitchChat = nativeSwitchChat;
 
-				Reflect.defineProperty(window, 'switchChat', <{ value: SwitchChat }>{
-					value(chatSwitchElement) {
-						self.switchChat(chatSwitchElement);
-					}
-				});
+				Reflect.defineProperty(window, 'switchChat', <{ value: SwitchChat }>{ value: switchChatHook });
+
+				// Navigate to the correct chat tab
+				this.navigateToChatTab();
+			},
+			get() {
+				return switchChatHook;
 			}
 		});
 	}
@@ -73,7 +80,7 @@ export default class {
 		const currentTab = (chatSwitchElement.getAttribute('data-tab') ?? 'public') as AvailableStates;
 		this.chatState = this.chatStates[(this.chatStates.indexOf(currentTab) + 1) % this.chatStates.length];
 
-		if (this.chatState === 'live_tv') {
+		if (this.chatState === TWITCH_MATERIAL_ICON) {
 			this.chatInputClone.style.display = 'inline';
 			this.chatListClone.style.display = 'block';
 			this.chatInput.style.display = 'none';
@@ -151,9 +158,7 @@ export default class {
 		this.chatListClone.scrollTop = this.chatListClone.scrollHeight;
 	}
 
-	/**
-	 * Resolve the order of the chat tabs depending on whether teams are enabled or not.
-	 */
+	/** Resolve the order of the chat tabs depending on whether teams are enabled or not. */
 	setOrder() {
 		const testElement = document.createElement('div');
 		testElement.setAttribute('data-tab', 'public');
@@ -161,13 +166,29 @@ export default class {
 
 		// If the data-tab is toggled to groups by the game, then teams are enabled
 		this.chatStates = testElement.getAttribute('data-tab') === 'groups'
-			? ['public', 'groups', 'live_tv']
-			: ['public', 'live_tv'];
+			? ['public', 'groups', TWITCH_MATERIAL_ICON]
+			: ['public', TWITCH_MATERIAL_ICON];
 	}
 
-	/**
-	 *
-	 */
+	/** Save the game chat state to preferences and set it upon load. */
+	navigateToChatTab() {
+		window.addEventListener('beforeunload', () => {
+			preferences.set('gameChatState', this.chatState);
+		});
+
+		const chatSwitchElement = document.getElementById('chatSwitch') as HTMLDivElement;
+		const savedState = preferences.get('gameChatState') ?? 'public';
+
+		if (savedState === TWITCH_MATERIAL_ICON) {
+			let iterations = 0;
+			while (chatSwitchElement.getAttribute('data-tab') !== TWITCH_MATERIAL_ICON && iterations < 10) {
+				this.switchChat(chatSwitchElement);
+				iterations++;
+			}
+		}
+	}
+
+	/** Register the event listeners for the Twitch chat input element. */
 	initInputEventListeners() {
 		// On this.chatInputClone enter, send the message to the server
 		this.chatInputClone.addEventListener('keydown', evt => {
