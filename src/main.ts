@@ -13,11 +13,10 @@ import {
 	TWITCH_PORT,
 	WINDOW_ALL_CLOSED_BUFFER_TIME
 } from '@constants';
-import { createServer } from 'http';
 import WindowUtils, { openExternal } from '@window-utils';
 import { ElectronBlocker } from '@cliqz/adblocker-electron';
 import SplashUtils from '@splash-utils';
-// import { Client as TwitchClient } from 'tmi.js';
+import { createServer } from 'http';
 import fetch from 'node-fetch';
 import { promises as fs } from 'fs';
 import { info } from '@logger';
@@ -68,7 +67,7 @@ class Application {
 									headers: {
 										'Content-Type': 'application/json'
 									}
-								}).then(request => request.text()).then(text => window.close());
+								}).then(window.close);
 							} else {
 								document.write('<h2>An error has occured</h2>');
 							}
