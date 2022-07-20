@@ -108,6 +108,8 @@ export const MESSAGE_GAME_DONE = 'game-done';
 export const MESSAGE_EXIT_CLIENT = 'exit-client';
 export const MESSAGE_OPEN_SETTINGS = 'open-settings';
 export const MESSAGE_RELEASES_DATA = 'releases-data';
+export const TWITCH_MESSAGE_RECEIVE = 'twitch-message-receive';
+export const TWITCH_MESSAGE_SEND = 'twitch-message-send';
 
 /**
  * Returns the default window options, with sizing for the given tab.

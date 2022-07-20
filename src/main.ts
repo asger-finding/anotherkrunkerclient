@@ -9,6 +9,8 @@ import {
 	MESSAGE_EXIT_CLIENT,
 	SPLASH_CONSTRUCTOR_OPTIONS,
 	TARGET_GAME_URL,
+	TWITCH_MESSAGE_RECEIVE,
+	TWITCH_MESSAGE_SEND,
 	WINDOW_ALL_CLOSED_BUFFER_TIME
 } from '@constants';
 import { ElectronBlocker } from '@cliqz/adblocker-electron';
@@ -54,7 +56,13 @@ class Application {
 			client.on('message', (_listener, userState, msg) => {
 				const message = TwitchUtils.simplifyAndFilterMessage(userState, msg);
 
-				if (message) gameWindow.webContents.send('twitch-message', message);
+				if (message) gameWindow.webContents.send(TWITCH_MESSAGE_RECEIVE, message);
+			});
+
+			// Setup event listener
+			ipcMain.on(TWITCH_MESSAGE_SEND, (_evt, message: string) => {
+				const channel = `#${ client.getUsername() }`;
+				client.say(channel, message);
 			});
 		});
 	}

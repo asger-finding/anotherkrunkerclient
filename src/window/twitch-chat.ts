@@ -1,9 +1,14 @@
+import {
+	TWITCH_MESSAGE_RECEIVE,
+	TWITCH_MESSAGE_SEND
+} from '@constants';
 import { TwitchMessage } from '@client';
 import { ipcRenderer } from 'electron';
+
 type AvailableStates = 'public' | 'groups' | 'live_tv';
 type SwitchChat = (element: HTMLDivElement) => void;
 
-export default class TwitchChat {
+export default class {
 
 	chatList: HTMLDivElement;
 
@@ -27,7 +32,7 @@ export default class TwitchChat {
 	 * Set up the event listener for the Twitch chat.
 	 */
 	constructor() {
-		ipcRenderer.on('twitch-message', (_evt, message: TwitchMessage) => {
+		ipcRenderer.on(TWITCH_MESSAGE_RECEIVE, (_evt, message: TwitchMessage) => {
 			if (!this.chatListClone) return this.enqueuedTwitchMessages.push(message);
 			return this.appendTwitchMessage(message);
 		});
@@ -107,6 +112,7 @@ export default class TwitchChat {
 		this.chatInputClone.removeAttribute('onfocus');
 		this.chatInputClone.removeAttribute('onblur');
 		this.chatInputClone.style.display = 'none';
+		this.initInputEventListeners();
 
 		for (const chatMessage of this.enqueuedTwitchMessages) {
 			this.appendTwitchMessage(chatMessage);
@@ -157,6 +163,26 @@ export default class TwitchChat {
 		this.chatStates = testElement.getAttribute('data-tab') === 'groups'
 			? ['public', 'groups', 'live_tv']
 			: ['public', 'live_tv'];
+	}
+
+	/**
+	 *
+	 */
+	initInputEventListeners() {
+		// On this.chatInputClone enter, send the message to the server
+		this.chatInputClone.addEventListener('keydown', evt => {
+			if (evt.key === 'Enter') {
+				// Send the message to main
+				ipcRenderer.send(TWITCH_MESSAGE_SEND, this.chatInputClone.value);
+
+				// Clear the input
+				this.chatInputClone.value = '';
+				this.chatInputClone.blur();
+
+				evt.preventDefault();
+				evt.stopPropagation();
+			}
+		});
 	}
 
 }
