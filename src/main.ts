@@ -9,11 +9,15 @@ import {
 	MESSAGE_EXIT_CLIENT,
 	SPLASH_CONSTRUCTOR_OPTIONS,
 	TARGET_GAME_URL,
+	TWITCH_CLIENT_ID,
+	TWITCH_PORT,
 	WINDOW_ALL_CLOSED_BUFFER_TIME
 } from '@constants';
+import { createServer } from 'http';
+import WindowUtils, { openExternal } from '@window-utils';
 import { ElectronBlocker } from '@cliqz/adblocker-electron';
 import SplashUtils from '@splash-utils';
-import WindowUtils from '@window-utils';
+// import { Client as TwitchClient } from 'tmi.js';
 import fetch from 'node-fetch';
 import { promises as fs } from 'fs';
 import { info } from '@logger';
@@ -32,6 +36,61 @@ class Application {
 		Application.registerAppEventListeners();
 		Application.registerIpcEventListeners();
 		Application.setAppFlags();
+
+		// Create localhost http server
+		const state = Math.random().toString(36)
+			.substring(2, 12);
+		const url = `https://id.twitch.tv/oauth2/authorize?client_id=${ TWITCH_CLIENT_ID }&redirect_uri=http://localhost:${ TWITCH_PORT }&response_type=token&scope=chat:read+chat:edit&state=${ state }`;
+
+		const server = createServer((req, res) => {
+			if (req.method !== 'GET') return res.end();
+
+			if (req.url === '/') {
+				res.writeHead(200, { 'Content-Type': 'text/html' });
+
+				return res.end(`<!DOCTYPE html>
+				<html lang="en">
+					<head><title>Twitch oAuth</title><head>
+
+					<body>
+						<noscript><h2>You must enable JavaScript to use Twitch oauth!</h2></noscript>
+				
+						<h2>You may close this window</h2>
+				
+						<script>
+							if (location.hash) {
+								const token = location.hash.match(/access_token=(.*)&scope/)[1];
+								const state = location.hash.match(/state=(.*)&/)[1];
+								if (state !== '${ state }') throw new Error('State mismatch');
+
+								fetch('http://localhost:${ TWITCH_PORT }/token?token=' + token, {
+									method: 'GET',
+									headers: {
+										'Content-Type': 'application/json'
+									}
+								}).then(request => request.text()).then(text => window.close());
+							} else {
+								document.write('<h2>An error has occured</h2>');
+							}
+						</script>
+					<body>
+				</html>`);
+			}
+			if ((req.url ?? '').startsWith('/token')) {
+				res.writeHead(200, { 'Content-Type': 'text/html' });
+
+				const { token } = req.url.match(/token=(?<token>.*)/u)?.groups;
+				console.log(token);
+
+				server.close();
+			}
+			return res.end();
+		}).listen(TWITCH_PORT, () => {
+			openExternal(url);
+		});
+
+		// Close the server after 5 minutes
+		setTimeout(() => server.close(), 5 * 60 * 1000);
 	}
 
 	/**

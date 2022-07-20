@@ -41,6 +41,7 @@
     "electron-updater": "^4.0.0",
     "node-fetch": "^2",
     "semver": "^7.3.7",
+    "tmi.js": "^1.8.5",
     "top-user-agents": "latest"
   },
   "devDependencies": {

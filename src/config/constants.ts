@@ -29,6 +29,9 @@ export const TARGET_GAME_URL = `https://${ TARGET_GAME_DOMAIN }/`;
 export const [TARGET_GAME_SHORTNAME] = TARGET_GAME_DOMAIN.split('.');
 export const QUICKJOIN_URL_QUERY_PARAM = 'quickjoin';
 
+export const TWITCH_CLIENT_ID = 'b8ee5yb7azo5fochp2ajvt9e5f4sfs';
+export const TWITCH_PORT = 33333;
+
 // If not contained, it will throw an error whenever Constants is referenced outside the main process.
 export const IS_DEVELOPMENT = process.type === 'browser' ? !app.isPackaged : null;
 
