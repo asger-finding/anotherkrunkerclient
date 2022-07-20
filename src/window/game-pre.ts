@@ -95,13 +95,15 @@ function constructChatMessage(message: TwitchMessage): HTMLDivElement {
  * @param message - The Twitch message and username.
  */
 function createAndAppend(message: TwitchMessage): void {
+	if (!chatList) return;
+
 	const chatMessage = constructChatMessage(message);
-	chatList?.append(chatMessage);
+	chatList.append(chatMessage);
+
+	chatList.scrollTop = chatList.scrollHeight;
 }
 
 ipcRenderer.on('twitch-message', (_evt, message: TwitchMessage) => {
-	if (chatList) { createAndAppend(message); } else {
-		chatList = document.getElementById('chatList');
-		if (chatList) createAndAppend(message);
-	}
+	if (!chatList) chatList = document.getElementById('chatList');
+	createAndAppend(message);
 });
