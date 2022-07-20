@@ -17,6 +17,7 @@
             // src top-level
             "@color-utils": ["src/color-utils"],
             "@logger": ["src/logger"],
+            "@twitch-utils": ["src/twitch-utils"],
 
             // config
             "@constants": ["src/config/constants"],

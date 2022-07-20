@@ -9,14 +9,12 @@ import {
 	MESSAGE_EXIT_CLIENT,
 	SPLASH_CONSTRUCTOR_OPTIONS,
 	TARGET_GAME_URL,
-	TWITCH_CLIENT_ID,
-	TWITCH_PORT,
 	WINDOW_ALL_CLOSED_BUFFER_TIME
 } from '@constants';
-import WindowUtils, { openExternal } from '@window-utils';
 import { ElectronBlocker } from '@cliqz/adblocker-electron';
 import SplashUtils from '@splash-utils';
-import { createServer } from 'http';
+import TwitchUtils from '@twitch-utils';
+import WindowUtils from '@window-utils';
 import fetch from 'node-fetch';
 import { promises as fs } from 'fs';
 import { info } from '@logger';
@@ -31,65 +29,10 @@ conditions; read ${ CLIENT_LICENSE_PERMALINK } for more details.\n`);
 class Application {
 
 	/** Run the things possible before the app reaches the ready state. */
-	public static preAppReady(): void {
+	public static async preAppReady(): Promise<void> {
 		Application.registerAppEventListeners();
 		Application.registerIpcEventListeners();
 		Application.setAppFlags();
-
-		// Create localhost http server
-		const state = Math.random().toString(36)
-			.substring(2, 12);
-		const url = `https://id.twitch.tv/oauth2/authorize?client_id=${ TWITCH_CLIENT_ID }&redirect_uri=http://localhost:${ TWITCH_PORT }&response_type=token&scope=chat:read+chat:edit&state=${ state }`;
-
-		const server = createServer((req, res) => {
-			if (req.method !== 'GET') return res.end();
-
-			if (req.url === '/') {
-				res.writeHead(200, { 'Content-Type': 'text/html' });
-
-				return res.end(`<!DOCTYPE html>
-				<html lang="en">
-					<head><title>Twitch oAuth</title><head>
-
-					<body>
-						<noscript><h2>You must enable JavaScript to use Twitch oauth!</h2></noscript>
-				
-						<h2>You may close this window</h2>
-				
-						<script>
-							if (location.hash) {
-								const token = location.hash.match(/access_token=(.*)&scope/)[1];
-								const state = location.hash.match(/state=(.*)&/)[1];
-								if (state !== '${ state }') throw new Error('State mismatch');
-
-								fetch('http://localhost:${ TWITCH_PORT }/token?token=' + token, {
-									method: 'GET',
-									headers: {
-										'Content-Type': 'application/json'
-									}
-								}).then(window.close);
-							} else {
-								document.write('<h2>An error has occured</h2>');
-							}
-						</script>
-					<body>
-				</html>`);
-			}
-			if ((req.url ?? '').startsWith('/token')) {
-				res.writeHead(200, { 'Content-Type': 'text/html' });
-
-				const { token } = req.url.match(/token=(?<token>.*)/u)?.groups;
-				console.log(token);
-
-				server.close();
-			}
-			return res.end();
-		}).listen(TWITCH_PORT, () => {
-			openExternal(url);
-		});
-
-		// Close the server after 5 minutes
-		setTimeout(() => server.close(), 5 * 60 * 1000);
 	}
 
 	/**
@@ -100,11 +43,20 @@ class Application {
 		Application.setAppName();
 		Application.registerFileProtocols();
 
-		await Promise.all([
+		const [client] = await Promise.all([
+			TwitchUtils.createClient(),
 			WindowUtils.createWindow(SPLASH_CONSTRUCTOR_OPTIONS).then(window => SplashUtils.load(window)),
 			Application.enableTrackerBlocking()
 		]);
-		WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
+		const gameWindow = await WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
+		gameWindow.webContents.once('dom-ready', () => {
+			client.connect();
+			client.on('message', (_listener, userState, msg) => {
+				const message = TwitchUtils.simplifyAndFilterMessage(userState, msg);
+
+				if (message) gameWindow.webContents.send('twitch-message', message);
+			});
+		});
 	}
 
 	/** Register the listeners for the app process (e.g. 'window-all-closed') */

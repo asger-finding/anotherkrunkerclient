@@ -20,6 +20,7 @@
     "lint": "yarn eslint . --ext .ts,.js"
   },
   "_moduleAliases": {
+    "@twitch-utils": "src/twitch-utils",
     "@color-utils": "src/color-utils",
     "@logger": "src/logger",
     "@constants": "src/config/constants",
@@ -49,6 +50,7 @@
     "@types/electron-localshortcut": "^3.1.0",
     "@types/node": "12.12.21",
     "@types/node-fetch": "^2",
+    "@types/tmi.js": "^1.8.1",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "acorn": "latest",

@@ -29,6 +29,7 @@ export const TARGET_GAME_URL = `https://${ TARGET_GAME_DOMAIN }/`;
 export const [TARGET_GAME_SHORTNAME] = TARGET_GAME_DOMAIN.split('.');
 export const QUICKJOIN_URL_QUERY_PARAM = 'quickjoin';
 
+// Client ID can be obtained by creating a new app on the Twitch developer portal (https://dev.twitch.tv/console/apps)
 export const TWITCH_CLIENT_ID = 'b8ee5yb7azo5fochp2ajvt9e5f4sfs';
 export const TWITCH_PORT = 33333;
 

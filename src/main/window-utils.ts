@@ -88,7 +88,7 @@ export default class {
 
 		this.registerEventListeners(constructorOptions, browserWindow, windowData);
 		const specialWindowCb = this.createSpecialWindow(windowData);
-		if (typeof specialWindowCb === 'function') await specialWindowCb(browserWindow);
+		if (typeof specialWindowCb === 'function') specialWindowCb(browserWindow);
 
 		return browserWindow;
 	}
