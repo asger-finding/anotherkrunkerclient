@@ -190,18 +190,25 @@ export default class {
 
 	/** Register the event listeners for the Twitch chat input element. */
 	initInputEventListeners() {
-		// On this.chatInputClone enter, send the message to the server
-		this.chatInputClone.addEventListener('keydown', evt => {
-			if (evt.key === 'Enter') {
-				// Send the message to main
-				ipcRenderer.send(TWITCH_MESSAGE_SEND, this.chatInputClone.value);
+		// Register event listener on document for keydown
+		document.addEventListener('keydown', (evt: KeyboardEvent) => {
+			const isEnter = evt.key === 'Enter';
+			const isChatInputFocused = document.activeElement === this.chatInputClone;
 
-				// Clear the input
-				this.chatInputClone.value = '';
-				this.chatInputClone.blur();
+			if (isEnter) {
+				if (isChatInputFocused) {
+					// Send the message to main
+					ipcRenderer.send(TWITCH_MESSAGE_SEND, this.chatInputClone.value);
 
-				evt.preventDefault();
-				evt.stopPropagation();
+					// Clear the input
+					this.chatInputClone.value = '';
+					this.chatInputClone.blur();
+
+					evt.preventDefault();
+					evt.stopPropagation();
+				} else if (this.chatInputClone.style.display === 'inline') {
+					this.chatInputClone.focus();
+				}
 			}
 		});
 	}
