@@ -3,7 +3,7 @@ import '@game-settings';
 import FunctionHook from '@function-hooker';
 import { MESSAGE_EXIT_CLIENT } from '@constants';
 import { MapExport } from '../krunker';
-import { TwitchMessage } from '@client';
+import TwitchChat from '@twitch-chat';
 import { promises as fs } from 'fs';
 import { ipcRenderer } from 'electron';
 import { resolve } from 'path';
@@ -56,54 +56,5 @@ functionHook.hook('JSON.parse', (object: MapExport | Record<string, unknown>) =>
 	return object;
 });
 
-let chatList = document.getElementById('chatList');
-
-/**
- * Construct an in-game chat message from a Twitch message.
- * 
- * @param message - The Twitch message and username.
- * @returns The chat message element.
- */
-function constructChatMessage(message: TwitchMessage): HTMLDivElement {
-	// Get the last element in chatList
-	const lastElement = chatList?.lastElementChild as HTMLDivElement;
-	const lastIndex = lastElement?.id?.lastIndexOf('_') ?? 0;
-	const lastId = Number(lastElement?.id?.substring(lastIndex + 1) ?? '-1');
-
-	const wrapper = document.createElement('div');
-	wrapper.setAttribute('data-tab', '-1');
-	wrapper.setAttribute('id', `chatMsg_${lastId + 1}`);
-
-	const chatItem = document.createElement('div');
-	chatItem.setAttribute('class', 'chatItem');
-	chatItem.setAttribute('style', 'background-color: rgba(0, 0, 0, 0.3)');
-	chatItem.innerText = `\u200e${ message.username }\u200e: `;
-
-	const chatMsg = document.createElement('span');
-	chatMsg.setAttribute('class', 'chatMsg');
-	chatMsg.innerText = `\u200e${ message.message }\u200e`;
-
-	chatItem.append(chatMsg);
-	wrapper.append(chatItem);
-
-	return wrapper;
-}
-
-/**
- * Construct and add a chat message to the chat list.
- * 
- * @param message - The Twitch message and username.
- */
-function createAndAppend(message: TwitchMessage): void {
-	if (!chatList) return;
-
-	const chatMessage = constructChatMessage(message);
-	chatList.append(chatMessage);
-
-	chatList.scrollTop = chatList.scrollHeight;
-}
-
-ipcRenderer.on('twitch-message', (_evt, message: TwitchMessage) => {
-	if (!chatList) chatList = document.getElementById('chatList');
-	createAndAppend(message);
-});
+const twitchChat = new TwitchChat();
+twitchChat.init();

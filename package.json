@@ -28,6 +28,7 @@
     "@splash-pre-utils": "src/window/splash-pre-utils",
     "@game-settings": "src/window/game-settings",
     "@function-hooker": "src/window/function-hooker",
+    "@twitch-chat": "src/window/twitch-chat",
     "@splash-utils": "src/main/splash-utils",
     "@game-utils": "src/main/game-utils",
     "@window-utils": "src/main/window-utils",
