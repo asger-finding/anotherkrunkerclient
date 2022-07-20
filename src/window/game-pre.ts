@@ -3,6 +3,7 @@ import '@game-settings';
 import FunctionHook from '@function-hooker';
 import { MESSAGE_EXIT_CLIENT } from '@constants';
 import { MapExport } from '../krunker';
+import TwitchChat from '@twitch-chat';
 import { promises as fs } from 'fs';
 import { ipcRenderer } from 'electron';
 import { resolve } from 'path';
@@ -54,3 +55,6 @@ functionHook.hook('JSON.parse', (object: MapExport | Record<string, unknown>) =>
 	}
 	return object;
 });
+
+const twitchChat = new TwitchChat();
+twitchChat.init();

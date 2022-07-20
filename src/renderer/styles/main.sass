@@ -2,3 +2,32 @@ body
     // Show the exit button
     #clientExit
         display: flex
+
+#chatInputClone
+    width: 269px
+    padding: 6px
+    padding-left: 10px
+    margin-top: 0
+    color: #fff
+    font-size: 15px
+    box-sizing: border-box
+    background-color: rgba(0,0,0,.4)
+    border: 2px solid rgba(0,0,0,.1)
+    pointer-events: all
+    border-radius: 5px
+    margin-left: 4px
+
+    &::placeholder
+        color: rgba(255,255,255,.7)
+
+#chatListClone 
+    overflow-y: hidden
+    overflow-y: auto
+    overflow-x: hidden
+    z-index: 999999
+    border-radius: 5px
+    background-color: rgba(0,0,0,.4)
+    pointer-events: all
+    position: relative
+    direction: rtl
+    text-align: left

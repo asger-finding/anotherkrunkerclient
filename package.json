@@ -20,6 +20,7 @@
     "lint": "yarn eslint . --ext .ts,.js"
   },
   "_moduleAliases": {
+    "@twitch-utils": "src/twitch-utils",
     "@color-utils": "src/color-utils",
     "@logger": "src/logger",
     "@constants": "src/config/constants",
@@ -27,6 +28,7 @@
     "@splash-pre-utils": "src/window/splash-pre-utils",
     "@game-settings": "src/window/game-settings",
     "@function-hooker": "src/window/function-hooker",
+    "@twitch-chat": "src/window/twitch-chat",
     "@splash-utils": "src/main/splash-utils",
     "@game-utils": "src/main/game-utils",
     "@window-utils": "src/main/window-utils",
@@ -41,6 +43,7 @@
     "electron-updater": "^4.0.0",
     "node-fetch": "^2",
     "semver": "^7.3.7",
+    "tmi.js": "^1.8.5",
     "top-user-agents": "latest"
   },
   "devDependencies": {
@@ -48,12 +51,13 @@
     "@types/electron-localshortcut": "^3.1.0",
     "@types/node": "12.12.21",
     "@types/node-fetch": "^2",
+    "@types/tmi.js": "^1.8.1",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "acorn": "latest",
     "acorn-walk": "latest",
     "del": "latest",
-    "electron": "^9",
+    "electron": "^10",
     "electron-builder": "latest",
     "eslint": "latest",
     "eslint-config-airbnb-typescript": "latest",

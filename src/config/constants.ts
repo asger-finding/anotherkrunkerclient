@@ -29,6 +29,11 @@ export const TARGET_GAME_URL = `https://${ TARGET_GAME_DOMAIN }/`;
 export const [TARGET_GAME_SHORTNAME] = TARGET_GAME_DOMAIN.split('.');
 export const QUICKJOIN_URL_QUERY_PARAM = 'quickjoin';
 
+// Client ID can be obtained by creating a new app on the Twitch developer portal (https://dev.twitch.tv/console/apps)
+export const TWITCH_CLIENT_ID = 'b8ee5yb7azo5fochp2ajvt9e5f4sfs';
+export const TWITCH_PORT = 33333;
+export const TWITCH_MATERIAL_ICON = 'live_tv';
+
 // If not contained, it will throw an error whenever Constants is referenced outside the main process.
 export const IS_DEVELOPMENT = process.type === 'browser' ? !app.isPackaged : null;
 
@@ -104,6 +109,8 @@ export const MESSAGE_GAME_DONE = 'game-done';
 export const MESSAGE_EXIT_CLIENT = 'exit-client';
 export const MESSAGE_OPEN_SETTINGS = 'open-settings';
 export const MESSAGE_RELEASES_DATA = 'releases-data';
+export const TWITCH_MESSAGE_RECEIVE = 'twitch-message-receive';
+export const TWITCH_MESSAGE_SEND = 'twitch-message-send';
 
 /**
  * Returns the default window options, with sizing for the given tab.

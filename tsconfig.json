@@ -17,6 +17,7 @@
             // src top-level
             "@color-utils": ["src/color-utils"],
             "@logger": ["src/logger"],
+            "@twitch-utils": ["src/twitch-utils"],
 
             // config
             "@constants": ["src/config/constants"],
@@ -27,6 +28,7 @@
             "@game-api": ["src/window/game-api"],
             "@game-settings": ["src/window/game-settings"],
             "@function-hooker": ["src/window/function-hooker"],
+            "@twitch-chat": ["src/window/twitch-chat"],
 
             // main
             "@splash-utils": ["src/main/splash-utils"],

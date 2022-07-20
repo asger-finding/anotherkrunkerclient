@@ -9,10 +9,13 @@ import {
 	MESSAGE_EXIT_CLIENT,
 	SPLASH_CONSTRUCTOR_OPTIONS,
 	TARGET_GAME_URL,
+	TWITCH_MESSAGE_RECEIVE,
+	TWITCH_MESSAGE_SEND,
 	WINDOW_ALL_CLOSED_BUFFER_TIME
 } from '@constants';
 import { ElectronBlocker } from '@cliqz/adblocker-electron';
 import SplashUtils from '@splash-utils';
+import TwitchUtils from '@twitch-utils';
 import WindowUtils from '@window-utils';
 import fetch from 'node-fetch';
 import { promises as fs } from 'fs';
@@ -28,7 +31,7 @@ conditions; read ${ CLIENT_LICENSE_PERMALINK } for more details.\n`);
 class Application {
 
 	/** Run the things possible before the app reaches the ready state. */
-	public static preAppReady(): void {
+	public static async preAppReady(): Promise<void> {
 		Application.registerAppEventListeners();
 		Application.registerIpcEventListeners();
 		Application.setAppFlags();
@@ -42,11 +45,26 @@ class Application {
 		Application.setAppName();
 		Application.registerFileProtocols();
 
-		await Promise.all([
+		const [client] = await Promise.all([
+			TwitchUtils.createClient(),
 			WindowUtils.createWindow(SPLASH_CONSTRUCTOR_OPTIONS).then(window => SplashUtils.load(window)),
 			Application.enableTrackerBlocking()
 		]);
-		WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
+		const gameWindow = await WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
+		gameWindow.webContents.once('dom-ready', () => {
+			client.connect();
+			client.on('message', (_listener, userState, msg) => {
+				const message = TwitchUtils.simplifyAndFilterMessage(userState, msg);
+
+				if (message) gameWindow.webContents.send(TWITCH_MESSAGE_RECEIVE, message);
+			});
+
+			// Setup event listener
+			ipcMain.on(TWITCH_MESSAGE_SEND, (_evt, message: string) => {
+				const channel = `#${ client.getUsername() }`;
+				client.say(channel, message);
+			});
+		});
 	}
 
 	/** Register the listeners for the app process (e.g. 'window-all-closed') */

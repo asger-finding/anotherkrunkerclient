@@ -65,3 +65,8 @@ export interface WindowSaveData {
 }
 
 export type DefaultConstructorOptions = Electron.BrowserWindowConstructorOptions & WindowSaveData;
+
+export type TwitchMessage = {
+	username: string;
+	message: string;
+};
