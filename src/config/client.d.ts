@@ -69,4 +69,5 @@ export type DefaultConstructorOptions = Electron.BrowserWindowConstructorOptions
 export type SimplifiedTwitchMessage = {
 	username: string;
 	message: string;
+	color?: string;
 };

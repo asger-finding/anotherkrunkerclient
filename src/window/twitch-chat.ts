@@ -116,7 +116,8 @@ export default class TwitchChat {
 
 		const chatMessage: SimplifiedTwitchMessage = {
 			username: item.chatUserstate.username ?? '<unknown>',
-			message: item.message
+			message: item.message,
+			color: item.chatUserstate.color
 		};
 
 		if (!this.chatListClone) this.enqueuedTwitchMessages.push(chatMessage);
@@ -213,13 +214,16 @@ export default class TwitchChat {
 		const chatItem = document.createElement('div');
 		chatItem.setAttribute('class', 'chatItem');
 		chatItem.setAttribute('style', 'background-color: rgba(0, 0, 0, 0.3)');
-		chatItem.innerText = `\u200e${ message.username }\u200e: `;
+
+		const chatUsername = document.createElement('span');
+		chatUsername.style.color = message.color ?? '#ffffff';
+		chatUsername.innerText = `\u200e${ message.username }\u200e: `;
 
 		const chatMsg = document.createElement('span');
 		chatMsg.setAttribute('class', 'chatMsg');
 		chatMsg.innerText = `\u200e${ message.message }\u200e`;
 
-		chatItem.append(chatMsg);
+		chatItem.append(chatUsername, chatMsg);
 		wrapper.append(chatItem);
 
 		this.twitchMessageCount++;
