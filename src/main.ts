@@ -9,7 +9,7 @@ import {
 	MESSAGE_EXIT_CLIENT,
 	SPLASH_CONSTRUCTOR_OPTIONS,
 	TARGET_GAME_URL,
-	TWITCH_GET_CHANNEL,
+	TWITCH_GET_INFO,
 	TWITCH_MESSAGE_RECEIVE,
 	TWITCH_MESSAGE_SEND,
 	WINDOW_ALL_CLOSED_BUFFER_TIME
@@ -51,6 +51,7 @@ class Application {
 			WindowUtils.createWindow(SPLASH_CONSTRUCTOR_OPTIONS).then(window => SplashUtils.load(window)),
 			Application.enableTrackerBlocking()
 		]);
+
 		const gameWindow = await WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
 		gameWindow.webContents.once('dom-ready', () => {
 			client.connect();
@@ -69,9 +70,14 @@ class Application {
 				client.say(channel, message);
 			});
 
-			ipcMain.on(TWITCH_GET_CHANNEL, evt => {
+			ipcMain.handle(TWITCH_GET_INFO, async() => {
 				const [channel] = client.getChannels();
-				evt.returnValue = channel;
+
+				return {
+					isLive: await TwitchUtils.isLive(),
+					username: client.getUsername(),
+					channel
+				};
 			});
 		});
 	}

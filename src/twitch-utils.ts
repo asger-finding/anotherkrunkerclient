@@ -28,6 +28,7 @@ export default class {
 				username,
 				password: `oauth:${ token }`
 			},
+			// TODO: Any channel can be selected
 			channels: [username]
 		});
 	}
@@ -146,6 +147,26 @@ export default class {
 		preferences.set('twitch.username', login);
 
 		return login;
+	}
+
+	/**
+	 * Check the live status of the authenticated user.
+	 * 
+	 * The status may take a few minutes to update.
+	 */
+	public static async isLive() {
+		const token = await this.getAccessToken();
+		// TODO: Any streamer can be checked for live status.
+		const username = await this.getUsername(token);
+
+		return fetch(`https://api.twitch.tv/helix/streams?user_login=${ username }`, {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${ token }`,
+				'Client-ID': TWITCH_CLIENT_ID
+			}
+		}).then(res => res.json())
+			.then(({ data }) => data.length > 0);
 	}
 
 }

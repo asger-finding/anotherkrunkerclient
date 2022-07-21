@@ -1,5 +1,5 @@
 import {
-	TWITCH_GET_CHANNEL,
+	TWITCH_GET_INFO,
 	TWITCH_MATERIAL_ICON,
 	TWITCH_MESSAGE_RECEIVE,
 	TWITCH_MESSAGE_SEND,
@@ -9,6 +9,7 @@ import { ChatUserstate } from 'tmi.js';
 import { SimplifiedTwitchMessage } from '@client';
 import { ipcRenderer } from 'electron';
 
+type ViewerStates = 'subscriber' | 'vip' | 'moderator' | 'broadcaster';
 type AvailableStates = 'public' | 'groups' | typeof TWITCH_MATERIAL_ICON;
 type SwitchChat = (element: HTMLDivElement) => void;
 type TwitchMessageItem = {
@@ -16,11 +17,55 @@ type TwitchMessageItem = {
 	message: string;
 };
 
+/**
+ * Interface for Twitch message conditions.
+ * 
+ * @example
+ * const condition = {
+ *     // Does message start with '!hello'
+ *     condition: /^!ping$/i,
+ * 
+ *     mustBeLive: true,
+ *     onlyOwnChannel: false,
+ *     // Callback to execute if the condition is met
+ *     call: (chatUserstate: ChatUserstate, message: string) => {
+ *         TwitchChat.sendTwitchMessage(`Pong, ${chatUserstate.username}!`);
+ *     }
+ * }
+ */
+interface ConditionFields {
+
+	/** RegExp to match the message. */
+	condition: RegExp;
+
+	/**
+	 * Command can only be triggered on the authenticated user's own channel.
+	 * 
+	 * @default true
+	 */
+	onlyOwnChannel?: boolean;
+
+	/**
+	 * The target channel must be live.
+	 * 
+	 * @default true
+	 */
+	mustBeLive?: boolean;
+
+	/** Who can trigger the condition? Unspecified (the default) means everyone. */
+	whoCanTrigger?: Array<ViewerStates>;
+
+	/** The call to make if all conditions are met. */
+	call: (userState: ChatUserstate, message: string) => void;
+}
+
 export default class TwitchChat {
 
-	private cachedUsername: string;
-
-	private targetChannel: string;
+	private twitchInfo: {
+		username: string;
+		isLive: boolean;
+		channel: string;
+	};
 
 	private chatList: HTMLDivElement;
 
@@ -53,27 +98,35 @@ export default class TwitchChat {
 	 *     }
 	 * }
 	 */
-	private static conditions: Array<{ condition: RegExp, onlyOwnChannel: boolean, call: (userState: ChatUserstate, message: string) => void }> = [
+	private static conditions: Array<ConditionFields> = [
 		{
 			condition: /^!link(?: (?:.*))?$/ui,
 			onlyOwnChannel: true,
+			mustBeLive: true,
 			call(userState) {
 				const { search } = new URL(location.href);
 
 				if (search.startsWith('?game=')) TwitchChat.sendTwitchMessage(`@${ userState.username } — ${ location.href }`);
+			}
+		},
+		{
+			condition: /^!ping$/ui,
+			onlyOwnChannel: false,
+			mustBeLive: true,
+			whoCanTrigger: ['moderator', 'broadcaster'],
+			call(userState) {
+				TwitchChat.sendTwitchMessage(`@${ userState.username }, pong!`);
 			}
 		}
 	];
 
 	/** Set up the event listener for the Twitch chat. */
 	constructor() {
-		this.cachedUsername = preferences.get('twitch.username') as string;
-
 		ipcRenderer.on(TWITCH_MESSAGE_RECEIVE, (_evt, item: TwitchMessageItem) => this.filterTwitchMessage(item));
 	}
 
 	/** Initialize the Twitch chat. */
-	public async init() {
+	public init() {
 		/** @param chatSwitchElement - The element that triggered the chat tab switch. */
 		const switchChatHook: SwitchChat = chatSwitchElement => {
 			this.switchChat(chatSwitchElement);
@@ -87,15 +140,15 @@ export default class TwitchChat {
 			 * 
 			 * @param nativeSwitchChat - The native switchChat function.
 			 */
-			set: (nativeSwitchChat: SwitchChat) => {
+			set: async(nativeSwitchChat: SwitchChat) => {
 				// At this point, the chat has been initialized
 				this.saveElements();
 				this.nativeSwitchChat = nativeSwitchChat;
-				this.targetChannel = ipcRenderer.sendSync(TWITCH_GET_CHANNEL);
 
 				Reflect.defineProperty(window, 'switchChat', <{ value: SwitchChat }>{ value: switchChatHook });
 
 				// Navigate to the correct chat tab
+				this.twitchInfo = await ipcRenderer.invoke(TWITCH_GET_INFO);
 				this.navigateToChatTab();
 			},
 			get() {
@@ -110,7 +163,6 @@ export default class TwitchChat {
 	 * 
 	 * @param item - The Twitch message context
 	 */
-	// eslint-disable-next-line complexity
 	private filterTwitchMessage(item: TwitchMessageItem): void {
 		this.iterateOverConditions(item);
 
@@ -129,9 +181,19 @@ export default class TwitchChat {
 	 *
 	 * @param item - The Twitch message context
 	 */
+	// eslint-disable-next-line complexity
 	private iterateOverConditions(item: TwitchMessageItem) {
 		for (const condition of TwitchChat.conditions) {
-			if (condition.onlyOwnChannel && this.targetChannel !== `#${this.cachedUsername}`) continue;
+			if (
+				(condition.mustBeLive && !this.twitchInfo.isLive)
+				|| (condition.onlyOwnChannel && this.twitchInfo.channel !== `#${this.twitchInfo.username}`)
+			) continue;
+
+			if (condition.whoCanTrigger instanceof Array && condition.whoCanTrigger.length) {
+				const userBadges = Object.keys(item.chatUserstate.badges ?? {}) as ViewerStates[];
+				const allowed = condition.whoCanTrigger;
+				if (!userBadges.some(badge => allowed.includes(badge))) continue;
+			}
 
 			if (condition.condition.test(item.message)) condition.call(item.chatUserstate, item.message);
 		}
