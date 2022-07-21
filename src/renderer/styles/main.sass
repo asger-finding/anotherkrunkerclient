@@ -31,3 +31,18 @@ body
     position: relative
     direction: rtl
     text-align: left
+
+    &::-webkit-scrollbar 
+        width: 6px
+
+    &::-webkit-scrollbar-thumb
+        border-radius: 2px
+        -webkit-box-shadow: unset
+        box-shadow: unset
+        border-color: #36393f
+
+    &::-webkit-scrollbar-track 
+        -webkit-box-shadow: unset
+        box-shadow: unset
+        border-radius: unset
+        background-color: rgba(0,0,0,.25)

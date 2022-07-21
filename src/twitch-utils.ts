@@ -1,4 +1,3 @@
-import { ChatUserstate, Client } from 'tmi.js';
 import {
 	IS_DEVELOPMENT,
 	TWITCH_CLIENT_ID,
@@ -6,7 +5,7 @@ import {
 	preferences
 } from '@constants';
 import { error, info, warn } from '@logger';
-import { TwitchMessage } from '@client';
+import { Client } from 'tmi.js';
 import { createServer } from 'http';
 import fetch from 'node-fetch';
 import { openExternal } from '@window-utils';
@@ -31,21 +30,6 @@ export default class {
 			},
 			channels: [username]
 		});
-	}
-
-	/**
-	 *
-	 * @param userState - tmi.js userstate object
-	 * @param message - Twitch message string
-	 * @returns Message simplified to username and message
-	 */
-	public static simplifyAndFilterMessage(userState: ChatUserstate, message: string): TwitchMessage | null {
-		if (userState['message-type'] !== 'chat') return null;
-
-		return {
-			message: message.replace(/\s+/gu, ' ').trim(),
-			username: userState.username ?? 'unknown'
-		};
 	}
 
 	/** @returns Promise for Twitch oauth token, either saved in the preferences or fetched from the Twitch API. */

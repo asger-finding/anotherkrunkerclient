@@ -4,42 +4,68 @@ import {
 	TWITCH_MESSAGE_SEND,
 	preferences
 } from '@constants';
-import { TwitchMessage } from '@client';
+import { ChatUserstate } from 'tmi.js';
+import { SimplifiedTwitchMessage } from '@client';
 import { ipcRenderer } from 'electron';
 
 type AvailableStates = 'public' | 'groups' | typeof TWITCH_MATERIAL_ICON;
 type SwitchChat = (element: HTMLDivElement) => void;
+type TwitchMessageItem = {
+	chatUserstate: ChatUserstate;
+	message: string;
+};
 
-export default class {
+export default class TwitchChat {
 
-	chatList: HTMLDivElement;
+	private chatList: HTMLDivElement;
 
-	chatListClone: HTMLDivElement;
+	private chatListClone: HTMLDivElement;
 
-	chatInput: HTMLInputElement;
+	private chatInput: HTMLInputElement;
 
-	chatInputClone: HTMLInputElement;
+	private chatInputClone: HTMLInputElement;
 
-	twitchMessageCount = 0;
+	private twitchMessageCount = 0;
 
-	enqueuedTwitchMessages: TwitchMessage[] = [];
+	private enqueuedTwitchMessages: SimplifiedTwitchMessage[] = [];
 
-	chatStates: AvailableStates[];
+	private chatStates: AvailableStates[];
 
-	chatState: AvailableStates = 'public';
+	private chatState: AvailableStates = 'public';
 
-	nativeSwitchChat: SwitchChat;
+	private nativeSwitchChat: SwitchChat;
+
+	/**
+	 * RegExes to test incoming messages against to trigger a chat action.
+	 * 
+	 * @example
+	 * const condition = {
+	 *     // Does message start with '!hello'
+	 *     condition: /^!ping$/i,
+	 *     // Callback to execute if the condition is met
+	 *     call: (chatUserstate: ChatUserstate, message: string) => {
+	 *         TwitchChat.sendTwitchMessage(`Pong, ${chatUserstate.username}!`);
+	 *     }
+	 * }
+	 */
+	private static conditions: Array<{ condition: RegExp, call: (userState: ChatUserstate, message: string) => void }> = [
+		{
+			condition: /^!link(?:\s*)$/ui,
+			call(userState) {
+				const { search } = new URL(location.href);
+
+				if (search.startsWith('?game=')) TwitchChat.sendTwitchMessage(`@${ userState.username } — ${ location.href }`);
+			}
+		}
+	];
 
 	/** Set up the event listener for the Twitch chat. */
 	constructor() {
-		ipcRenderer.on(TWITCH_MESSAGE_RECEIVE, (_evt, message: TwitchMessage) => {
-			if (!this.chatListClone) return this.enqueuedTwitchMessages.push(message);
-			return this.appendTwitchMessage(message);
-		});
+		ipcRenderer.on(TWITCH_MESSAGE_RECEIVE, (_evt, item: TwitchMessageItem) => this.filterTwitchMessage(item));
 	}
 
 	/** Initialize the Twitch chat. */
-	init() {
+	public init() {
 		/** @param chatSwitchElement - The element that triggered the chat tab switch. */
 		const switchChatHook: SwitchChat = chatSwitchElement => {
 			this.switchChat(chatSwitchElement);
@@ -70,11 +96,29 @@ export default class {
 	}
 
 	/**
+	 * Iterate through conditions and call the callbacks if the condition is met.
+	 * Append the message to the chat list.
+	 * 
+	 * @param item - The Twitch message context
+	 */
+	private filterTwitchMessage(item: TwitchMessageItem): void {
+		for (const condition of TwitchChat.conditions) if (condition.condition.test(item.message)) condition.call(item.chatUserstate, item.message);
+
+		const chatMessage: SimplifiedTwitchMessage = {
+			username: item.chatUserstate.username ?? '<unknown>',
+			message: item.message
+		};
+
+		if (!this.chatListClone) this.enqueuedTwitchMessages.push(chatMessage);
+		else this.appendTwitchMessage(chatMessage);
+	}
+
+	/**
 	 * Toggle the chat tab
 	 * 
 	 * @param chatSwitchElement - The element that triggered the chat tab switch.
 	 */
-	switchChat(chatSwitchElement: HTMLDivElement) {
+	private switchChat(chatSwitchElement: HTMLDivElement) {
 		this.setOrder();
 
 		const currentTab = (chatSwitchElement.getAttribute('data-tab') ?? 'public') as AvailableStates;
@@ -101,7 +145,7 @@ export default class {
 	 * Save the chat elements to the class.
 	 * This must be called after the chat has been initialized.
 	 */
-	saveElements() {
+	private saveElements() {
 		this.chatList = document.getElementById('chatList') as HTMLDivElement;
 		this.chatInput = document.getElementById('chatInput') as HTMLInputElement;
 
@@ -136,7 +180,7 @@ export default class {
 	 * 
 	 * @param message - The Twitch message and username.
 	 */
-	appendTwitchMessage(message: TwitchMessage): void {
+	private appendTwitchMessage(message: SimplifiedTwitchMessage): void {
 		const wrapper = document.createElement('div');
 		wrapper.setAttribute('data-tab', '-1');
 		wrapper.setAttribute('id', `chatMsg_${this.twitchMessageCount}`);
@@ -159,7 +203,7 @@ export default class {
 	}
 
 	/** Resolve the order of the chat tabs depending on whether teams are enabled or not. */
-	setOrder() {
+	private setOrder() {
 		const testElement = document.createElement('div');
 		testElement.setAttribute('data-tab', 'public');
 		this.nativeSwitchChat(testElement);
@@ -171,7 +215,7 @@ export default class {
 	}
 
 	/** Save the game chat state to preferences and set it upon load. */
-	navigateToChatTab() {
+	private navigateToChatTab() {
 		window.addEventListener('beforeunload', () => {
 			preferences.set('gameChatState', this.chatState);
 		});
@@ -189,21 +233,37 @@ export default class {
 	}
 
 	/** Register the event listeners for the Twitch chat input element. */
-	initInputEventListeners() {
-		// On this.chatInputClone enter, send the message to the server
-		this.chatInputClone.addEventListener('keydown', evt => {
-			if (evt.key === 'Enter') {
-				// Send the message to main
-				ipcRenderer.send(TWITCH_MESSAGE_SEND, this.chatInputClone.value);
+	private initInputEventListeners() {
+		// Register event listener on document for keydown
+		document.addEventListener('keydown', (evt: KeyboardEvent) => {
+			const isEnter = evt.key === 'Enter';
+			const isChatInputFocused = document.activeElement === this.chatInputClone;
 
-				// Clear the input
-				this.chatInputClone.value = '';
-				this.chatInputClone.blur();
+			if (isEnter) {
+				if (isChatInputFocused) {
+					// Send the message to main
+					TwitchChat.sendTwitchMessage(this.chatInputClone.value);
 
-				evt.preventDefault();
-				evt.stopPropagation();
+					// Clear the input
+					this.chatInputClone.value = '';
+					this.chatInputClone.blur();
+
+					evt.preventDefault();
+					evt.stopPropagation();
+				} else if (this.chatInputClone.style.display === 'inline') {
+					this.chatInputClone.focus();
+				}
 			}
 		});
+	}
+
+	/**
+	 * Send a Twitch message to the chat.
+	 * 
+	 * @param message - The message to send.
+	 */
+	private static sendTwitchMessage(message: string) {
+		ipcRenderer.send(TWITCH_MESSAGE_SEND, message);
 	}
 
 }
