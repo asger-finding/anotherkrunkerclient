@@ -280,7 +280,8 @@ export default class TwitchChat {
 		const chatUsername = document.createElement('span');
 
 		// TODO: Optional username color
-		chatUsername.style.color = /*message.color ?? */'#ffffff';
+		// chatUsername.style.color = message.color ?? '#ffffff';
+		chatUsername.style.color = '#ffffff';
 		chatUsername.innerText = `\u200e${ message.username }\u200e: `;
 
 		const chatMsg = document.createElement('span');
