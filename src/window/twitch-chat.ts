@@ -50,7 +50,7 @@ export default class TwitchChat {
 	 */
 	private static conditions: Array<{ condition: RegExp, call: (userState: ChatUserstate, message: string) => void }> = [
 		{
-			condition: /^!link(?:\s*)$/ui,
+			condition: /^!link(?: (?:.*))?$/ui,
 			call(userState) {
 				const { search } = new URL(location.href);
 
