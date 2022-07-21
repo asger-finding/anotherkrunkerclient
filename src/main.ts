@@ -9,6 +9,7 @@ import {
 	MESSAGE_EXIT_CLIENT,
 	SPLASH_CONSTRUCTOR_OPTIONS,
 	TARGET_GAME_URL,
+	TWITCH_GET_CHANNEL,
 	TWITCH_MESSAGE_RECEIVE,
 	TWITCH_MESSAGE_SEND,
 	WINDOW_ALL_CLOSED_BUFFER_TIME
@@ -66,6 +67,11 @@ class Application {
 			ipcMain.on(TWITCH_MESSAGE_SEND, (_evt, message: string) => {
 				const [channel] = client.getChannels();
 				client.say(channel, message);
+			});
+
+			ipcMain.on(TWITCH_GET_CHANNEL, evt => {
+				const [channel] = client.getChannels();
+				evt.returnValue = channel;
 			});
 		});
 	}

@@ -35,7 +35,7 @@ export default class {
 	/** @returns Promise for Twitch oauth token, either saved in the preferences or fetched from the Twitch API. */
 	private static getAccessToken(): Promise<string> {
 		return new Promise((resolve, reject) => {
-			const cachedToken = preferences.get('twitchToken');
+			const cachedToken = preferences.get('twitch.token');
 			if (typeof cachedToken === 'string') return resolve(cachedToken);
 
 			// Create a random state string to prevent csrf attacks
@@ -122,7 +122,7 @@ export default class {
 
 		if (!token) return new Error('No token');
 
-		preferences.set('twitchToken', token);
+		preferences.set('twitch.token', token);
 		return token;
 	}
 
@@ -142,6 +142,8 @@ export default class {
 			}
 		}).then(res => res.json())
 			.then(({ data }) => data[0].login);
+
+		preferences.set('twitch.username', login);
 
 		return login;
 	}

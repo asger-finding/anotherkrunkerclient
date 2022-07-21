@@ -1,4 +1,5 @@
 import {
+	TWITCH_GET_CHANNEL,
 	TWITCH_MATERIAL_ICON,
 	TWITCH_MESSAGE_RECEIVE,
 	TWITCH_MESSAGE_SEND,
@@ -16,6 +17,10 @@ type TwitchMessageItem = {
 };
 
 export default class TwitchChat {
+
+	private cachedUsername: string;
+
+	private targetChannel: string;
 
 	private chatList: HTMLDivElement;
 
@@ -48,9 +53,10 @@ export default class TwitchChat {
 	 *     }
 	 * }
 	 */
-	private static conditions: Array<{ condition: RegExp, call: (userState: ChatUserstate, message: string) => void }> = [
+	private static conditions: Array<{ condition: RegExp, onlyOwnChannel: boolean, call: (userState: ChatUserstate, message: string) => void }> = [
 		{
 			condition: /^!link(?: (?:.*))?$/ui,
+			onlyOwnChannel: true,
 			call(userState) {
 				const { search } = new URL(location.href);
 
@@ -61,11 +67,13 @@ export default class TwitchChat {
 
 	/** Set up the event listener for the Twitch chat. */
 	constructor() {
+		this.cachedUsername = preferences.get('twitch.username') as string;
+
 		ipcRenderer.on(TWITCH_MESSAGE_RECEIVE, (_evt, item: TwitchMessageItem) => this.filterTwitchMessage(item));
 	}
 
 	/** Initialize the Twitch chat. */
-	public init() {
+	public async init() {
 		/** @param chatSwitchElement - The element that triggered the chat tab switch. */
 		const switchChatHook: SwitchChat = chatSwitchElement => {
 			this.switchChat(chatSwitchElement);
@@ -83,6 +91,7 @@ export default class TwitchChat {
 				// At this point, the chat has been initialized
 				this.saveElements();
 				this.nativeSwitchChat = nativeSwitchChat;
+				this.targetChannel = ipcRenderer.sendSync(TWITCH_GET_CHANNEL);
 
 				Reflect.defineProperty(window, 'switchChat', <{ value: SwitchChat }>{ value: switchChatHook });
 
@@ -101,8 +110,9 @@ export default class TwitchChat {
 	 * 
 	 * @param item - The Twitch message context
 	 */
+	// eslint-disable-next-line complexity
 	private filterTwitchMessage(item: TwitchMessageItem): void {
-		for (const condition of TwitchChat.conditions) if (condition.condition.test(item.message)) condition.call(item.chatUserstate, item.message);
+		this.iterateOverConditions(item);
 
 		const chatMessage: SimplifiedTwitchMessage = {
 			username: item.chatUserstate.username ?? '<unknown>',
@@ -111,6 +121,19 @@ export default class TwitchChat {
 
 		if (!this.chatListClone) this.enqueuedTwitchMessages.push(chatMessage);
 		else this.appendTwitchMessage(chatMessage);
+	}
+
+	/**
+	 * Iterate over the Twitch command conditions and call the callbacks if the condition is met.
+	 *
+	 * @param item - The Twitch message context
+	 */
+	private iterateOverConditions(item: TwitchMessageItem) {
+		for (const condition of TwitchChat.conditions) {
+			if (condition.onlyOwnChannel && this.targetChannel !== `#${this.cachedUsername}`) continue;
+
+			if (condition.condition.test(item.message)) condition.call(item.chatUserstate, item.message);
+		}
 	}
 
 	/**
@@ -264,7 +287,7 @@ export default class TwitchChat {
 	 * 
 	 * @param message - The message to send.
 	 */
-	private static sendTwitchMessage(message: string) {
+	private static async sendTwitchMessage(message: string) {
 		ipcRenderer.send(TWITCH_MESSAGE_SEND, message);
 	}
 
