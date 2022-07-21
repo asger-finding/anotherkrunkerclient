@@ -181,6 +181,8 @@ export default class TwitchChat {
 	 * @param message - The Twitch message and username.
 	 */
 	private appendTwitchMessage(message: SimplifiedTwitchMessage): void {
+		if (this.chatListClone.firstElementChild && this.chatListClone.children.length > 200) this.chatListClone.removeChild(this.chatListClone.firstElementChild);
+
 		const wrapper = document.createElement('div');
 		wrapper.setAttribute('data-tab', '-1');
 		wrapper.setAttribute('id', `chatMsg_${this.twitchMessageCount}`);
