@@ -64,7 +64,7 @@ class Application {
 
 			// Setup event listener
 			ipcMain.on(TWITCH_MESSAGE_SEND, (_evt, message: string) => {
-				const channel = `#${ client.getUsername() }`;
+				const [channel] = client.getChannels();
 				client.say(channel, message);
 			});
 		});
