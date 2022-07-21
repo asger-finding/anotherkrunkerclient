@@ -53,10 +53,13 @@ class Application {
 		const gameWindow = await WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
 		gameWindow.webContents.once('dom-ready', () => {
 			client.connect();
-			client.on('message', (_listener, userState, msg) => {
-				const message = TwitchUtils.simplifyAndFilterMessage(userState, msg);
+			client.on('message', (_listener, chatUserstate, message) => {
+				if (chatUserstate['message-type'] !== 'chat' || !message) return;
 
-				if (message) gameWindow.webContents.send(TWITCH_MESSAGE_RECEIVE, message);
+				gameWindow.webContents.send(TWITCH_MESSAGE_RECEIVE, {
+					chatUserstate,
+					message
+				});
 			});
 
 			// Setup event listener
