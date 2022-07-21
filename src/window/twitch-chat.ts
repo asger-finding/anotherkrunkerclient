@@ -216,7 +216,9 @@ export default class TwitchChat {
 		chatItem.setAttribute('style', 'background-color: rgba(0, 0, 0, 0.3)');
 
 		const chatUsername = document.createElement('span');
-		chatUsername.style.color = message.color ?? '#ffffff';
+
+		// TODO: Optional username color
+		chatUsername.style.color = /*message.color ?? */'#ffffff';
 		chatUsername.innerText = `\u200e${ message.username }\u200e: `;
 
 		const chatMsg = document.createElement('span');
