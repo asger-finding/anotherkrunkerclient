@@ -1,10 +1,12 @@
-interface SettingsGenerator {
-	createCheckbox(onclick: (this: GlobalEventHandlers, evt: Event) => unknown, inputNodeAttributes: Partial<HTMLInputElement>): HTMLLabelElement;
-	createSlider(oninput: (this: GlobalEventHandlers, evt: Event) => unknown, inputNodeAttributes: Partial<HTMLInputElement>): [HTMLInputElement, HTMLDivElement];
-	createSelect(onchange: (this: GlobalEventHandlers, evt: Event) => unknown, inputNodeAttributes: Partial<HTMLSelectElement>, options: { [key: string]: string }): HTMLSelectElement;
-	createColor(onchange: (this: GlobalEventHandlers, evt: Event) => unknown, inputNodeAttributes: Partial<HTMLInputElement>): HTMLInputElement;
-	createText(oninput: (this: GlobalEventHandlers, evt: Event) => unknown, inputNodeAttributes: Partial<HTMLInputElement>): HTMLInputElement;
-}
+export type EventHandler<T extends Event> = (event: T) => void;
+
+export type InputNodeAttributes<Target extends Event> = { [key: string]: unknown } & {
+	oninput: EventHandler<Target>;
+};
+
+export type Callback = (...args: never[]) => unknown;
+
+export type AsyncReturnType<Target extends (...args: unknown[]) => Promise<unknown>> = Awaited<ReturnType<Target>>;
 
 declare global {
 	namespace NodeJS {
@@ -14,7 +16,6 @@ declare global {
 	}
 	export interface Window {
 		OffCliV: boolean;
-		SettingsGenerator: SettingsGenerator;
 		clientAPI: {
 			clientName: string;
 
@@ -28,10 +29,6 @@ declare global {
 		closeClient: () => null;
 	}
 }
-
-export type Callback = (...args: never[]) => unknown;
-
-export type AsyncReturnType<Target extends (...args: unknown[]) => Promise<unknown>> = Awaited<ReturnType<Target>>;
 
 interface GitHubResponse {
 	data?: {

@@ -147,7 +147,8 @@ export const GAME_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions 
 	webPreferences: {
 		...getDefaultConstructorOptions(TABS.GAME).webPreferences,
 		preload: resolve(__dirname, '../window/game-pre'),
-		contextIsolation: false
+		contextIsolation: false,
+		webviewTag: true
 	}
 };
 

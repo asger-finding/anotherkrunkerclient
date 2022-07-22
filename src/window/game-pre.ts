@@ -1,5 +1,3 @@
-import '@game-settings';
-
 import FunctionHook from '@function-hooker';
 import { MESSAGE_EXIT_CLIENT } from '@constants';
 import { MapExport } from '../krunker';
