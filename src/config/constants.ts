@@ -81,7 +81,6 @@ export const ELECTRON_FLAGS: Array<[string, string?]> = [
 	['disable-canvas-aa'],
 	['disable-2d-canvas-clip-aa'],
 	['enable-gpu-async-worker-context'],
-	['enable-gpu-memory-buffer-compositor-resources'],
 	['enable-gpu-memory-buffer-video-frames']
 ];
 
