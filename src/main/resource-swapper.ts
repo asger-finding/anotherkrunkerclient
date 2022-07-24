@@ -31,7 +31,7 @@ export default class {
 		if (this.started) return;
 
 		// If the target directory doesn't exist, create it.
-		if (!existsSync(global.resourceswapProtocolSource)) mkdirSync(global.resourceswapProtocolSource, { recursive: true });
+		if (!existsSync(this.target)) mkdirSync(this.target, { recursive: true });
 
 		this.recursiveSwap('');
 
