@@ -41,7 +41,7 @@ export function navigate(browserWindow: BrowserWindow & { resourceSwapper?: Reso
 	const { isKrunker } = getURLData(windowUrl ?? browserWindow.webContents.getURL());
 
 	if (isKrunker) {
-		// Hide the captcha bar in the window that krunker may spawn.
+		// Hide the captcha bar that krunker may spawn.
 		browserWindow.webContents.once('did-frame-finish-load', () => {
 			browserWindow.webContents.insertCSS('body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }');
 		});
@@ -106,8 +106,8 @@ export default class {
 		register(browserWindow, 'Esc', () => webContents.executeJavaScript('document.exitPointerLock()', true));
 		register(browserWindow, 'Alt+F4', () => browserWindow.close());
 		register(browserWindow, 'F11', () => browserWindow.setFullScreen(!browserWindow.isFullScreen()));
-		register(browserWindow, ['F5', 'Ctrl+R'], () => webContents.reload());
-		register(browserWindow, ['Ctrl+F5', 'Ctrl+Shift+R'], () => webContents.reloadIgnoringCache());
+		register(browserWindow, ['F5', 'Ctrl+R'], () => { webContents.reload(); navigate(browserWindow); });
+		register(browserWindow, ['Ctrl+F5', 'Ctrl+Shift+R'], () => { webContents.reloadIgnoringCache(); navigate(browserWindow); });
 		register(browserWindow, ['F12', 'Ctrl+Shift+I'], () => this.openDevToolsWithFallback(browserWindow));
 	}
 
