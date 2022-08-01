@@ -9,7 +9,7 @@ import { openExternal } from '@window-utils';
 /**
  * Transform the HTML of the splash window to show the release data and assign event listeners.
  * 
- * @param releaseData - Release data from GitHub API to display in the splash
+ * @param releaseData Release data from GitHub API to display in the splash
  */
 function transformSplash(releaseData: ReleaseData): void {
 	const { clientVersionElement, clientUpdateElement } = SplashPreloadUtils;

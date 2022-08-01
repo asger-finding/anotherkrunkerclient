@@ -17,8 +17,8 @@ import { spawn } from 'child_process';
 /**
  * Load a URL in the specified window with a spoofed user agent
  *
- * @param browserWindow - The target window to spoof
- * @param windowUrl - URL to load
+ * @param browserWindow The target window to spoof
+ * @param windowUrl URL to load
  */
 async function loadSpoofedURL(browserWindow: Electron.BrowserWindow, windowUrl: string): Promise<void> {
 	let ua: AsyncReturnType<typeof getSpoofedUA> = '';
@@ -33,8 +33,8 @@ async function loadSpoofedURL(browserWindow: Electron.BrowserWindow, windowUrl: 
  * Run when navigated (exclude `windowUrl` param) or when navigating (include `windowUrl` param) to a new URL.
  * Spoofs the user agent, loads the URL, and triggers site-specific behavior.
  *
- * @param browserWindow - The target window
- * @param windowUrl - URL to load, if any
+ * @param browserWindow The target window
+ * @param windowUrl URL to load, if any
  */
 export function navigate(browserWindow: BrowserWindow & { resourceSwapper?: ResourceSwapper }, windowUrl?: string): void {
 	if (windowUrl) loadSpoofedURL(browserWindow, windowUrl);
@@ -56,7 +56,7 @@ export function navigate(browserWindow: BrowserWindow & { resourceSwapper?: Reso
  * Open an outlink in the default browser.
  * Fix for `shell.openExternal()` in some electron versions.
  *
- * @param externalUrl - The URL to open externally
+ * @param externalUrl The URL to open externally
  */
 export function openExternal(externalUrl: string): void {
 	let command = 'xdg-open';
@@ -73,8 +73,8 @@ export default class {
 	 * Register shortcuts for the window. If show is true in parameters, show the window.  
 	 * If the window is a Krunker tab, set the window scaling preferences.
 	 *
-	 * @param constructorOptions - The options to pass to the window constructor
-	 * @param windowURL - The URL to load in the window
+	 * @param constructorOptions The options to pass to the window constructor
+	 * @param windowURL The URL to load in the window
 	 * @returns Newly generated window instance
 	 */
 	public static async createWindow(constructorOptions: Electron.BrowserWindowConstructorOptions, windowURL?: string): Promise<Electron.BrowserWindow> {
@@ -96,7 +96,7 @@ export default class {
 	/**
 	 * Register global shortcuts for the window. Should be done before dom-ready
 	 *
-	 * @param browserWindow - The window to register the event on
+	 * @param browserWindow The window to register the event on
 	 */
 	private static registerShortcuts(browserWindow: Electron.BrowserWindow): void {
 		const { webContents } = browserWindow;
@@ -115,9 +115,9 @@ export default class {
 	 * Create electron event listeners for the window.  
 	 * Some one-time events are triggered onces, some are triggered on every event.
 	 *
-	 * @param constructorOptions - The parameters the window was created with
-	 * @param browserWindow - Target window
-	 * @param windowData - Data from Constants.getURLData on the target window URL
+	 * @param constructorOptions The parameters the window was created with
+	 * @param browserWindow Target window
+	 * @param windowData Data from Constants.getURLData on the target window URL
 	 */
 	private static registerEventListeners(constructorOptions: Electron.BrowserWindowConstructorOptions, browserWindow: Electron.BrowserWindow, windowData: WindowData): void {
 		const { webContents } = browserWindow;
@@ -185,7 +185,7 @@ export default class {
 	/**
 	 * If the tab matches the switch case, apply tab-specific methods to the window.
 	 *
-	 * @param windowData - Data from Constants.getURLData on the target window URL
+	 * @param windowData Data from Constants.getURLData on the target window URL
 	 * @returns A function that returns a void promise when all is done
 	 */
 	private static createSpecialWindow(windowData: WindowData): ((browserWindow: Electron.BrowserWindow) => Promise<void>) | null {
@@ -201,8 +201,8 @@ export default class {
 	 * Attempt to open the DevTools for the window.
 	 * If it refuses to open after 500 ms, use a fallback method.
 	 *
-	 * @param browserWindow - The window to open the DevTools in
-	 * @param mode - The mode to open the DevTools in
+	 * @param browserWindow The window to open the DevTools in
+	 * @param mode The mode to open the DevTools in
 	 */
 	public static openDevToolsWithFallback(browserWindow: Electron.BrowserWindow, mode?: Electron.OpenDevToolsOptions): void {
 		// Addresses https://stackoverflow.com/q/69969658/11452298 for electron < 13.5.0
@@ -230,7 +230,7 @@ export default class {
 	/**
 	 * Destroy the splash window.
 	 *
-	 * @param browserWindow - The window to destroy
+	 * @param browserWindow The window to destroy
 	 */
 	public static destroyWindow(browserWindow: Electron.BrowserWindow): void {
 		info('Destroying a window instance');

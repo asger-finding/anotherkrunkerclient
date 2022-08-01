@@ -115,7 +115,7 @@ export const TWITCH_MESSAGE_SEND = 'twitch-message-send';
 /**
  * Returns the default window options, with sizing for the given tab.
  *
- * @param tabName - The name of the tab to get sizing data for.
+ * @param tabName The name of the tab to get sizing data for.
  * @returns The default window constructor options.
  */
 export const getDefaultConstructorOptions = (tabName?: string): DefaultConstructorOptions => <DefaultConstructorOptions>{
@@ -147,7 +147,8 @@ export const GAME_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions 
 		...getDefaultConstructorOptions(TABS.GAME).webPreferences,
 		preload: resolve(__dirname, '../window/game-pre'),
 		contextIsolation: false,
-		webviewTag: true
+		webviewTag: true,
+		nodeIntegrationInSubFrames: true
 	}
 };
 
@@ -177,7 +178,7 @@ export const SPLASH_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOption
 /**
  * Returns the current Krunker tab (if any), whether we're on Krunker, what Krunker tab we're on, and whether quickJoin is enabled
  *
- * @param baseURL - The URL to analyze
+ * @param baseURL The URL to analyze
  * @returns Analyzed URL
  */
 export const getURLData = (baseURL?: string): WindowData => {

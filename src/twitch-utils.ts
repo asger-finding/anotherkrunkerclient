@@ -115,7 +115,7 @@ export default class {
 	/**
 	 * Handles the Twitch oauth token url with a regex.
 	 * 
-	 * @param url - url string
+	 * @param url url string
 	 * @returns Twitch oauth token or an error if the token was not found.
 	 */
 	private static handleTokenUrl(url: string | undefined): string | Error {
@@ -130,7 +130,7 @@ export default class {
 	/**
 	 * Get the username of the Twitch authenticated user.
 	 * 
-	 * @param token - Twitch oauth token
+	 * @param token Twitch oauth token
 	 * @returns Promise for Twitch username from the Twitch API.
 	 */
 	private static async getUsername(token: string): Promise<string> {

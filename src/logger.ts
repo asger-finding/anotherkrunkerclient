@@ -22,7 +22,7 @@ function newTimestamp(): string {
 /**
  * If in development, log a timestamped message to the console in blue.
  *
- * @param args - The arguments to log
+ * @param args The arguments to log
  */
 export function info(...args: unknown[]): void {
 	if (IS_DEVELOPMENT) console.log('\x1b[36m%s\x1b[0m', newTimestamp(), separator, ...args);
@@ -31,7 +31,7 @@ export function info(...args: unknown[]): void {
 /**
  * If in development, log a timestamped message to the console in yellow.
  *
- * @param args - The arguments to log
+ * @param args The arguments to log
  */
 export function warn(...args: unknown[]): void {
 	if (IS_DEVELOPMENT) console.warn('\x1b[33m%s\x1b[0m', newTimestamp(), separator, ...args);
@@ -40,7 +40,7 @@ export function warn(...args: unknown[]): void {
 /**
  * If in development, log a timestamped message to the console in red.
  *
- * @param args - The arguments to log
+ * @param args The arguments to log
  */
 export function error(...args: unknown[]): void {
 	if (IS_DEVELOPMENT) console.error('\x1b[31m%s\x1b[0m', newTimestamp(), separator, ...args);

@@ -20,7 +20,7 @@ export default class {
 	/**
 	 * Set the target window.
 	 *
-	 * @param browserWindow - The target window.
+	 * @param browserWindow The target window.
 	 */
 	public constructor(browserWindow: Electron.BrowserWindow) {
 		this.browserWindow = browserWindow;
@@ -73,7 +73,7 @@ export default class {
 	/**
 	 * Recursively swap all files in the target directory.
 	 *
-	 * @param prefix - The target directory to swap.
+	 * @param prefix The target directory to swap.
 	 */
 	private recursiveSwap(prefix: string): void {
 		try {

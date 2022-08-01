@@ -19,7 +19,7 @@ export default class {
 	 * Get the client release data and emit it to the splash window.  
 	 * Show the window on ready-to-show and callback.
 	 *
-	 * @param browserWindow - The target window to load onto
+	 * @param browserWindow The target window to load onto
 	 * @returns Promise for when everything is done
 	 */
 	public static load(browserWindow: Electron.BrowserWindow): Promise<void> {
@@ -80,7 +80,7 @@ export default class {
 	/**
 	 * Emit the client release data to the splash window event listener.
 	 *
-	 * @param browserWindow - The target window to emit the release data to
+	 * @param browserWindow The target window to emit the release data to
 	 */
 	private static async emitReleaseData(browserWindow: Electron.BrowserWindow): Promise<void> {
 		return browserWindow.webContents.send(MESSAGE_RELEASES_DATA, await this.getReleaseData());

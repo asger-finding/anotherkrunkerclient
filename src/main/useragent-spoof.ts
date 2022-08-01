@@ -37,7 +37,7 @@ function getCurrentUA(): string | null {
 /**
  * Iterate over an array of top user agents and get the best match for the current OS.
  *
- * @param userAgents - The user agents to choose from
+ * @param userAgents The user agents to choose from
  * @returns User agent to use
  */
 function iterateOverUAs(userAgents: unknown): string {

@@ -10,7 +10,7 @@ export default class {
 	 * Load the game window with the game URL.  
 	 * Show the window on ready-to-show and callback.
 	 *
-	 * @param browserWindow - The target window to load onto
+	 * @param browserWindow The target window to load onto
 	 * @returns Promise for when everything is done
 	 */
 	public static load(browserWindow: Electron.BrowserWindow): Promise<void> {

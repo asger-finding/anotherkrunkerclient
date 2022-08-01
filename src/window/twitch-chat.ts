@@ -127,7 +127,7 @@ export default class TwitchChat {
 
 	/** Initialize the Twitch chat. */
 	public init() {
-		/** @param chatSwitchElement - The element that triggered the chat tab switch. */
+		/** @param chatSwitchElement The element that triggered the chat tab switch. */
 		const switchChatHook: SwitchChat = chatSwitchElement => {
 			this.switchChat(chatSwitchElement);
 		};
@@ -138,7 +138,7 @@ export default class TwitchChat {
 			/**
 			 * Save the native switchChat function and replace it with a custom one. Save the chat elements to the class.
 			 * 
-			 * @param nativeSwitchChat - The native switchChat function.
+			 * @param nativeSwitchChat The native switchChat function.
 			 */
 			set: async(nativeSwitchChat: SwitchChat) => {
 				// At this point, the chat has been initialized
@@ -161,7 +161,7 @@ export default class TwitchChat {
 	 * Iterate through conditions and call the callbacks if the condition is met.
 	 * Append the message to the chat list.
 	 * 
-	 * @param item - The Twitch message context
+	 * @param item The Twitch message context
 	 */
 	private filterTwitchMessage(item: TwitchMessageItem): void {
 		this.iterateOverConditions(item);
@@ -179,7 +179,7 @@ export default class TwitchChat {
 	/**
 	 * Iterate over the Twitch command conditions and call the callbacks if the condition is met.
 	 *
-	 * @param item - The Twitch message context
+	 * @param item The Twitch message context
 	 */
 	// eslint-disable-next-line complexity
 	private iterateOverConditions(item: TwitchMessageItem) {
@@ -202,7 +202,7 @@ export default class TwitchChat {
 	/**
 	 * Toggle the chat tab
 	 * 
-	 * @param chatSwitchElement - The element that triggered the chat tab switch.
+	 * @param chatSwitchElement The element that triggered the chat tab switch.
 	 */
 	private switchChat(chatSwitchElement: HTMLDivElement) {
 		this.setOrder();
@@ -264,7 +264,7 @@ export default class TwitchChat {
 	/**
 	 * Create a new in-game chat message and append it to the cloned chat list.
 	 * 
-	 * @param message - The Twitch message and username.
+	 * @param message The Twitch message and username.
 	 */
 	private appendTwitchMessage(message: SimplifiedTwitchMessage): void {
 		if (this.chatListClone.firstElementChild && this.chatListClone.children.length > 200) this.chatListClone.removeChild(this.chatListClone.firstElementChild);
@@ -354,7 +354,7 @@ export default class TwitchChat {
 	/**
 	 * Send a Twitch message to the chat.
 	 * 
-	 * @param message - The message to send.
+	 * @param message The message to send.
 	 */
 	private static async sendTwitchMessage(message: string) {
 		ipcRenderer.send(TWITCH_MESSAGE_SEND, message);

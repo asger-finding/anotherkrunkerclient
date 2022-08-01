@@ -1,23 +1,31 @@
 import FunctionHook from '@function-hooker';
 import { MESSAGE_EXIT_CLIENT } from '@constants';
 import { MapExport } from '../krunker';
+import Settings from '@game-settings';
 import TwitchChat from '@twitch-chat';
 import { promises as fs } from 'fs';
 import { ipcRenderer } from 'electron';
 import { resolve } from 'path';
 
+/**
+ * Return a promise for when/if the DOM content has loaded
+ */
+function ensureContentLoaded() {
+	return new Promise<void>(promiseResolve => {
+		if (document.readyState === 'interactive' || document.readyState === 'complete') promiseResolve();
+		else document.addEventListener('DOMContentLoaded', () => promiseResolve());
+	});
+}
+
 (async function() {
-	const css = await fs.readFile(resolve(__dirname, '../renderer/styles/main.css'), 'utf8');
+	const [css] = await Promise.all([
+		fs.readFile(resolve(__dirname, '../renderer/styles/main.css'), 'utf8'),
+		ensureContentLoaded()
+	]);
 
-	/** Inject the read css file into the DOM */
-	function inject() {
-		const injectElement = document.createElement('style');
-		injectElement.innerHTML = css;
-		document.head.appendChild(injectElement);
-	}
-
-	if (document.readyState === 'interactive' || document.readyState === 'complete') inject();
-	else document.addEventListener('DOMContentLoaded', inject);
+	const injectElement = document.createElement('style');
+	injectElement.innerHTML = css;
+	document.head.appendChild(injectElement);
 }());
 
 // When closeClient is called from the onclick, close the client. The game will attempt to override this.
@@ -56,3 +64,6 @@ functionHook.hook('JSON.parse', (object: MapExport | Record<string, unknown>) =>
 
 const twitchChat = new TwitchChat();
 twitchChat.init();
+
+const settings = new Settings();
+settings.initMainWindow(ensureContentLoaded());
