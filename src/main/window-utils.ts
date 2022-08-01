@@ -8,11 +8,11 @@ import {
 } from '@constants';
 import GameUtils from '@game-utils';
 import ResourceSwapper from '@resource-swapper';
+import { exec } from 'child_process';
 import { getSpoofedUA } from '@useragent-spoof';
 import { info } from '@logger';
 import { lt as lessThan } from 'semver';
 import { register } from 'electron-localshortcut';
-import { spawn } from 'child_process';
 
 /**
  * Load a URL in the specified window with a spoofed user agent
@@ -63,7 +63,7 @@ export function openExternal(externalUrl: string): void {
 	if (process.platform === 'darwin') command = 'open';
 	if (process.platform === 'win32') command = 'explorer';
 
-	spawn(command, [externalUrl]);
+	exec(`${ command } "${ externalUrl }"`);
 }
 
 export default class {
