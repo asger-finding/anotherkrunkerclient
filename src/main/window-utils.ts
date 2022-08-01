@@ -228,7 +228,7 @@ export default class {
 	}
 
 	/**
-	 * Destroy the splash window.
+	 * Destroy the target window.
 	 *
 	 * @param browserWindow The window to destroy
 	 */

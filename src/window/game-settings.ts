@@ -18,7 +18,7 @@ export default class Settings {
 		const interval = setInterval(() => {
 			const instructions = document.getElementById('instructions');
 			if (instructions) {
-				Settings.observeInstructions(instructions);
+				Settings.observeInstructions(instructions as HTMLDivElement);
 				clearInterval(interval);
 			}
 		}, 100);
@@ -92,7 +92,9 @@ export default class Settings {
 					</style>`;
 					const webviewTag = document.createElement('webview');
 					webviewTag.src = `file://${ resolve(__dirname, '../renderer/html/settings.html') }`;
-					webviewTag.preload = `file://${ resolve(__dirname, './settings-pre.js') }`;
+
+					// The preload script will already be transpiled to javascript
+					webviewTag.preload = `file://${ resolve(__dirname, './settings-preload.js') }`;
 					webviewTag.nodeintegrationinsubframes = true;
 
 					return styles + webviewTag.outerHTML;

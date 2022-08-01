@@ -7,15 +7,12 @@ import {
 	GAME_CONSTRUCTOR_OPTIONS,
 	IS_DEVELOPMENT,
 	MESSAGE_EXIT_CLIENT,
-	SPLASH_CONSTRUCTOR_OPTIONS,
 	TARGET_GAME_URL,
 	TWITCH_GET_INFO,
 	TWITCH_MESSAGE_RECEIVE,
-	TWITCH_MESSAGE_SEND,
-	WINDOW_ALL_CLOSED_BUFFER_TIME
+	TWITCH_MESSAGE_SEND
 } from '@constants';
 import { ElectronBlocker } from '@cliqz/adblocker-electron';
-import SplashUtils from '@splash-utils';
 import TwitchUtils from '@twitch-utils';
 import WindowUtils from '@window-utils';
 import fetch from 'node-fetch';
@@ -48,7 +45,6 @@ class Application {
 
 		const [client] = await Promise.all([
 			TwitchUtils.createClient(),
-			WindowUtils.createWindow(SPLASH_CONSTRUCTOR_OPTIONS).then(window => SplashUtils.load(window)),
 			Application.enableTrackerBlocking()
 		]);
 
@@ -88,13 +84,7 @@ class Application {
 
 		app.on('quit', () => app.quit());
 		app.on('window-all-closed', () => {
-			if (process.platform !== 'darwin') {
-				// Allow some buffer time where one window may close so another one can open.
-				return setTimeout(() => {
-					const windowCount = BrowserWindow.getAllWindows().length;
-					if (windowCount === 0) app.quit();
-				}, WINDOW_ALL_CLOSED_BUFFER_TIME);
-			}
+			if (process.platform !== 'darwin') app.quit();
 
 			return null;
 		});

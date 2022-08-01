@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a bug report for anotherkrunkerclient.
+about: Create a bug report for this project.
 title: "[BUG]"
 labels: bug
 assignees: ''

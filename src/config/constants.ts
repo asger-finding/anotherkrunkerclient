@@ -84,9 +84,6 @@ export const ELECTRON_FLAGS: Array<[string, string?]> = [
 	['enable-gpu-memory-buffer-video-frames']
 ];
 
-// How long the splash window should be visible before entering the game
-export const SPLASH_ALIVE_TIME = 1500;
-
 // How long before the client ends the electron process after all windows are closed
 export const WINDOW_ALL_CLOSED_BUFFER_TIME = 200;
 
@@ -103,7 +100,6 @@ export const TABS = {
 };
 
 // ipc messages
-export const MESSAGE_SPLASH_DONE = 'splash-done';
 export const MESSAGE_GAME_DONE = 'game-done';
 export const MESSAGE_EXIT_CLIENT = 'exit-client';
 export const MESSAGE_OPEN_SETTINGS = 'open-settings';
@@ -145,33 +141,10 @@ export const GAME_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions 
 	show: false,
 	webPreferences: {
 		...getDefaultConstructorOptions(TABS.GAME).webPreferences,
-		preload: resolve(__dirname, '../window/game-pre'),
+		preload: resolve(__dirname, '../window/game-preload'),
 		contextIsolation: false,
 		webviewTag: true,
 		nodeIntegrationInSubFrames: true
-	}
-};
-
-/**
- * Get the window constructor options for the splash screen.
- *
- * @returns Splash window constructor options
- */
-export const SPLASH_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions = {
-	...getDefaultConstructorOptions(),
-	width: 640,
-	height: 320,
-	show: false,
-	frame: false,
-	movable: false,
-	center: true,
-	resizable: false,
-	skipTaskbar: true,
-	alwaysOnTop: true,
-	fullscreenable: false,
-	webPreferences: {
-		...getDefaultConstructorOptions().webPreferences,
-		preload: resolve(__dirname, '../window/splash-pre')
 	}
 };
 
