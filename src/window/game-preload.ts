@@ -17,53 +17,55 @@ function ensureContentLoaded() {
 	});
 }
 
-(async function() {
-	const [css] = await Promise.all([
-		fs.readFile(resolve(__dirname, '../renderer/styles/main.css'), 'utf8'),
-		ensureContentLoaded()
-	]);
+if (process.isMainFrame) {
+	(async function() {
+		const [css] = await Promise.all([
+			fs.readFile(resolve(__dirname, '../renderer/styles/main.css'), 'utf8'),
+			ensureContentLoaded()
+		]);
 
-	const injectElement = document.createElement('style');
-	injectElement.innerHTML = css;
-	document.head.appendChild(injectElement);
-}());
+		const injectElement = document.createElement('style');
+		injectElement.innerHTML = css;
+		document.head.appendChild(injectElement);
+	}());
 
-// When closeClient is called from the onclick, close the client. The game will attempt to override this.
-Object.defineProperty(window, 'closeClient', {
-	enumerable: false,
-	value(): void { return ipcRenderer.send(MESSAGE_EXIT_CLIENT); }
-});
+	// When closeClient is called from the onclick, close the client. The game will attempt to override this.
+	Object.defineProperty(window, 'closeClient', {
+		enumerable: false,
+		value(): void { return ipcRenderer.send(MESSAGE_EXIT_CLIENT); }
+	});
 
-const mapSettings: Partial<MapExport> = {
-	skyDome: false,
-	toneMapping: 4,
-	sky: 0x040a14,
-	fog: 0x080c12,
-	lightI: 1.6,
-	light: 0xffffff,
-	ambient: 0x2d4c80
-};
+	const mapSettings: Partial<MapExport> = {
+		skyDome: false,
+		toneMapping: 4,
+		sky: 0x040a14,
+		fog: 0x080c12,
+		lightI: 1.6,
+		light: 0xffffff,
+		ambient: 0x2d4c80
+	};
 
-const functionHook = new FunctionHook();
-functionHook.hook('JSON.parse', (object: MapExport | Record<string, unknown>) => {
-	// Check if the parsed object is a map export.
-	if (object.name && object.spawns) {
-		/**
-		 * Merge the parsed map with the client map settings.
-		 * Proxy the map settings so whenever they're accessed,
-		 * we can pass values and reference mapSettings.
-		 */
-		return new Proxy({ ...object, ...mapSettings }, {
-			get(target: MapExport, key: keyof MapExport) {
-				return mapSettings[key] ?? target[key];
-			}
-		});
-	}
-	return object;
-});
+	const functionHook = new FunctionHook();
+	functionHook.hook('JSON.parse', (object: MapExport | Record<string, unknown>) => {
+		// Check if the parsed object is a map export.
+		if (object.name && object.spawns) {
+			/**
+			 * Merge the parsed map with the client map settings.
+			 * Proxy the map settings so whenever they're accessed,
+			 * we can pass values and reference mapSettings.
+			 */
+			return new Proxy({ ...object, ...mapSettings }, {
+				get(target: MapExport, key: keyof MapExport) {
+					return mapSettings[key] ?? target[key];
+				}
+			});
+		}
+		return object;
+	});
 
-const twitchChat = new TwitchChat();
-twitchChat.init();
+	const twitchChat = new TwitchChat();
+	twitchChat.init();
 
-const settings = new Settings();
-settings.initMainWindow(ensureContentLoaded());
+	const settings = new Settings();
+	settings.initMainWindow(ensureContentLoaded());
+}
