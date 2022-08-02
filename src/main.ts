@@ -1,4 +1,3 @@
-import { BrowserWindow, app, ipcMain, protocol, session } from 'electron';
 import {
 	CLIENT_AUTHOR,
 	CLIENT_LICENSE_PERMALINK,
@@ -12,6 +11,7 @@ import {
 	TWITCH_MESSAGE_RECEIVE,
 	TWITCH_MESSAGE_SEND
 } from '@constants';
+import { app, ipcMain, protocol, session } from 'electron';
 import { ElectronBlocker } from '@cliqz/adblocker-electron';
 import TwitchUtils from '@twitch-utils';
 import WindowUtils from '@window-utils';

@@ -1,4 +1,3 @@
-import FunctionHook from '@function-hooker';
 import { MESSAGE_EXIT_CLIENT } from '@constants';
 import { MapExport } from '../krunker';
 import Settings from '@game-settings';
@@ -7,17 +6,15 @@ import { promises as fs } from 'fs';
 import { ipcRenderer } from 'electron';
 import { resolve } from 'path';
 
-/**
- * Return a promise for when/if the DOM content has loaded
- */
-function ensureContentLoaded() {
-	return new Promise<void>(promiseResolve => {
+if (process.isMainFrame) {
+	/**
+	 * Return a promise for when/if the DOM content has loaded
+	 */
+	const ensureContentLoaded = () => new Promise<void>(promiseResolve => {
 		if (document.readyState === 'interactive' || document.readyState === 'complete') promiseResolve();
 		else document.addEventListener('DOMContentLoaded', () => promiseResolve());
 	});
-}
 
-if (process.isMainFrame) {
 	(async function() {
 		const [css] = await Promise.all([
 			fs.readFile(resolve(__dirname, '../renderer/styles/main.css'), 'utf8'),
@@ -35,37 +32,39 @@ if (process.isMainFrame) {
 		value(): void { return ipcRenderer.send(MESSAGE_EXIT_CLIENT); }
 	});
 
-	const mapSettings: Partial<MapExport> = {
-		skyDome: false,
-		toneMapping: 4,
-		sky: 0x040a14,
-		fog: 0x080c12,
-		lightI: 1.6,
-		light: 0xffffff,
-		ambient: 0x2d4c80
-	};
-
-	const functionHook = new FunctionHook();
-	functionHook.hook('JSON.parse', (object: MapExport | Record<string, unknown>) => {
-		// Check if the parsed object is a map export.
-		if (object.name && object.spawns) {
-			/**
-			 * Merge the parsed map with the client map settings.
-			 * Proxy the map settings so whenever they're accessed,
-			 * we can pass values and reference mapSettings.
-			 */
-			return new Proxy({ ...object, ...mapSettings }, {
-				get(target: MapExport, key: keyof MapExport) {
-					return mapSettings[key] ?? target[key];
-				}
-			});
-		}
-		return object;
-	});
-
 	const twitchChat = new TwitchChat();
 	twitchChat.init();
 
 	const settings = new Settings();
 	settings.initMainWindow(ensureContentLoaded());
 }
+
+const mapSettings: Partial<MapExport> = {
+	skyDome: false,
+	toneMapping: 4,
+	sky: 0x040a14,
+	fog: 0x080c12,
+	lightI: 1.6,
+	light: 0xffffff,
+	ambient: 0x2d4c80
+};
+
+const jsonParse = JSON.parse;
+JSON.parse = function(...args: unknown[]) {
+	const result = jsonParse.apply(this, args as never);
+
+	if (result.name && result.spawns) {
+		/**
+		 * Merge the parsed map with the client map settings.
+		 * Proxy the map settings so whenever they're accessed,
+		 * we can pass values and reference mapSettings.
+		 */
+		return new Proxy({ ...result, ...mapSettings }, {
+			get(target: MapExport, key: keyof MapExport) {
+				return mapSettings[key] ?? target[key];
+			}
+		});
+	}
+
+	return result;
+};

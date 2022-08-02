@@ -13,12 +13,12 @@ export default class Settings {
 	 * @param DOMContentLoadedPromise A promise that will be resolved when the DOM is loaded
 	 */
 	async initMainWindow(DOMContentLoadedPromise: Promise<void>) {
-		await DOMContentLoadedPromise;
+		await Promise.all([DOMContentLoadedPromise, this.initSettingsWindow()]);
 
 		const interval = setInterval(() => {
 			const instructions = document.getElementById('instructions');
 			if (instructions) {
-				Settings.observeInstructions(instructions as HTMLDivElement);
+				this.observeInstructions(instructions as HTMLDivElement);
 				clearInterval(interval);
 			}
 		}, 100);
@@ -28,7 +28,7 @@ export default class Settings {
 	 *
 	 * @param instructions
 	 */
-	private static observeInstructions(instructions: HTMLDivElement) {
+	private observeInstructions(instructions: HTMLDivElement) {
 		new MutationObserver((_mutations, observer) => {
 			observer.disconnect();
 
@@ -77,28 +77,7 @@ export default class Settings {
 				const result: string = getSettingsHook.apply(settingsWindow, args);
 				const isClientTab = settingsWindow.tabIndex === tabsLength;
 
-				if (isClientTab) {
-					const menuWindow = document.getElementById('menuWindow');
-					if (menuWindow) menuWindow.scrollTop = 0;
-
-					const styles = `<style>
-						#settHolder webview {
-							/* The header is 131px css in css. Window height is 100vh - 250px. */
-							height: calc(100vh - 250px - 131px);
-						}
-						#menuWindow {
-							overflow: hidden !important;
-						}
-					</style>`;
-					const webviewTag = document.createElement('webview');
-					webviewTag.src = `file://${ resolve(__dirname, '../renderer/html/settings.html') }`;
-
-					// The preload script will already be transpiled to javascript
-					webviewTag.preload = `file://${ resolve(__dirname, './settings-preload.js') }`;
-					webviewTag.nodeintegrationinsubframes = true;
-
-					return styles + webviewTag.outerHTML;
-				}
+				if (isClientTab) return this.wrapper.outerHTML;
 				return result;
 			};
 		}).observe(instructions, { childList: true });
@@ -114,23 +93,11 @@ export default class Settings {
 		this.createSection({
 			title: 'Client',
 			id: 'client',
-			requiresRestart: 'requires client restart'
+			requiresRestart: true
 		}, {
 			title: 'Auto-reload',
 			type: 'checkbox',
 			inputNodeAttributes: {
-				oninput(evt) {
-					console.log(evt);
-				}
-			}
-		}, {
-			title: 'Auto-reload delay',
-			type: 'slider',
-			inputNodeAttributes: {
-				min: 0,
-				max: 10,
-				step: 1,
-				value: 0,
 				oninput(evt) {
 					console.log(evt);
 				}
@@ -178,7 +145,7 @@ export default class Settings {
 	public createSection(sectionData: {
 		title: string;
 		id: string;
-		requiresRestart?: 'requires restart' | 'requires client restart';
+		requiresRestart?: boolean;
 	}, ...properties: {
 		title: string;
 		type: 'checkbox' | 'slider' | 'select' | 'color' | 'text';
@@ -197,9 +164,9 @@ export default class Settings {
 
 		if (sectionData.requiresRestart) {
 			const requiresRestartSpan = document.createElement('span');
-			requiresRestartSpan.classList.add('requiresRestart');
+			requiresRestartSpan.id = 'requiresRestart';
 
-			requiresRestartSpan.innerText = ` ${ sectionData.requiresRestart }`;
+			requiresRestartSpan.innerText = ' requires restart';
 			requiresRestartSpan.prepend(Object.assign(document.createElement('span'), {
 				innerText: '*',
 				style: 'color: #eb5656'
@@ -307,10 +274,13 @@ export default class Settings {
 	 * @returns Wrapper
 	 */
 	public static createSlider(title: string, inputNodeAttributes: InputNodeAttributes<Event>) {
+		throw new Error('Not yet implemented');
+
+		// TODO: Update input and slider relative to each other
 		const input = Object.assign(document.createElement('input'), inputNodeAttributes);
 		input.style.borderWidth = '0px';
 		input.classList.add('sliderVal');
-		input.id = `c_slid_input_${ inputNodeAttributes.id }`;
+		input.id = `slid_input_${ inputNodeAttributes.id }`;
 		input.type = 'number';
 
 		const div = document.createElement('div');
@@ -318,17 +288,13 @@ export default class Settings {
 
 		const slider = Object.assign(document.createElement('input'), inputNodeAttributes);
 		slider.classList.add('sliderM');
-		slider.id = `c_slid_${ inputNodeAttributes.id }`;
+		slider.id = `slid_${ inputNodeAttributes.id }`;
 		slider.type = 'range';
 
-		div.append(slider);
+		input.setAttribute('value', String(inputNodeAttributes.value));
+		slider.setAttribute('value', String(inputNodeAttributes.value));
 
-		slider.addEventListener('input', () => {
-			input.value = slider.value;
-		});
-		input.addEventListener('input', () => {
-			slider.value = input.value;
-		});
+		div.append(slider);
 
 		return Settings.createWrapper(title, div, input);
 	}

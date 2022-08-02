@@ -143,7 +143,6 @@ export const GAME_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions 
 		...getDefaultConstructorOptions(TABS.GAME).webPreferences,
 		preload: resolve(__dirname, '../window/game-preload'),
 		contextIsolation: false,
-		webviewTag: true,
 		nodeIntegrationInSubFrames: true
 	}
 };
