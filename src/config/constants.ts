@@ -50,6 +50,7 @@ export const ELECTRON_FLAGS: Array<[string, string?]> = [
 	// Performance optimization flags.
 	// TODO: client setting for these
 	['enable-highres-timer'],
+	['enable-quic'],
 	['enable-webgl'],
 	['enable-gpu-rasterization'],
 	['enable-zero-copy'],

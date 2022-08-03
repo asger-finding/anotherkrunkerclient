@@ -5,15 +5,15 @@ type ShowWindow = (windowId: number) => void;
 
 export default class Settings {
 
-	wrapper: HTMLDivElement;
+	itemElements: Node[] = [];
 
 	nativeShowWindow: ShowWindow;
 
 	/**
 	 * @param DOMContentLoadedPromise A promise that will be resolved when the DOM is loaded
 	 */
-	async initMainWindow(DOMContentLoadedPromise: Promise<void>) {
-		await Promise.all([DOMContentLoadedPromise, this.initSettingsWindow()]);
+	static async init(DOMContentLoadedPromise: Promise<void>) {
+		await DOMContentLoadedPromise;
 
 		const interval = setInterval(() => {
 			const instructions = document.getElementById('instructions');
@@ -26,9 +26,9 @@ export default class Settings {
 
 	/**
 	 *
-	 * @param instructions
+	 * @param instructions The krunker instructions element
 	 */
-	private observeInstructions(instructions: HTMLDivElement) {
+	private static observeInstructions(instructions: HTMLDivElement) {
 		new MutationObserver((_mutations, observer) => {
 			observer.disconnect();
 
@@ -36,30 +36,34 @@ export default class Settings {
 
 			if (settingsWindow.label !== 'settings') throw new Error('Wrong Game Settings index');
 
-			const getSettingsHook = settingsWindow.getSettings;
-			const getTabsHook = settingsWindow.getTabs;
+			const getSettingsHook = settingsWindow.getSettings.bind(settingsWindow);
+			const getTabsHook = settingsWindow.getTabs.bind(settingsWindow);
+			const changeTabHook = settingsWindow.changeTab.bind(settingsWindow);
+			const genListHook = settingsWindow.genList.bind(settingsWindow);
 
 			// Compensate for user agent spoofing
 			const isElectron = navigator.userAgent.includes('Electron');
 			let tabsLength = -1;
+			let isClientTab = false;
 
 			/**
+			 * Append the client tab to the settings window
 			 *
 			 * @param args the native function arguments
 			 * @returns The html for the settings tabs
 			 */
 			settingsWindow.getTabs = (...args: unknown[]) => {
-				const result: string = getTabsHook.apply(settingsWindow, args);
+				const result: string = getTabsHook(...args);
 
 				tabsLength = ((result.match(/<\/div>/gu) ?? []).length);
-				const isPicked = settingsWindow.tabIndex === tabsLength;
+				isClientTab = settingsWindow.tabIndex === tabsLength;
 
 				const clientTab = Object.assign(document.createElement('div'), {
 					innerText: 'Client',
 					style: 'border-bottom: 5px solid transparent;'
 				});
 				const attributes = {
-					class: `settingTab ${isPicked ? 'tabANew' : ''}`,
+					class: `settingTab ${isClientTab ? 'tabANew' : ''}`,
 					onmouseenter: 'playTick()',
 					onclick: `playSelect(0.1);window.windows[0].changeTab(${ tabsLength })`
 				};
@@ -69,15 +73,67 @@ export default class Settings {
 			};
 
 			/**
+			 * Void getSettingsCall if it's the client tab
 			 *
 			 * @param args the native function arguments
 			 * @returns The html for the settings body
 			 */
 			settingsWindow.getSettings = (...args: unknown[]) => {
-				const result: string = getSettingsHook.apply(settingsWindow, args);
-				const isClientTab = settingsWindow.tabIndex === tabsLength;
+				const result: string = getSettingsHook(...args);
 
-				if (isClientTab) return this.wrapper.outerHTML;
+				if (isClientTab) return '';
+				return result;
+			};
+
+			/**
+			 * Append the client settings elements to the settings window if it's the client tab
+			 * 
+			 * @param args the native function arguments
+			 * @returns The native function result
+			 */
+			settingsWindow.changeTab = (...args: unknown[]) => {
+				const result = changeTabHook(...args);
+
+				if (isClientTab) {
+					const settingsHolder = document.getElementById('settHolder');
+					if (settingsHolder) {
+						settingsHolder.innerHTML = '';
+						settingsHolder.append(...this.generateSettings());
+					}
+				}
+
+				return result;
+			};
+
+			/**
+			 * 
+			 * 
+			 * @param args the native function arguments
+			 * @returns The native function result
+			 */
+			settingsWindow.genList = (...args: unknown[]) => {
+				const result = genListHook(...args);
+
+				if (isClientTab) {
+					const menuWindow = document.getElementById('menuWindow');
+					if (menuWindow) {
+						new MutationObserver((mutations, childObserver) => {
+							// Iterate over all mutations
+							for (const mutation of mutations) {
+								for (const node of mutation.addedNodes) {
+									if (node instanceof HTMLElement && node.id === 'settHolder') {
+										childObserver.disconnect();
+
+										node.innerHTML = '';
+										node.append(...this.generateSettings());
+									}
+								}
+							}
+						}).observe(menuWindow, { childList: true });
+					}
+				}
+
+
 				return result;
 			};
 		}).observe(instructions, { childList: true });
@@ -86,11 +142,9 @@ export default class Settings {
 	/**
 	 *
 	 */
-	initSettingsWindow() {
-		this.wrapper = Object.assign(document.createElement('div'), { id: 'settHolder' });
-
+	static generateSettings(): HTMLElement[] {
 		// Placeholder section
-		this.createSection({
+		const section1 = this.createSection({
 			title: 'Client',
 			id: 'client',
 			requiresRestart: true
@@ -98,6 +152,18 @@ export default class Settings {
 			title: 'Auto-reload',
 			type: 'checkbox',
 			inputNodeAttributes: {
+				oninput(evt) {
+					console.log(evt);
+				}
+			}
+		}, {
+			title: 'Auto-reload delay',
+			type: 'slider',
+			inputNodeAttributes: {
+				min: 0,
+				max: 10,
+				step: 1,
+				value: 4,
 				oninput(evt) {
 					console.log(evt);
 				}
@@ -132,17 +198,19 @@ export default class Settings {
 				}
 			}
 		});
+
+		return [...section1];
 	}
 
-	// eslint-disable-next-line complexity
 	/**
 	 * @param sectionData the section body data
 	 * @param sectionData.title the section title
 	 * @param sectionData.id the section id
 	 * @param sectionData.requiresRestart whether the section requires a restart
 	 * @param properties the section elements
+	 * @returns The section header and body
 	 */
-	public createSection(sectionData: {
+	public static createSection(sectionData: {
 		title: string;
 		id: string;
 		requiresRestart?: boolean;
@@ -151,7 +219,7 @@ export default class Settings {
 		type: 'checkbox' | 'slider' | 'select' | 'color' | 'text';
 		inputNodeAttributes: InputNodeAttributes<Event | MouseEvent>;
 		options?: Record<string, string>
-	}[]) {
+	}[]): HTMLElement[] {
 		const header = document.createElement('div');
 		header.classList.add('setHed');
 		header.id = `setHed_${ sectionData.id }`;
@@ -180,15 +248,15 @@ export default class Settings {
 		 * 
 		 * @returns void
 		 */
-		header.onclick = () => Settings.collapseFolder(header);
+		header.onclick = () => this.collapseFolder(header);
 
 		const body = document.createElement('div');
 		body.classList.add('setBodH');
 		body.id = `setBody_${ sectionData.id }`;
 
-		for (const property of properties) body.append(Settings.createItemFrom(property));
+		for (const property of properties) body.append(this.createItemFrom(property));
 
-		this.wrapper.append(header, body);
+		return [header, body];
 	}
 
 	/**
@@ -262,7 +330,7 @@ export default class Settings {
 
 		label.append(input, span);
 
-		return Settings.createWrapper(title, label);
+		return this.createWrapper(title, label);
 	}
 
 	/**
@@ -274,9 +342,6 @@ export default class Settings {
 	 * @returns Wrapper
 	 */
 	public static createSlider(title: string, inputNodeAttributes: InputNodeAttributes<Event>) {
-		throw new Error('Not yet implemented');
-
-		// TODO: Update input and slider relative to each other
 		const input = Object.assign(document.createElement('input'), inputNodeAttributes);
 		input.style.borderWidth = '0px';
 		input.classList.add('sliderVal');
@@ -291,12 +356,16 @@ export default class Settings {
 		slider.id = `slid_${ inputNodeAttributes.id }`;
 		slider.type = 'range';
 
-		input.setAttribute('value', String(inputNodeAttributes.value));
-		slider.setAttribute('value', String(inputNodeAttributes.value));
+		slider.addEventListener('input', () => {
+			input.value = slider.value;
+		});
+		input.addEventListener('input', () => {
+			slider.value = input.value;
+		});
 
 		div.append(slider);
 
-		return Settings.createWrapper(title, div, input);
+		return this.createWrapper(title, div, input);
 	}
 
 	/**
@@ -321,7 +390,7 @@ export default class Settings {
 			}
 		}
 
-		return Settings.createWrapper(title, select);
+		return this.createWrapper(title, select);
 	}
 
 	/**
@@ -339,7 +408,7 @@ export default class Settings {
 		input.type = 'color';
 		input.name = 'color';
 
-		return Settings.createWrapper(title, input);
+		return this.createWrapper(title, input);
 	}
 
 	/**
@@ -357,7 +426,7 @@ export default class Settings {
 		input.type = 'text';
 		input.name = 'text';
 
-		return Settings.createWrapper(title, input);
+		return this.createWrapper(title, input);
 	}
 
 	/**
