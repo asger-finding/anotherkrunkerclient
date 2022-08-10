@@ -35,7 +35,8 @@ if (process.isMainFrame) {
 	const twitchChat = new TwitchChat();
 	twitchChat.init();
 
-	Settings.init(ensureContentLoaded());
+	const settings = new Settings();
+	settings.init(ensureContentLoaded());
 }
 
 const mapSettings: Partial<MapExport> = {

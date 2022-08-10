@@ -1,19 +1,21 @@
 import { InputNodeAttributes } from '@client';
-import { resolve } from 'path';
 
 type ShowWindow = (windowId: number) => void;
 
 export default class Settings {
 
-	itemElements: Node[] = [];
+	itemElements: HTMLElement[] = [];
 
 	nativeShowWindow: ShowWindow;
 
 	/**
 	 * @param DOMContentLoadedPromise A promise that will be resolved when the DOM is loaded
 	 */
-	static async init(DOMContentLoadedPromise: Promise<void>) {
-		await DOMContentLoadedPromise;
+	async init(DOMContentLoadedPromise: Promise<void>) {
+		await Promise.all([
+			DOMContentLoadedPromise,
+			this.generateSettings()
+		]);
 
 		const interval = setInterval(() => {
 			const instructions = document.getElementById('instructions');
@@ -28,11 +30,46 @@ export default class Settings {
 	 *
 	 * @param instructions The krunker instructions element
 	 */
-	private static observeInstructions(instructions: HTMLDivElement) {
+	private observeInstructions(instructions: HTMLDivElement) {
 		new MutationObserver((_mutations, observer) => {
 			observer.disconnect();
 
-			const [settingsWindow] = window.windows;
+			interface KrunkerWindow extends Window {
+				windows: [
+					{
+						applyAllWeps: (...args: unknown[]) => void;
+						changeTab: (...args: unknown[]) => void;
+						changeWep: (...args: unknown[]) => void;
+						collapseFolder: (...args: unknown[]) => void;
+						currWep: number;
+						dark: boolean;
+						gen: () => string;
+						genList: (...args: unknown[]) => string;
+						getSettings: (...args: unknown[]) => string;
+						getTabs: (...args: unknown[]) => string;
+						header: string;
+						html: string;
+						label: string;
+						maxH: string;
+						popup: boolean;
+						resetAllWeps: (...args: unknown[]) => void;
+						searchList: () => void;
+						searchMatches: (...args: unknown[]) => boolean;
+						settingSearch: string | null;
+						settingType: string;
+						sticky: boolean;
+						tabIndex: number;
+						tabs: {
+							basic: Array<Record<string, unknown>>;
+							advanced: Array<Record<string, unknown>>;
+						}
+						toggleType: (evt: Event) => void;
+						width: number;
+					},
+					...Record<string, unknown>[]
+				]
+			}
+			const [settingsWindow] = (window as unknown as KrunkerWindow).windows;
 
 			if (settingsWindow.label !== 'settings') throw new Error('Wrong Game Settings index');
 
@@ -98,7 +135,7 @@ export default class Settings {
 					const settingsHolder = document.getElementById('settHolder');
 					if (settingsHolder) {
 						settingsHolder.innerHTML = '';
-						settingsHolder.append(...this.generateSettings());
+						settingsHolder.append(...this.itemElements);
 					}
 				}
 
@@ -125,7 +162,7 @@ export default class Settings {
 										childObserver.disconnect();
 
 										node.innerHTML = '';
-										node.append(...this.generateSettings());
+										node.append(...this.itemElements);
 									}
 								}
 							}
@@ -140,11 +177,11 @@ export default class Settings {
 	}
 
 	/**
-	 *
+	 * @returns The generated settings elements
 	 */
-	static generateSettings(): HTMLElement[] {
+	generateSettings(): Node[] {
 		// Placeholder section
-		const section1 = this.createSection({
+		const clientSection = Settings.createSection({
 			title: 'Client',
 			id: 'client',
 			requiresRestart: true
@@ -199,7 +236,8 @@ export default class Settings {
 			}
 		});
 
-		return [...section1];
+		const items = this.itemElements = [...clientSection];
+		return items;
 	}
 
 	/**
