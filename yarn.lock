@@ -7032,9 +7032,9 @@ to-through@^2.0.0:
     through2 "^2.0.3"
 
 top-user-agents@latest:
-  version "1.0.46"
-  resolved "https://registry.yarnpkg.com/top-user-agents/-/top-user-agents-1.0.46.tgz#31b1b8b6af6d8ce586213e8cc79f578dd1088a9f"
-  integrity sha512-qbH/N84vNX/w6sMFV1V3Rk6JD4TI15gjGtc0k18GQSiVs822mIw4ZSX/cF4216Y5phOBdIuUtvOAIMYdf8SKlQ==
+  version "1.0.47"
+  resolved "https://registry.yarnpkg.com/top-user-agents/-/top-user-agents-1.0.47.tgz#a492753929cd693b5c23de7c166a16c886bd0620"
+  integrity sha512-prHy5XHaCu2OLhOlImITHLdfTP/qRaavHVNrZ7jG/5qWrVfH2hmA2zUD6IzI3eyKQWGQBD3jcfarupxD9Gx7/A==
   dependencies:
     cheerio "~1.0.0-rc.12"
     got "~11.8.5"
