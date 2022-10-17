@@ -506,10 +506,10 @@
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.3.10.tgz#5f19ee40cbeff87d916eedc8c2bfe2305d957f73"
   integrity sha512-zsv3fsC7S84NN6nPK06u79oWgrPVd0NvOyqgghV1haPaFcVxIrP4DLomRwGAXk0ui4HZA7mOcSFL98sMVW9viw==
 
-"@types/tmi.js@^1.8.1":
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/@types/tmi.js/-/tmi.js-1.8.1.tgz#36a295c9a053bd4ec79c5cbf77248f4985dbb791"
-  integrity sha512-rnUKPYZfrNsxXbmNOK7NuHIF6VPRPiCQnrZQwyWnl6UaoOAc0ZmQ5VRpUq4p1JwqBA2+4qDPn9EXVqzzvNUzBA==
+"@types/tmi.js@^1.8.2":
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/@types/tmi.js/-/tmi.js-1.8.2.tgz#7345399a4b74c39b9baa98540a397e24fa3a9e5c"
+  integrity sha512-meCZPCqs8zuCvw8Wl+0UXy2D6L/31Vskc99B/dZeQtIZvzX3EEzWSLTmRRxwI36m5hQFi3xjoLcnmEL8hBPqHA==
 
 "@types/verror@^1.10.3":
   version "1.10.5"
