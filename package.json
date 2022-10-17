@@ -51,7 +51,7 @@
     "@types/electron-localshortcut": "^3.1.0",
     "@types/node": "12.12.21",
     "@types/node-fetch": "^2",
-    "@types/tmi.js": "^1.8.1",
+    "@types/tmi.js": "^1.8.2",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "acorn": "latest",
