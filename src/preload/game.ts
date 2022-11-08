@@ -1,5 +1,5 @@
 import { MESSAGES } from '@constants';
-import { MapExport } from '../krunker';
+import { MapExport } from '@krunker';
 import Settings from '@game-settings';
 import TwitchChat from '@twitch-chat';
 import { promises as fs } from 'fs';
@@ -75,6 +75,21 @@ JSON.parse = function(...args: unknown[]) {
 				return mapSettings[key] ?? target[key];
 			}
 		});
+	}
+
+	return result;
+};
+
+const nativeFetch = fetch;
+window.fetch = async function(...args: unknown[]) {
+	const result = await nativeFetch.apply(this, args as never);
+
+
+	const [target] = args;
+	if (typeof target === 'string' && /^maps\/(?:.*)(?:.\.json)/u.test(target)) {
+		const json = await (result.clone()).json();
+
+		return new Response(JSON.stringify({ ...json, ...mapSettings }));
 	}
 
 	return result;

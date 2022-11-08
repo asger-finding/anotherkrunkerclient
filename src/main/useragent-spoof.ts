@@ -29,7 +29,7 @@ function getCurrentUAOS(): string {
  */
 function getCurrentUA(): string | null {
 	const lastSet = preferences.get(`${ storeSchema }.set`, Date.now());
-	if (Date.now() - Number(lastSet) > USERAGENT_LIFETIME) preferences.reset(`${ storeSchema }.userAgent`);
+	if (Date.now() - Number(lastSet) > USERAGENT_LIFETIME) preferences.delete(`${ storeSchema }.userAgent`);
 
 	return preferences.get(`${ storeSchema }.userAgent`, null) as string | null;
 }

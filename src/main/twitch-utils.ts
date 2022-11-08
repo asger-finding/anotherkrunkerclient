@@ -18,6 +18,8 @@ export default class {
 	 * @returns Promise for a tmi.js client instance or null if failed.
 	 */
 	public static async createClient(): Promise<Client | null> {
+		info('Initializing Twitch client');
+
 		const token = await this.getAccessToken();
 		const username = await this.getUsername(token);
 
@@ -30,7 +32,6 @@ export default class {
 				username,
 				password: `oauth:${ token }`
 			},
-			// TODO: Any channel can be selected
 			channels: [username]
 		});
 	}
@@ -171,7 +172,6 @@ export default class {
 	 */
 	public static async isLive() {
 		const token = await this.getAccessToken();
-		// TODO: Any streamer can be checked for live status.
 		const username = await this.getUsername(token);
 
 		return fetch(`https://api.twitch.tv/helix/streams?user_login=${ username }`, {

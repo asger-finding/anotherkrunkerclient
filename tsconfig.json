@@ -14,34 +14,31 @@
         "outDir": "build",
         "baseUrl": ".",
         "paths": {
-            // src top-level
-            "@color-utils": ["src/color-utils"],
-            "@logger": ["src/logger"],
-            "@twitch-utils": ["src/twitch-utils"],
-
-            // config
-            "@constants": ["src/config/constants"],
-            "@client": ["src/config/client"],
-            "@flags": ["src/config/flags"],
-
-            // window
-            "@splash-pre-utils": ["src/window/splash-pre-utils"],
-            "@game-api": ["src/window/game-api"],
-            "@game-settings": ["src/window/game-settings"],
-            "@function-hooker": ["src/window/function-hooker"],
-            "@twitch-chat": ["src/window/twitch-chat"],
-
             // main
-            "@splash-utils": ["src/main/splash-utils"],
             "@game-utils": ["src/main/game-utils"],
             "@window-utils": ["src/main/window-utils"],
-            "@event-handler": ["src/main/event-handler"],
+            "@twitch-utils": ["src/main/twitch-utils"],
             "@resource-swapper": ["src/main/resource-swapper"],
-            "@useragent-spoof": ["src/main/useragent-spoof"]
+            "@useragent-spoof": ["src/main/useragent-spoof"],
+            "@flags": ["src/main/flags"],
+
+            // common
+            "@constants": ["src/common/constants"],
+            "@logger": ["src/common/logger"],
+            "@color-utils": ["src/common/color-utils"],
+
+            // preload
+            "@game-settings": ["src/preload/game-settings"],
+            "@twitch-chat": ["src/preload/twitch-chat"],
+
+            // typings
+            "@client": ["typings/client"],
+            "@krunker": ["typings/krunker"]
         }
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "typings/**/*"
     ],
     "exclude": [
         "node_modules",

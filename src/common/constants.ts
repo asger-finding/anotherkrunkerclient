@@ -94,7 +94,7 @@ export const GAME_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions 
 	show: false,
 	webPreferences: {
 		...getDefaultConstructorOptions(TABS.GAME).webPreferences,
-		preload: resolve(__dirname, '../window/game-preload'),
+		preload: resolve(__dirname, '../preload/game'),
 		contextIsolation: false,
 		nodeIntegrationInSubFrames: true
 	}

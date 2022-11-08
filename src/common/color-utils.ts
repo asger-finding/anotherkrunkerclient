@@ -1,16 +1,14 @@
-import { Hexadecimal } from './krunker';
+import { Hexadecimal } from '@krunker';
 
 /**
  * Get the grayscale value of a given color using the specified algorithm.
  *
- * @param hex Hexadecimal color code in the format 0xdeafbeef or '#deafbeef'
+ * @param value Hexadecimal color code in the format 0xdeafbeef or '#deafbeef'
  * @returns Grayscale hex color
  */
-export const toGrayscale = (hex: Hexadecimal) => {
-	if (typeof hex === 'string') {
-		hex = hex.replace('#', '');
-		hex = parseInt(hex, 16);
-	}
+export const toGrayscale = (value: Hexadecimal) => {
+	const hex = typeof value === 'number' ? value : parseInt(value.replace('#', ''), 16);
+
 	const red = (hex & 0xff0000) >> 16;
 	const green = (hex & 0x00ff00) >> 8;
 	const blue = hex & 0x0000ff;

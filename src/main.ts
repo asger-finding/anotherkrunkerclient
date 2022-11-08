@@ -34,7 +34,7 @@ class Application {
 
 	/**
 	 * Initialize the app, register protocols.  
-	 * Create the splash window, followed by the game window.
+	 * Create the game window.
 	 */
 	public static async init(): Promise<void> {
 		Application.setAppName();
@@ -123,7 +123,7 @@ class Application {
 	/** Register resource swapper file protocols */
 	private static registerFileProtocols(): void {
 		// Register resource swapper file protocols.
-		// TODO: Dynamic protocol source.
+		// TODO: User-defined protocol source / swapper location
 		const protocolSource = global.resourceswapProtocolSource;
 
 		protocol.registerFileProtocol(CLIENT_NAME, ({ url }, callback) => {
@@ -135,6 +135,8 @@ class Application {
 
 	/** Enable ad and tracker blocking */
 	private static async enableTrackerBlocking(): Promise<unknown> {
+		info('Initializing tracker blocking');
+
 		return ElectronBlocker.fromPrebuiltFull(fetch, {
 			path: `${ app.getPath('userData') }/electronblocker-cache.bin`,
 			read: fs.readFile,

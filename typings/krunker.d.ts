@@ -665,35 +665,41 @@ export interface MapExport {
 	fogD: number;
 
 	/** 
+	 * See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.physicallyCorrectLights THREE.js: WebGLRenderer.physicallyCorrectLights}
+	 * 
 	 * @default 'map-dependent'
-	 * @remarks See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.physicallyCorrectLights THREE.js: WebGLRenderer.physicallyCorrectLights}
 	 */
 	correctLights: boolean;
 
 	/**
+	 * See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.toneMapping THREE.js: WebGLRenderer.toneMapping}  
+	 * 
 	 * @default 0 (THREE.NoToneMapping)
-	 * @remarks See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.toneMapping THREE.js: WebGLRenderer.toneMapping}  
 	 */
 	toneMapping: 0 | 1 | 2 | 3 | 4;
 
 	/**
+	 * See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.toneMappingExposure THREE.js: WebGLRenderer.toneMappingExposure}
+	 * 
 	 * @default 1
-	 * @remarks See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.toneMappingExposure THREE.js: WebGLRenderer.toneMappingExposure}
 	 */
 	toneMappingExposure: number;
 
 	/**
 	 * 0: `LinearEncoding`  
 	 * 1: `sRGBEncoding`
+	 * 
+	 * See {@link https://threejs.org/docs/#api/en/constants/Textures THREE.js: Encoding}
 	 *
 	 * @default 0 (THREE.LinearEncoding)
-	 * @remarks See {@link https://threejs.org/docs/#api/en/constants/Textures THREE.js: Encoding}
 	 */
 	outputEncoding: 0 | 1;
 
 	/**
+	 * Possibly deprecated or requires a different render engine.
+	 * 
 	 * @default 2
-	 * @remarks Possibly deprecated or requires a different render engine.
+	 * @deprecated
 	 */
 	gammaFactor: number;
 }
