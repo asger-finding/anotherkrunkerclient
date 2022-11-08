@@ -25,6 +25,7 @@
     "@logger": "src/logger",
     "@constants": "src/config/constants",
     "@client": "src/config/client",
+    "@flags": "src/config/flags",
     "@splash-pre-utils": "src/window/splash-pre-utils",
     "@game-settings": "src/window/game-settings",
     "@function-hooker": "src/window/function-hooker",

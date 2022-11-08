@@ -41,6 +41,7 @@ rules:
 
   no-trailing-spaces: [error, { ignoreComments: true }]
   multiline-comment-style: [error, separate-lines]
+  id-length: [warn, { exceptions: [i, j, k] }]
   linebreak-style: 0
   sort-keys: 0
   no-labels: 0

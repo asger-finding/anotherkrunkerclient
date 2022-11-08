@@ -22,6 +22,7 @@
             // config
             "@constants": ["src/config/constants"],
             "@client": ["src/config/client"],
+            "@flags": ["src/config/flags"],
 
             // window
             "@splash-pre-utils": ["src/window/splash-pre-utils"],

@@ -68,3 +68,13 @@ export type SimplifiedTwitchMessage = {
 	message: string;
 	color?: string;
 };
+
+export interface PartialGPU {
+	gpuDevice: Array<{
+		active: boolean;
+		vendorId: number;
+		deviceId: number;
+	}>;
+}
+
+export type Flags = Array<[string] | [string, string]>;

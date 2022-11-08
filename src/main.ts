@@ -2,7 +2,6 @@ import {
 	CLIENT_AUTHOR,
 	CLIENT_LICENSE_PERMALINK,
 	CLIENT_NAME,
-	getRecommendedFlags,
 	GAME_CONSTRUCTOR_OPTIONS,
 	IS_DEVELOPMENT,
 	MESSAGES,
@@ -14,6 +13,7 @@ import TwitchUtils from '@twitch-utils';
 import WindowUtils from '@window-utils';
 import fetch from 'node-fetch';
 import { promises as fs } from 'fs';
+import getFlags from '@flags';
 import { info } from '@logger';
 import { join } from 'path';
 
@@ -117,7 +117,7 @@ class Application {
 		info('Setting Electron flags');
 
 		const { appendSwitch } = app.commandLine;
-		for (const [flag, value] of await getRecommendedFlags()) appendSwitch(flag, value);
+		for (const [flag, value] of await getFlags()) appendSwitch(flag, value);
 	}
 
 	/** Register resource swapper file protocols */
