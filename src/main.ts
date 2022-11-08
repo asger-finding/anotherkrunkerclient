@@ -2,14 +2,11 @@ import {
 	CLIENT_AUTHOR,
 	CLIENT_LICENSE_PERMALINK,
 	CLIENT_NAME,
-	ELECTRON_FLAGS,
+	getRecommendedFlags,
 	GAME_CONSTRUCTOR_OPTIONS,
 	IS_DEVELOPMENT,
-	MESSAGE_EXIT_CLIENT,
-	TARGET_GAME_URL,
-	TWITCH_GET_INFO,
-	TWITCH_MESSAGE_RECEIVE,
-	TWITCH_MESSAGE_SEND
+	MESSAGES,
+	TARGET_GAME_URL
 } from '@constants';
 import { app, ipcMain, protocol, session } from 'electron';
 import { ElectronBlocker } from '@cliqz/adblocker-electron';
@@ -48,25 +45,27 @@ class Application {
 			Application.enableTrackerBlocking()
 		]);
 
+		if (client === null) return;
+
 		const gameWindow = await WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
 		gameWindow.webContents.once('dom-ready', () => {
 			client.connect();
 			client.on('message', (_listener, chatUserstate, message) => {
 				if (chatUserstate['message-type'] !== 'chat' || !message) return;
 
-				gameWindow.webContents.send(TWITCH_MESSAGE_RECEIVE, {
+				gameWindow.webContents.send(MESSAGES.TWITCH_MESSAGE_RECEIVE, {
 					chatUserstate,
 					message
 				});
 			});
 
 			// Setup event listener
-			ipcMain.on(TWITCH_MESSAGE_SEND, (_evt, message: string) => {
+			ipcMain.on(MESSAGES.TWITCH_MESSAGE_SEND, (_evt, message: string) => {
 				const [channel] = client.getChannels();
 				client.say(channel, message);
 			});
 
-			ipcMain.handle(TWITCH_GET_INFO, async() => {
+			ipcMain.handle(MESSAGES.TWITCH_GET_INFO, async() => {
 				const [channel] = client.getChannels();
 
 				return {
@@ -102,7 +101,7 @@ class Application {
 	private static registerIpcEventListeners(): void {
 		info('Registering ipc event listeners');
 
-		ipcMain.on(MESSAGE_EXIT_CLIENT, app.quit);
+		ipcMain.on(MESSAGES.EXIT_CLIENT, app.quit);
 	}
 
 	/** Set the app name and the userdata path properly under development. */
@@ -114,11 +113,11 @@ class Application {
 	}
 
 	/** Get Electron flags and append them. */
-	private static setAppFlags(): void {
+	private static async setAppFlags(): Promise<void> {
 		info('Setting Electron flags');
 
 		const { appendSwitch } = app.commandLine;
-		for (const [flag, value] of ELECTRON_FLAGS) appendSwitch(flag, value);
+		for (const [flag, value] of await getRecommendedFlags()) appendSwitch(flag, value);
 	}
 
 	/** Register resource swapper file protocols */

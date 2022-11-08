@@ -24,7 +24,7 @@ export { CLIENT_NAME, CLIENT_AUTHOR, CLIENT_VERSION, CLIENT_REPO };
 // Permalink to the license
 export const CLIENT_LICENSE_PERMALINK = 'https://yerl.org/ZKZ8V';
 
-export const TARGET_GAME_DOMAIN = 'krunker.io';
+export const TARGET_GAME_DOMAIN: 'krunker.io' | 'browserfps.com' = 'krunker.io';
 export const TARGET_GAME_URL = `https://${ TARGET_GAME_DOMAIN }/`;
 export const [TARGET_GAME_SHORTNAME] = TARGET_GAME_DOMAIN.split('.');
 export const QUICKJOIN_URL_QUERY_PARAM = 'quickjoin';
@@ -38,7 +38,7 @@ export const TWITCH_MATERIAL_ICON = 'live_tv';
 export const IS_DEVELOPMENT = process.type === 'browser' ? !app.isPackaged : null;
 
 // https://gist.github.com/dodying/34ea4760a699b47825a766051f47d43b
-export const ELECTRON_FLAGS: Array<[string, string?]> = [
+const ELECTRON_FLAGS: Array<[string] | [string, string]> = [
 
 	// Unlock the frame rate
 	['disable-frame-rate-limit'],
@@ -100,14 +100,14 @@ export const TABS = {
 	EDITOR: 'editor'
 };
 
-// ipc messages
-export const MESSAGE_GAME_DONE = 'game-done';
-export const MESSAGE_EXIT_CLIENT = 'exit-client';
-export const MESSAGE_OPEN_SETTINGS = 'open-settings';
-export const MESSAGE_RELEASES_DATA = 'releases-data';
-export const TWITCH_GET_INFO = 'twitch-get-info';
-export const TWITCH_MESSAGE_RECEIVE = 'twitch-message-receive';
-export const TWITCH_MESSAGE_SEND = 'twitch-message-send';
+// ipc messages must be typeof string
+export enum MESSAGES {
+	GAME_DONE = 'game-done',
+	EXIT_CLIENT = 'exit-client',
+	TWITCH_GET_INFO = 'twitch-get-info',
+	TWITCH_MESSAGE_SEND = 'twitch-message-send',
+	TWITCH_MESSAGE_RECEIVE = 'twitch-message-receive'
+}
 
 /**
  * Returns the default window options, with sizing for the given tab.
@@ -184,3 +184,114 @@ export const getURLData = (baseURL?: string): WindowData => {
 		};
 	}
 };
+
+enum GPUVendors {
+	nvidia = 0x10DE,
+	amd = 0x1002,
+	intel = 0x8086
+}
+
+interface PartialGPU {
+	gpuDevice: Array<{
+		active: boolean;
+		vendorId: number;
+		deviceId: number;
+	}>;
+}
+
+const isUnix = process.platform !== 'win32' && process.platform !== 'darwin';
+
+const isWayland = process.env.XDG_SESSION_TYPE === 'wayland' || typeof process.env.WAYLAND_DISPLAY !== 'undefined';
+
+const isWaylandNative = isWayland && (
+	process.argv.includes('--ozone-platform=wayland')
+	|| process.argv.includes('--ozone-hint=auto')
+	|| process.argv.includes('--ozone-hint=wayland')
+);
+
+/**
+ *Check if the device has an active GPU
+ * 
+ * @param object
+ * @returns Boolean for whether or not the device has active GPU devices
+ */
+// eslint-disable-next-line complexity
+async function getGPU(): Promise<PartialGPU | null> {
+	const gpuInfo = await app.getGPUInfo('basic');
+
+	if (!(gpuInfo instanceof Object)) return null;
+	if (!('gpuDevice' in gpuInfo) || !Array.isArray((gpuInfo as PartialGPU).gpuDevice)) return null;
+
+	for (const device of (gpuInfo as PartialGPU).gpuDevice) {
+		if (!('active' in device) || typeof device.active !== 'boolean') return null;
+		if (!('vendorId' in device) || typeof device.vendorId !== 'number') return null;
+		if (!('deviceId' in device) || typeof device.deviceId !== 'number') return null;
+	}
+
+	return gpuInfo;
+}
+
+/**
+ * An experimental function to return information about recommended flags to
+ * improve the app's integration within the OS.
+ * 
+ * This is currently used only for Wayland to enable screen recording and use
+ * recommended flags for native Wayland if `--ozone-platform=wayland` is used
+ * (see {@link getRecommendedGPUFlags} for GPU optimizations for Wayland).
+ * 
+ * @returns OS flags for Wayland
+ */
+export function getRecommendedOSFlags() {
+	const flags: ([string] | [string, string])[] = [];
+	if (isUnix) {
+		if (isWaylandNative) flags.push(['enable-features', 'UseOzonePlatform,WebRTCPipeWireCapturer,WaylandWindowDecorations']);
+		else if (isWayland) flags.push(['enable-features', 'WebRTCPipeWireCapturer']);
+	}
+	return flags;
+}
+
+
+/**
+ * Guess the best GL backend for the enviroment.
+ */
+// eslint-disable-next-line complexity
+export async function getRecommendedFlags() {
+	/**
+	 * Tries to guess the best GL backend for the current desktop enviroment
+	 * to use as native instead of ANGLE.
+	 * It is `desktop` by default (all platforms) and `egl` on WayLand (*nix).
+	 */
+	const desktopGl: 'desktop' | 'egl' = (isUnix && isWayland) ? 'egl' : 'desktop';
+
+	let activeGPU = false;
+	const flags: Array<[string] | [string, string]> = [];
+	const gpuInfo = await getGPU();
+	if (gpuInfo) {
+		loop: for (const device of gpuInfo.gpuDevice) {
+			if (device.active) {
+				switch (device.vendorId) {
+					case GPUVendors.intel:
+					case GPUVendors.amd:
+					case GPUVendors.nvidia:
+						flags.push(['use-gl', desktopGl],
+							['enable-features', 'VaapiVideoDecoder,VaapiVideoEncoder'],
+							['disable-features', 'UseChromeOSDirectVideoDecoder']);
+
+						activeGPU = true;
+						break loop;
+					default:
+						break;
+				}
+			}
+		}
+	}
+
+	// Use OpenGL ES driver for Linux ARM devices.
+	if (!activeGPU && isUnix && process.arch === 'arm64') flags.push(['use-gl', 'egl']);
+
+	return Array.from(new Set([
+		...ELECTRON_FLAGS,
+		...flags,
+		...getRecommendedOSFlags()
+	]));
+}

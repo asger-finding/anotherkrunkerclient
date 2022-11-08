@@ -15,11 +15,13 @@ export default class {
 	/**
 	 * Create a new Twitch client.
 	 * 
-	 * @returns Promise for a tmi.js client instance.
+	 * @returns Promise for a tmi.js client instance or null if failed.
 	 */
-	public static async createClient(): Promise<Client> {
+	public static async createClient(): Promise<Client | null> {
 		const token = await this.getAccessToken();
 		const username = await this.getUsername(token);
+
+		if (username === null) return null;
 
 		return new Client({
 			options: { debug: IS_DEVELOPMENT ?? false },
@@ -104,7 +106,7 @@ export default class {
 			});
 
 			// Close the server after 5 minutes
-			setTimeout(() => {
+			return setTimeout(() => {
 				server.close();
 
 				return reject(new Error('Timeout'));
@@ -131,9 +133,12 @@ export default class {
 	 * Get the username of the Twitch authenticated user.
 	 * 
 	 * @param token Twitch oauth token
+	 * @param attempts Prevent infinite loop by limiting attempts
 	 * @returns Promise for Twitch username from the Twitch API.
 	 */
-	private static async getUsername(token: string): Promise<string> {
+	private static async getUsername(token: string, attempts = 0): Promise<string | null> {
+		if (attempts > 2) return null;
+
 		// We should not cache the username, as it can be changed.
 		const login: string = await fetch('https://api.twitch.tv/helix/users', {
 			method: 'GET',
@@ -142,7 +147,17 @@ export default class {
 				'Client-ID': TWITCH_CLIENT_ID
 			}
 		}).then(res => res.json())
-			.then(({ data }) => data[0].login);
+			.then(async({ data }) => {
+				if (typeof data === 'undefined') {
+					info('Invalid Twitch token cache');
+
+					// Invalidate token cache
+					preferences.delete('twitch.token');
+
+					return this.getUsername(await this.getAccessToken(), attempts + 1);
+				}
+				return data[0].login;
+			});
 
 		preferences.set('twitch.username', login);
 

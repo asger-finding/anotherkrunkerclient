@@ -1,4 +1,4 @@
-import { MESSAGE_EXIT_CLIENT } from '@constants';
+import { MESSAGES } from '@constants';
 import { MapExport } from '../krunker';
 import Settings from '@game-settings';
 import TwitchChat from '@twitch-chat';
@@ -26,10 +26,21 @@ if (process.isMainFrame) {
 		document.head.appendChild(injectElement);
 	}());
 
+	/**
+	 * Send a close message to main when function is called
+	 *
+	 * @returns void
+	 */
+	const exitClient = () => ipcRenderer.send(MESSAGES.EXIT_CLIENT);
+
 	// When closeClient is called from the onclick, close the client. The game will attempt to override this.
-	Object.defineProperty(window, 'closeClient', {
-		enumerable: false,
-		value(): void { return ipcRenderer.send(MESSAGE_EXIT_CLIENT); }
+	Reflect.defineProperty(window, 'closeClient', {
+		set() {
+			Reflect.defineProperty(window, 'closeClient', { value: exitClient });
+		},
+		get() {
+			return exitClient;
+		}
 	});
 
 	const twitchChat = new TwitchChat();

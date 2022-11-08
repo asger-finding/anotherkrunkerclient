@@ -43,6 +43,7 @@ rules:
   multiline-comment-style: [error, separate-lines]
   linebreak-style: 0
   sort-keys: 0
+  no-labels: 0
 
 env:
   browser: true

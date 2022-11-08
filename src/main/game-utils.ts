@@ -1,4 +1,4 @@
-import { MESSAGE_GAME_DONE, QUICKJOIN_URL_QUERY_PARAM, TARGET_GAME_URL } from '@constants';
+import { MESSAGES, QUICKJOIN_URL_QUERY_PARAM, TARGET_GAME_URL } from '@constants';
 import { info } from '@logger';
 import { ipcMain } from 'electron';
 import { navigate } from '@window-utils';
@@ -27,8 +27,8 @@ export default class {
 				info('did-finish-load reached on Game window');
 
 				// Resolve the promise when everything is done and dusted in the game window.
-				ipcMain.once(MESSAGE_GAME_DONE, () => {
-					info(`${ MESSAGE_GAME_DONE } received`);
+				ipcMain.once(MESSAGES.GAME_DONE, () => {
+					info(`${ MESSAGES.GAME_DONE } received`);
 
 					resolve();
 				});

@@ -1,8 +1,6 @@
 import {
-	TWITCH_GET_INFO,
+	MESSAGES,
 	TWITCH_MATERIAL_ICON,
-	TWITCH_MESSAGE_RECEIVE,
-	TWITCH_MESSAGE_SEND,
 	preferences
 } from '@constants';
 import { ChatUserstate } from 'tmi.js';
@@ -122,7 +120,7 @@ export default class TwitchChat {
 
 	/** Set up the event listener for the Twitch chat. */
 	constructor() {
-		ipcRenderer.on(TWITCH_MESSAGE_RECEIVE, (_evt, item: TwitchMessageItem) => this.filterTwitchMessage(item));
+		ipcRenderer.on(MESSAGES.TWITCH_MESSAGE_RECEIVE, (_evt, item: TwitchMessageItem) => this.filterTwitchMessage(item));
 	}
 
 	/** Initialize the Twitch chat. */
@@ -148,7 +146,7 @@ export default class TwitchChat {
 				Reflect.defineProperty(window, 'switchChat', <{ value: SwitchChat }>{ value: switchChatHook });
 
 				// Navigate to the correct chat tab
-				this.twitchInfo = await ipcRenderer.invoke(TWITCH_GET_INFO);
+				this.twitchInfo = await ipcRenderer.invoke(MESSAGES.TWITCH_GET_INFO);
 				this.navigateToChatTab();
 			},
 			get() {
@@ -357,7 +355,7 @@ export default class TwitchChat {
 	 * @param message The message to send.
 	 */
 	private static async sendTwitchMessage(message: string) {
-		ipcRenderer.send(TWITCH_MESSAGE_SEND, message);
+		ipcRenderer.send(MESSAGES.TWITCH_MESSAGE_SEND, message);
 	}
 
 }
