@@ -155,7 +155,6 @@ async function getRecommendedGPUFlags() {
  * @param flags Flags to iterate over
  * @returns Merged flags
  */
-// eslint-disable-next-line complexity
 function mergeFlags(flags: Flags): Flags {
 	const toMerge: Record<string, string[]> = {
 		'enable-features': [],
