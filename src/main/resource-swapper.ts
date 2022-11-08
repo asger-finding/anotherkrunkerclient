@@ -37,35 +37,42 @@ export default class {
 
 		if (this.urls.length) {
 			this.browserWindow.webContents.session.webRequest.onBeforeRequest({ urls: this.urls }, (details, callback) => {
-				const path = new URL(details.url).pathname;
+				let path = new URL(details.url).pathname;
+
+				if (path.startsWith('/assets.')) {
+					const slash = path.slice(1).indexOf('/');
+					path = path.slice(slash + 1);
+				}
 
 				// Redirect to the local resource.
 				callback({ redirectURL: `${ CLIENT_NAME }:/${ path.startsWith('/assets/') ? path.substring(7) : path }` });
 			});
 		}
 
-		// Fix CORS problem with browserfps.com.
-		this.browserWindow.webContents.session.webRequest.onHeadersReceived(({ responseHeaders }, callback) => {
-			for (const key in responseHeaders) {
-				const lowercase = key.toLowerCase();
+		if (TARGET_GAME_DOMAIN !== 'krunker.io') {
+			// Fix CORS problem with browserfps.com.
+			this.browserWindow.webContents.session.webRequest.onHeadersReceived(({ responseHeaders }, callback) => {
+				for (const key in responseHeaders) {
+					const lowercase = key.toLowerCase();
 
-				// If the credentials mode is 'include', callback normally or the request will error with CORS.
-				if (lowercase === 'access-control-allow-credentials' && responseHeaders[key][0] === 'true') return callback(responseHeaders);
+					// If the credentials mode is 'include', callback normally or the request will error with CORS.
+					if (lowercase === 'access-control-allow-credentials' && responseHeaders[key][0] === 'true') return callback(responseHeaders);
 
-				// Response headers may have varying letter casing, so we need to check in lowercase.
-				if (lowercase === 'access-control-allow-origin') {
-					delete responseHeaders[key];
-					break;
+					// Response headers may have varying letter casing, so we need to check in lowercase.
+					if (lowercase === 'access-control-allow-origin') {
+						delete responseHeaders[key];
+						break;
+					}
 				}
-			}
 
-			return callback({
-				responseHeaders: {
-					...responseHeaders,
-					'access-control-allow-origin': ['*']
-				}
+				return callback({
+					responseHeaders: {
+						...responseHeaders,
+						'access-control-allow-origin': ['*']
+					}
+				});
 			});
-		});
+		}
 
 		this.started = true;
 	}
@@ -85,18 +92,23 @@ export default class {
 					this.recursiveSwap(name);
 				} else {
 					// browserfps.com has the server name as the subdomain instead of 'assets', so we must take that into account.
+					// `*://storage.googleapis.com/assets.krunker.io${ name }*(\\?*)`,
+
+					// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns
 					const tests = [
-						`*://*.${ TARGET_GAME_DOMAIN }${ name }`,
-						`*://*.${ TARGET_GAME_DOMAIN }${ name }?*`,
-						`*://*.${ TARGET_GAME_DOMAIN }/assets${ name }`,
-						`*://*.${ TARGET_GAME_DOMAIN }/assets${ name }?*`
+						`*://storage.googleapis.com/assets.krunker.io${ name }?*`,
+						`*://storage.googleapis.com/assets.krunker.io${ name }`,
+						`*://storage.googleapis.com/user-assets.krunker.io${ name }?*`,
+						`*://storage.googleapis.com/user-assets.krunker.io${ name }`
 					];
 					this.urls.push(...(/^\/(?:models|textures|sound|scares|videos)(?:$|\/)/u.test(name)
 						? tests
 						: [
 							...tests,
 							`*://comp.${ TARGET_GAME_DOMAIN }${ name }?*`,
-							`*://comp.${ TARGET_GAME_DOMAIN }/assets/${ name }?*`
+							`*://comp.${ TARGET_GAME_DOMAIN }/assets/${ name }?*`,
+							`*://*.${ TARGET_GAME_DOMAIN }${ name }`,
+							`*://*.${ TARGET_GAME_DOMAIN }${ name }?*`
 						]
 					));
 				}
