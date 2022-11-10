@@ -1,38 +1,32 @@
-import {
-	productName as CLIENT_NAME,
-	repository as CLIENT_REPO,
-	version as CLIENT_VERSION,
-	author as _CLIENT_AUTHOR
-} from '../../package.json';
-import { DefaultConstructorOptions, WindowData, WindowSaveData } from '@client';
-import Store from 'electron-store';
+import { Author, WindowData } from '@client';
+import { author, productName, repository, version } from '../../package.json';
 import { app } from 'electron';
-import { resolve } from 'path';
-
-export const preferences = new Store();
 
 // The author field in package.json may appear as either a string or an object.
-// Transform it to a string.
-let CLIENT_AUTHOR: string | {
-	name: string;
-	email?: string;
-} = _CLIENT_AUTHOR;
-if (CLIENT_AUTHOR instanceof Object) CLIENT_AUTHOR = `${ CLIENT_AUTHOR.name } <${ CLIENT_AUTHOR.email ?? '---' }>`;
+// Ensure its of type string
+export const CLIENT_AUTHOR = ((author as Author) instanceof Object
+	? `${ author.name }${ author.email ? ` <${ author.email }>` : '' }`
+	: author) as string;
 
-export { CLIENT_NAME, CLIENT_AUTHOR, CLIENT_VERSION, CLIENT_REPO };
+export {
+	productName as CLIENT_NAME,
+	version as CLIENT_VERSION,
+	repository as CLIENT_REPO
+};
 
 // Permalink to the license
 export const CLIENT_LICENSE_PERMALINK = 'https://yerl.org/ZKZ8V';
 
 export const TARGET_GAME_DOMAIN: 'krunker.io' | 'browserfps.com' = 'krunker.io';
 export const TARGET_GAME_URL = `https://${ TARGET_GAME_DOMAIN }/`;
-export const [TARGET_GAME_SHORTNAME] = TARGET_GAME_DOMAIN.split('.');
 export const QUICKJOIN_URL_QUERY_PARAM = 'quickjoin';
 
 // Client ID can be obtained by creating a new app on the Twitch developer portal (https://dev.twitch.tv/console/apps)
-export const TWITCH_CLIENT_ID = 'b8ee5yb7azo5fochp2ajvt9e5f4sfs';
-export const TWITCH_PORT = 33333;
-export const TWITCH_MATERIAL_ICON = 'live_tv';
+export enum TWITCH {
+	CLIENT_ID = 'b8ee5yb7azo5fochp2ajvt9e5f4sfs',
+	PORT = 33333,
+	MATERIAL_ICON = 'live_tv'
+}
 
 // If not contained, it will throw an error whenever Constants is referenced outside the main process.
 export const IS_DEVELOPMENT = process.type === 'browser' ? !app.isPackaged : null;
@@ -43,6 +37,7 @@ export const WINDOW_ALL_CLOSED_BUFFER_TIME = 200;
 // 14 days in milliseconds
 export const USERAGENT_LIFETIME = 14 * 24 * 60 * 60 * 1000;
 
+// Named krunker tabs
 export const TABS = {
 	GAME: 'game',
 	SOCIAL: 'social',
@@ -60,45 +55,6 @@ export enum MESSAGES {
 	TWITCH_MESSAGE_SEND = 'twitch-message-send',
 	TWITCH_MESSAGE_RECEIVE = 'twitch-message-receive'
 }
-
-/**
- * Returns the default window options, with sizing for the given tab.
- *
- * @param tabName The name of the tab to get sizing data for.
- * @returns The default window constructor options.
- */
-export const getDefaultConstructorOptions = (tabName?: string): DefaultConstructorOptions => <DefaultConstructorOptions>{
-	movable: true,
-	resizable: true,
-	fullscreenable: true,
-	darkTheme: true,
-	backgroundColor: '#1c1c1c',
-	icon: resolve(__dirname, '../static/icon96x96.png'),
-	webPreferences: {
-		nodeIntegration: false,
-		contextIsolation: true,
-		worldSafeExecuteJavaScript: true,
-		enableRemoteModule: false
-	},
-	...preferences.get(`window.${ tabName }`, {
-		width: 1280,
-		height: 720,
-		fullscreen: false,
-		maximized: false
-	}) as WindowSaveData
-};
-
-/** The BrowserWindowConstructorOptions for the game window */
-export const GAME_CONSTRUCTOR_OPTIONS: Electron.BrowserWindowConstructorOptions = {
-	...getDefaultConstructorOptions(TABS.GAME),
-	show: false,
-	webPreferences: {
-		...getDefaultConstructorOptions(TABS.GAME).webPreferences,
-		preload: resolve(__dirname, '../preload/game'),
-		contextIsolation: false,
-		nodeIntegrationInSubFrames: true
-	}
-};
 
 /**
  * Returns the current Krunker tab (if any), whether we're on Krunker, what Krunker tab we're on, and whether quickJoin is enabled

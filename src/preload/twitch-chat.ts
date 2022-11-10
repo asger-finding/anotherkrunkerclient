@@ -1,14 +1,14 @@
 import {
 	MESSAGES,
-	TWITCH_MATERIAL_ICON,
-	preferences
+	TWITCH
 } from '@constants';
 import { ChatUserstate } from 'tmi.js';
 import { SimplifiedTwitchMessage } from '@client';
 import { ipcRenderer } from 'electron';
+import store from '@store';
 
 type ViewerStates = 'subscriber' | 'vip' | 'moderator' | 'broadcaster';
-type AvailableStates = 'public' | 'groups' | typeof TWITCH_MATERIAL_ICON;
+type AvailableStates = 'public' | 'groups' | typeof TWITCH.MATERIAL_ICON;
 type SwitchChat = (element: HTMLDivElement) => void;
 type TwitchMessageItem = {
 	chatUserstate: ChatUserstate;
@@ -208,7 +208,7 @@ export default class TwitchChat {
 		const currentTab = (chatSwitchElement.getAttribute('data-tab') ?? 'public') as AvailableStates;
 		this.chatState = this.chatStates[(this.chatStates.indexOf(currentTab) + 1) % this.chatStates.length];
 
-		if (this.chatState === TWITCH_MATERIAL_ICON) {
+		if (this.chatState === TWITCH.MATERIAL_ICON) {
 			this.chatInputClone.style.display = 'inline';
 			this.chatListClone.style.display = 'block';
 			this.chatInput.style.display = 'none';
@@ -302,22 +302,22 @@ export default class TwitchChat {
 
 		// If the data-tab is toggled to groups by the game, then teams are enabled
 		this.chatStates = testElement.getAttribute('data-tab') === 'groups'
-			? ['public', 'groups', TWITCH_MATERIAL_ICON]
-			: ['public', TWITCH_MATERIAL_ICON];
+			? ['public', 'groups', TWITCH.MATERIAL_ICON]
+			: ['public', TWITCH.MATERIAL_ICON];
 	}
 
-	/** Save the game chat state to preferences and set it upon load. */
+	/** Save the game chat state to store and set it upon load. */
 	private navigateToChatTab() {
 		window.addEventListener('beforeunload', () => {
-			preferences.set('gameChatState', this.chatState);
+			store.set('gameChatState', this.chatState);
 		});
 
 		const chatSwitchElement = document.getElementById('chatSwitch') as HTMLDivElement;
-		const savedState = preferences.get('gameChatState') ?? 'public';
+		const savedState = store.get('gameChatState') ?? 'public';
 
-		if (savedState === TWITCH_MATERIAL_ICON) {
+		if (savedState === TWITCH.MATERIAL_ICON) {
 			let iterations = 0;
-			while (chatSwitchElement.getAttribute('data-tab') !== TWITCH_MATERIAL_ICON && iterations < 10) {
+			while (chatSwitchElement.getAttribute('data-tab') !== TWITCH.MATERIAL_ICON && iterations < 10) {
 				this.switchChat(chatSwitchElement);
 				iterations++;
 			}

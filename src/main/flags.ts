@@ -75,7 +75,7 @@ const isWaylandNative = isWayland && (
  * @returns Boolean for whether or not the device has active GPU devices
  */
 // eslint-disable-next-line complexity
-async function getGPU(): Promise<PartialGPU | null> {
+const getGPU = async(): Promise<PartialGPU | null> => {
 	const gpuInfo = await app.getGPUInfo('basic');
 
 	if (!(gpuInfo instanceof Object)) return null;
@@ -88,7 +88,7 @@ async function getGPU(): Promise<PartialGPU | null> {
 	}
 
 	return gpuInfo;
-}
+};
 
 /**
  * An experimental function to return information about recommended flags to
@@ -100,7 +100,7 @@ async function getGPU(): Promise<PartialGPU | null> {
  * 
  * @returns OS flags for Wayland
  */
-function getRecommendedOSFlags() {
+const getRecommendedOSFlags = (): Flags => {
 	const OSFlags: Flags = [];
 	if (isUnix) {
 		if (isWaylandNative) OSFlags.push(['enable-features', 'UseOzonePlatform,WebRTCPipeWireCapturer,WaylandWindowDecorations']);
@@ -108,7 +108,7 @@ function getRecommendedOSFlags() {
 	}
 
 	return OSFlags;
-}
+};
 
 /**
  * Guess the best GL backend for the enviroment based on the GPU vendor.
@@ -116,7 +116,7 @@ function getRecommendedOSFlags() {
  * It is `desktop` by default and `egl` on Wayland
  */
 // eslint-disable-next-line complexity
-async function getRecommendedGPUFlags() {
+const getRecommendedGPUFlags = async(): Promise<Flags> => {
 	const GPUFlags: Flags = [];
 
 	const desktopGl: 'desktop' | 'egl' = (isUnix && isWayland) ? 'egl' : 'desktop';
@@ -147,7 +147,7 @@ async function getRecommendedGPUFlags() {
 	if (!activeGPU && isUnix && process.arch === 'arm64') GPUFlags.push(['use-gl', 'egl']);
 
 	return GPUFlags;
-}
+};
 
 /**
  * Merge some flags with the same keys to one value, and join them with a comma.
@@ -155,7 +155,7 @@ async function getRecommendedGPUFlags() {
  * @param flags Flags to iterate over
  * @returns Merged flags
  */
-function mergeFlags(flags: Flags): Flags {
+const mergeFlags = (flags: Flags): Flags => {
 	const toMerge: Record<string, string[]> = {
 		'enable-features': [],
 		'disable-features': []
@@ -176,12 +176,12 @@ function mergeFlags(flags: Flags): Flags {
 	for (const key in toMerge) flags.push([key, toMerge[key].join(',')]);
 
 	return flags;
-}
+};
 
 /**
  * Get the best flags for the operating system and graphics card.
  */
-export default async function getFlags(): Promise<Flags> {
+const getFlags = async(): Promise<Flags> => {
 	const flags = mergeFlags([
 		...ELECTRON_FLAGS,
 		...await getRecommendedGPUFlags(),
@@ -193,4 +193,7 @@ export default async function getFlags(): Promise<Flags> {
 	if (flat.length > set.size) warn('Duplicate value(s) in flags');
 
 	return flags;
-}
+};
+
+export default getFlags;
+

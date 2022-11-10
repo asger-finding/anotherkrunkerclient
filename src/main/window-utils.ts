@@ -1,11 +1,6 @@
-import { AsyncReturnType, WindowData, WindowSaveData } from '@client';
+import { AsyncReturnType, DefaultConstructorOptions, WindowData, WindowSaveData } from '@client';
 import { BrowserWindow, app, dialog } from 'electron';
-import {
-	TABS,
-	getDefaultConstructorOptions,
-	getURLData,
-	preferences
-} from '@constants';
+import { TABS, getURLData } from '@constants';
 import GameUtils from '@game-utils';
 import ResourceSwapper from '@resource-swapper';
 import { exec } from 'child_process';
@@ -13,6 +8,35 @@ import { getSpoofedUA } from '@useragent-spoof';
 import { info } from '@logger';
 import { lt as lessThan } from 'semver';
 import { register } from 'electron-localshortcut';
+import { resolve } from 'path';
+import store from '@store';
+
+/**
+ * Returns the default window options, with sizing for the given tab.
+ *
+ * @param tabName The name of the tab to get sizing data for.
+ * @returns The default window constructor options.
+ */
+export const getDefaultConstructorOptions = (tabName?: string): DefaultConstructorOptions => <DefaultConstructorOptions>{
+	movable: true,
+	resizable: true,
+	fullscreenable: true,
+	darkTheme: true,
+	backgroundColor: '#1c1c1c',
+	icon: resolve(__dirname, '../static/icon96x96.png'),
+	webPreferences: {
+		nodeIntegration: false,
+		contextIsolation: true,
+		worldSafeExecuteJavaScript: true,
+		enableRemoteModule: false
+	},
+	...store.get(`window.${ tabName }`, {
+		width: 1280,
+		height: 720,
+		fullscreen: false,
+		maximized: false
+	}) as WindowSaveData
+};
 
 /**
  * Load a URL in the specified window with a spoofed user agent
@@ -20,14 +44,14 @@ import { register } from 'electron-localshortcut';
  * @param browserWindow The target window to spoof
  * @param windowUrl URL to load
  */
-async function loadSpoofedURL(browserWindow: Electron.BrowserWindow, windowUrl: string): Promise<void> {
+const loadSpoofedURL = async(browserWindow: Electron.BrowserWindow, windowUrl: string): Promise<void> => {
 	let ua: AsyncReturnType<typeof getSpoofedUA> = '';
 	const windowUserAgent = browserWindow.webContents.getUserAgent();
 	const isElectron = windowUserAgent.includes('Electron');
 
 	if (isElectron) ua = await getSpoofedUA();
 	browserWindow.loadURL(windowUrl, { userAgent: ua || windowUserAgent });
-}
+};
 
 /**
  * Run when navigated (exclude `windowUrl` param) or when navigating (include `windowUrl` param) to a new URL.
@@ -36,7 +60,7 @@ async function loadSpoofedURL(browserWindow: Electron.BrowserWindow, windowUrl: 
  * @param browserWindow The target window
  * @param windowUrl URL to load, if any
  */
-export function navigate(browserWindow: BrowserWindow & { resourceSwapper?: ResourceSwapper }, windowUrl?: string): void {
+export const navigate = (browserWindow: BrowserWindow & { resourceSwapper?: ResourceSwapper }, windowUrl?: string): void => {
 	if (windowUrl) loadSpoofedURL(browserWindow, windowUrl);
 	const { isKrunker } = getURLData(windowUrl ?? browserWindow.webContents.getURL());
 
@@ -50,7 +74,7 @@ export function navigate(browserWindow: BrowserWindow & { resourceSwapper?: Reso
 		if (!browserWindow.resourceSwapper) browserWindow.resourceSwapper = new ResourceSwapper(browserWindow);
 		browserWindow.resourceSwapper.start();
 	}
-}
+};
 
 /**
  * Open an outlink in the default browser.
@@ -58,13 +82,13 @@ export function navigate(browserWindow: BrowserWindow & { resourceSwapper?: Reso
  *
  * @param externalUrl The URL to open externally
  */
-export function openExternal(externalUrl: string): void {
+export const openExternal = (externalUrl: string): void => {
 	let command = 'xdg-open';
 	if (process.platform === 'darwin') command = 'open';
 	if (process.platform === 'win32') command = 'explorer';
 
 	exec(`${ command } "${ externalUrl }"`);
-}
+};
 
 export default class {
 
@@ -82,7 +106,7 @@ export default class {
 		const browserWindow = new BrowserWindow(constructorOptions);
 
 		if (windowURL) navigate(browserWindow, windowURL);
-		if (preferences.get(`window.${ windowData.tab }.maximized`)) browserWindow.maximize();
+		if (store.get(`window.${ windowData.tab }.maximized`)) browserWindow.maximize();
 
 		browserWindow.removeMenu();
 
@@ -131,7 +155,7 @@ export default class {
 					fullscreen: browserWindow.isFullScreen(),
 					maximized: browserWindow.isMaximized()
 				};
-				for (const [key, value] of Object.entries(windowPreferences)) preferences.set(`window.${ windowData.tab }.${ key }`, value);
+				for (const [key, value] of Object.entries(windowPreferences)) store.set(`window.${ windowData.tab }.${ key }`, value);
 			});
 		}
 

@@ -1,14 +1,13 @@
 import {
 	IS_DEVELOPMENT,
-	TWITCH_CLIENT_ID,
-	TWITCH_PORT,
-	preferences
+	TWITCH
 } from '@constants';
 import { error, info, warn } from '@logger';
 import { Client } from 'tmi.js';
 import { createServer } from 'http';
 import fetch from 'node-fetch';
 import { openExternal } from '@window-utils';
+import store from '@store';
 
 export default class {
 
@@ -36,10 +35,10 @@ export default class {
 		});
 	}
 
-	/** @returns Promise for Twitch oauth token, either saved in the preferences or fetched from the Twitch API. */
+	/** @returns Promise for Twitch oauth token, either saved in the store or fetched from the Twitch API. */
 	private static getAccessToken(): Promise<string> {
 		return new Promise((resolve, reject) => {
-			const cachedToken = preferences.get('twitch.token');
+			const cachedToken = store.get('twitch.token');
 			if (typeof cachedToken === 'string') return resolve(cachedToken);
 
 			// Create a random state string to prevent csrf attacks
@@ -50,9 +49,9 @@ export default class {
 
 			// Create oauth url
 			const url = `https://id.twitch.tv/oauth2/authorize?client_id=${
-				TWITCH_CLIENT_ID
+				TWITCH.CLIENT_ID
 			}&redirect_uri=http://localhost:${
-				TWITCH_PORT
+				TWITCH.PORT
 			}&state=${
 				state
 			}&response_type=token&scope=chat:read+chat:edit`;
@@ -78,7 +77,7 @@ export default class {
 									const state = location.hash.match(/state=(.*)&/)[1];
 									if (state !== '${ state }') throw new Error('State mismatch');
 	
-									fetch('http://localhost:${ TWITCH_PORT }/token?token=' + token, {
+									fetch('http://localhost:${ TWITCH.PORT }/token?token=' + token, {
 										method: 'GET',
 										headers: {
 											'Content-Type': 'application/json'
@@ -102,7 +101,7 @@ export default class {
 					return resolve(result);
 				}
 				return res.end();
-			}).listen(TWITCH_PORT, () => {
+			}).listen(TWITCH.PORT, () => {
 				openExternal(url);
 			});
 
@@ -126,7 +125,7 @@ export default class {
 
 		if (!token) return new Error('No token');
 
-		preferences.set('twitch.token', token);
+		store.set('twitch.token', token);
 		return token;
 	}
 
@@ -145,7 +144,7 @@ export default class {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${ token }`,
-				'Client-ID': TWITCH_CLIENT_ID
+				'Client-ID': TWITCH.CLIENT_ID as string
 			}
 		}).then(res => res.json())
 			.then(async({ data }) => {
@@ -153,14 +152,14 @@ export default class {
 					info('Invalid Twitch token cache');
 
 					// Invalidate token cache
-					preferences.delete('twitch.token');
+					store.delete('twitch.token');
 
 					return this.getUsername(await this.getAccessToken(), attempts + 1);
 				}
 				return data[0].login;
 			});
 
-		preferences.set('twitch.username', login);
+		store.set('twitch.username', login);
 
 		return login;
 	}
@@ -178,7 +177,7 @@ export default class {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${ token }`,
-				'Client-ID': TWITCH_CLIENT_ID
+				'Client-ID': TWITCH.CLIENT_ID as string
 			}
 		}).then(res => res.json())
 			.then(({ data }) => data.length > 0);

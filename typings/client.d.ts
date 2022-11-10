@@ -78,3 +78,8 @@ export interface PartialGPU {
 }
 
 export type Flags = Array<[string] | [string, string]>;
+
+export type Author = string | {
+	name: string;
+	email?: string;
+};

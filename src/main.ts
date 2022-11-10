@@ -2,20 +2,20 @@ import {
 	CLIENT_AUTHOR,
 	CLIENT_LICENSE_PERMALINK,
 	CLIENT_NAME,
-	GAME_CONSTRUCTOR_OPTIONS,
 	IS_DEVELOPMENT,
 	MESSAGES,
+	TABS,
 	TARGET_GAME_URL
 } from '@constants';
+import WindowUtils, { getDefaultConstructorOptions } from '@window-utils';
 import { app, ipcMain, protocol, session } from 'electron';
+import { join, resolve } from 'path';
 import { ElectronBlocker } from '@cliqz/adblocker-electron';
 import TwitchUtils from '@twitch-utils';
-import WindowUtils from '@window-utils';
 import fetch from 'node-fetch';
 import { promises as fs } from 'fs';
 import getFlags from '@flags';
 import { info } from '@logger';
-import { join } from 'path';
 
 // eslint-disable-next-line no-console
 console.log(`${ CLIENT_NAME }  Copyright (C) 2022  ${ CLIENT_AUTHOR }
@@ -47,7 +47,16 @@ class Application {
 
 		if (client === null) return;
 
-		const gameWindow = await WindowUtils.createWindow(GAME_CONSTRUCTOR_OPTIONS, TARGET_GAME_URL);
+		const gameWindow = await WindowUtils.createWindow({
+			...getDefaultConstructorOptions(TABS.GAME),
+			show: false,
+			webPreferences: {
+				...getDefaultConstructorOptions(TABS.GAME).webPreferences,
+				preload: resolve(__dirname, './preload/game'),
+				contextIsolation: false,
+				nodeIntegrationInSubFrames: true
+			}
+		}, TARGET_GAME_URL);
 		gameWindow.webContents.once('dom-ready', () => {
 			client.connect();
 			client.on('message', (_listener, chatUserstate, message) => {
