@@ -168,9 +168,5 @@ protocol.registerSchemesAsPrivileged([
 if (!app.requestSingleInstanceLock()) { app.quit(); } else {
 	Application.preAppReady();
 
-	app.whenReady().then(async() => {
-		await Application.init();
-
-		info('Client initialized');
-	});
+	app.whenReady().then(Application.init);
 }
