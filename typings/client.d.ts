@@ -2,6 +2,7 @@ export type EventHandler<T extends Event> = (event: T) => void;
 
 export type InputNodeAttributes<Target extends Event> = { [key: string]: unknown } & {
 	oninput: EventHandler<Target>;
+	id: string;
 };
 
 export type Callback = (...args: never[]) => unknown;
@@ -15,17 +16,6 @@ declare global {
 		}
 	}
 	export interface Window {
-		OffCliV: boolean;
-		clientAPI: {
-			clientName: string;
-
-			send(channel: string, data: unknown[]): void;
-			receive(channel: string, ...callback: ((data: unknown) => void)[]): boolean | void;
-			requestFromStore(key: string, fallback: unknown): unknown | void;
-			setToStore(key: string, value: unknown): void;
-			storeHas(key: string): unknown | null;
-		};
-		openSettings: () => null;
 		closeClient: () => null;
 	}
 }

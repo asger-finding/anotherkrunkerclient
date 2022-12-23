@@ -1,21 +1,40 @@
 import { InputNodeAttributes } from '@client';
+import store from '@store';
+
+const { log } = console;
 
 type ShowWindow = (windowId: number) => void;
 
 export default class Settings {
 
+	static prefix = 'settings';
+
 	itemElements: HTMLElement[] = [];
+
+	savedSettings: Record<string, unknown> = {};
 
 	nativeShowWindow: ShowWindow;
 
 	/**
+	 * Initialize the base settings exclusively for store
+	 */
+	init(): void {
+		this.savedSettings = store.get(Settings.prefix) as typeof this.savedSettings;
+	}
+
+	/**
+	 * Initialize the store for main frame
+	 * 
 	 * @param DOMContentLoadedPromise A promise that will be resolved when the DOM is loaded
 	 */
-	async init(DOMContentLoadedPromise: Promise<void>) {
-		await Promise.all([
+	async initMainFrame(DOMContentLoadedPromise: Promise<void>): Promise<void> {
+		Settings.checkFrame(false);
+
+		[this.savedSettings] = await Promise.all([
+			store.get(Settings.prefix),
 			DOMContentLoadedPromise,
 			this.generateSettings()
-		]);
+		]) as [typeof this.savedSettings, ...Array<unknown>];
 
 		const interval = setInterval(() => {
 			const instructions = document.getElementById('instructions');
@@ -27,10 +46,22 @@ export default class Settings {
 	}
 
 	/**
+	 * Check if the frame aligns to what is expected. Else, throw an error.
+	 * 
+	 * @param expectSubframe If process.isMainFrame should return false.
+	 */
+	private static checkFrame(expectSubframe: boolean) {
+		if (process.isMainFrame && expectSubframe) throw new Error('Saw main frame and expected sub frame');
+		if (!process.isMainFrame && !expectSubframe) throw new Error('Saw sub frame and expected main frame');
+	}
+
+	/**
 	 *
 	 * @param instructions The krunker instructions element
 	 */
 	private observeInstructions(instructions: HTMLDivElement) {
+		Settings.checkFrame(false);
+
 		new MutationObserver((_mutations, observer) => {
 			observer.disconnect();
 
@@ -180,8 +211,25 @@ export default class Settings {
 	 * @returns The generated settings elements
 	 */
 	generateSettings(): Node[] {
+		Settings.checkFrame(false);
+
+		const parenter = {
+			set(target: Record<string, unknown>, prop: string, value: unknown) {
+				if (value instanceof Object) {
+					const proxy: typeof target = new Proxy({ parent: target }, parenter);
+					for (const key in value) proxy[key] = value[key];
+
+					target[prop] = proxy;
+					return proxy;
+				}
+
+				target[prop] = value;
+				return value;
+			}
+		};
+
 		// Placeholder section
-		const clientSection = Settings.createSection({
+		const clientSection = this.createSection({
 			title: 'Client',
 			id: 'client',
 			requiresRestart: true
@@ -189,29 +237,34 @@ export default class Settings {
 			title: 'Auto-reload',
 			type: 'checkbox',
 			inputNodeAttributes: {
-				oninput(evt) {
-					console.log(evt);
-				}
+				id: 'autoReload',
+				/**
+				 *
+				 */
+				oninput: evt => this.writeSetting('autoReload', (<HTMLInputElement>evt.target).checked)
 			}
 		}, {
 			title: 'Auto-reload delay',
 			type: 'slider',
 			inputNodeAttributes: {
+				id: 'autoReloadDelay',
 				min: 0,
 				max: 10,
 				step: 1,
-				value: 4,
-				oninput(evt) {
-					console.log(evt);
-				}
+				/**
+				 *
+				 */
+				oninput: evt => this.writeSetting('autoReloadDelay', (<HTMLInputElement>evt.target).value)
 			}
 		}, {
 			title: 'Auto-reload delay unit',
 			type: 'select',
 			inputNodeAttributes: {
-				oninput(evt) {
-					console.log(evt);
-				}
+				id: 'autoReloadDelayUnit',
+				/**
+				 *
+				 */
+				oninput: evt => this.writeSetting('autoReloadDelayUnit', (<HTMLInputElement>evt.target).value)
 			},
 			options: {
 				Seconds: 's',
@@ -219,25 +272,68 @@ export default class Settings {
 				Hours: 'h'
 			}
 		}, {
-			title: 'Background color',
-			type: 'color',
+			title: 'Map Attributes (JSON)',
+			type: 'text',
 			inputNodeAttributes: {
-				oninput(evt) {
-					console.log(evt);
+				id: 'mapAttributes',
+				/**
+				 *
+				 */
+				oninput: (evt, ...args) => {
+					const { value } = <HTMLInputElement>evt.target;
+
+					log(evt, args);
+					// Validate the JSON
+					try {
+						JSON.parse(value);
+					} catch {
+						// eslint-disable-next-line no-alert
+						alert('Invalid JSON, not saved');
+						return;
+					}
+
+					this.writeSetting('mapAttributes', (<HTMLInputElement>evt.target).value);
 				}
 			}
 		}, {
-			title: 'Background image',
+			title: 'Skybox image',
 			type: 'text',
 			inputNodeAttributes: {
-				oninput(evt) {
-					console.log(evt);
-				}
+				id: 'skyboxImage',
+				/**
+				 *
+				 */
+				oninput: evt => this.writeSetting('backgroundImage', (<HTMLInputElement>evt.target).value)
 			}
 		});
 
 		const items = this.itemElements = [...clientSection];
 		return items;
+	}
+
+	/**
+	 * Get a setting from cache, if false try the config file, or return `null`
+	 * 
+	 * @param key The setting to get
+	 * @returns Saved value or null
+	 */
+	public getSetting(key: string): unknown | null {
+		return this.savedSettings[key] ?? store.get(`${ Settings.prefix }.${ key }`, null);
+	}
+
+	/**
+	 * Save setting to the store
+	 * 
+	 * @param key Key to save value to
+	 * @param value Value to write to key
+	 */
+	private writeSetting(key: string, value: unknown): void {
+		if (typeof value !== 'undefined' && value !== null) {
+			store.set(`${ Settings.prefix }.${ key }`, value);
+			this.savedSettings[key] = value;
+		}
+
+		log(this.savedSettings);
 	}
 
 	/**
@@ -248,7 +344,7 @@ export default class Settings {
 	 * @param properties the section elements
 	 * @returns The section header and body
 	 */
-	public static createSection(sectionData: {
+	public createSection(sectionData: {
 		title: string;
 		id: string;
 		requiresRestart?: boolean;
@@ -258,6 +354,8 @@ export default class Settings {
 		inputNodeAttributes: InputNodeAttributes<Event | MouseEvent>;
 		options?: Record<string, string>
 	}[]): HTMLElement[] {
+		Settings.checkFrame(false);
+
 		const header = document.createElement('div');
 		header.classList.add('setHed');
 		header.id = `setHed_${ sectionData.id }`;
@@ -281,12 +379,10 @@ export default class Settings {
 			header.append(requiresRestartSpan);
 		}
 
-		/**
-		 * On header click, toggle the section
-		 * 
-		 * @returns void
-		 */
-		header.onclick = () => this.collapseFolder(header);
+		/** On header click, toggle the section */
+		header.onclick = () => {
+			Settings.collapseFolder(header);
+		};
 
 		const body = document.createElement('div');
 		body.classList.add('setBodH');
@@ -326,7 +422,7 @@ export default class Settings {
 	 * @returns The newly created HTMLElement
 	 */
 	// eslint-disable-next-line complexity
-	public static createItemFrom(property: {
+	private createItemFrom(property: {
 		title: string;
 		type: 'checkbox' | 'slider' | 'select' | 'color' | 'text';
 		inputNodeAttributes: InputNodeAttributes<Event | MouseEvent>;
@@ -356,19 +452,22 @@ export default class Settings {
 	 * @param inputNodeAttributes.onclick Event handler
 	 * @returns Wrapper
 	 */
-	public static createCheckbox(title: string, inputNodeAttributes: InputNodeAttributes<MouseEvent>) {
+	private createCheckbox(title: string, inputNodeAttributes: InputNodeAttributes<MouseEvent>) {
 		const label = document.createElement('label');
 		label.classList.add('switch');
 
 		const input = Object.assign(document.createElement('input'), inputNodeAttributes);
 		input.type = 'checkbox';
+		input.id = `check_${ inputNodeAttributes.id }`;
+
+		input.checked = this.getSetting(inputNodeAttributes.id) as boolean ?? inputNodeAttributes.checked ?? false;
 
 		const span = document.createElement('span');
 		span.classList.add('slider');
 
 		label.append(input, span);
 
-		return this.createWrapper(title, label);
+		return Settings.createWrapper(title, label);
 	}
 
 	/**
@@ -379,7 +478,7 @@ export default class Settings {
 	 * @param inputNodeAttributes.oninput Event handler
 	 * @returns Wrapper
 	 */
-	public static createSlider(title: string, inputNodeAttributes: InputNodeAttributes<Event>) {
+	private createSlider(title: string, inputNodeAttributes: InputNodeAttributes<Event>) {
 		const input = Object.assign(document.createElement('input'), inputNodeAttributes);
 		input.style.borderWidth = '0px';
 		input.classList.add('sliderVal');
@@ -401,9 +500,11 @@ export default class Settings {
 			slider.value = input.value;
 		});
 
+		input.value = slider.value = this.getSetting(inputNodeAttributes.id) as string ?? inputNodeAttributes.value ?? '';
+
 		div.append(slider);
 
-		return this.createWrapper(title, div, input);
+		return Settings.createWrapper(title, div, input);
 	}
 
 	/**
@@ -415,7 +516,7 @@ export default class Settings {
 	 * @param options Options to display
 	 * @returns Wrapper
 	 */
-	public static createSelect(title: string, inputNodeAttributes: InputNodeAttributes<Event>, options?: Record<string, string>) {
+	private createSelect(title: string, inputNodeAttributes: InputNodeAttributes<Event>, options?: Record<string, string>) {
 		const select = Object.assign(document.createElement('select'), inputNodeAttributes);
 		select.classList.add('inputGrey2');
 
@@ -428,7 +529,9 @@ export default class Settings {
 			}
 		}
 
-		return this.createWrapper(title, select);
+		select.value = this.getSetting(inputNodeAttributes.id) as string ?? inputNodeAttributes.value ?? '';
+
+		return Settings.createWrapper(title, select);
 	}
 
 	/**
@@ -439,14 +542,16 @@ export default class Settings {
 	 * @param inputNodeAttributes.oninput Event handler
 	 * @returns Wrapper
 	 */
-	public static createColor(title: string, inputNodeAttributes: InputNodeAttributes<Event>) {
+	private createColor(title: string, inputNodeAttributes: InputNodeAttributes<Event>) {
 		const input = Object.assign(document.createElement('input'), inputNodeAttributes);
 		input.style.float = 'right';
 		input.id = `slid_${ inputNodeAttributes.id }`;
 		input.type = 'color';
 		input.name = 'color';
 
-		return this.createWrapper(title, input);
+		input.value = this.getSetting(inputNodeAttributes.id) as string ?? inputNodeAttributes.value ?? '';
+
+		return Settings.createWrapper(title, input);
 	}
 
 	/**
@@ -457,14 +562,16 @@ export default class Settings {
 	 * @param inputNodeAttributes.oninput Event handler
 	 * @returns Wrapper
 	 */
-	public static createText(title: string, inputNodeAttributes: InputNodeAttributes<Event>) {
+	private createText(title: string, inputNodeAttributes: InputNodeAttributes<Event>) {
 		const input = Object.assign(document.createElement('input'), inputNodeAttributes);
 		input.classList.add('inputGrey2');
 		input.id = `slid_${ inputNodeAttributes.id }`;
 		input.type = 'text';
 		input.name = 'text';
 
-		return this.createWrapper(title, input);
+		input.value = this.getSetting(inputNodeAttributes.id) as string ?? inputNodeAttributes.value ?? '';
+
+		return Settings.createWrapper(title, input);
 	}
 
 	/**

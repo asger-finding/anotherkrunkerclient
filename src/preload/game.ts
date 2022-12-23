@@ -26,12 +26,10 @@ if (process.isMainFrame) {
 		document.head.appendChild(injectElement);
 	}());
 
-	/**
-	 * Send a close message to main when function is called
-	 *
-	 * @returns void
-	 */
-	const exitClient = () => ipcRenderer.send(MESSAGES.EXIT_CLIENT);
+	/** Send a close message to main when function is called */
+	const exitClient = () => {
+		ipcRenderer.send(MESSAGES.EXIT_CLIENT);
+	};
 
 	// When closeClient is called from the onclick, close the client. The game will attempt to override this.
 	Reflect.defineProperty(window, 'closeClient', {
@@ -47,18 +45,13 @@ if (process.isMainFrame) {
 	twitchChat.init();
 
 	const settings = new Settings();
-	settings.init(ensureContentLoaded());
+	settings.initMainFrame(ensureContentLoaded());
 }
 
-const mapSettings: Partial<MapExport> = {
-	skyDome: false,
-	toneMapping: 4,
-	sky: 0x040a14,
-	fog: 0x080c12,
-	lightI: 1.6,
-	light: 0xffffff,
-	ambient: 0x2d4c80
-};
+const settings = new Settings();
+settings.init();
+
+const mapSettings = JSON.parse((settings.savedSettings.mapAttributes as string | undefined) ?? '{}') as Partial<MapExport>;
 
 const jsonParse = JSON.parse;
 JSON.parse = function(...args: unknown[]) {
@@ -83,7 +76,6 @@ JSON.parse = function(...args: unknown[]) {
 const nativeFetch = fetch;
 window.fetch = async function(...args: unknown[]) {
 	const result = await nativeFetch.apply(this, args as never);
-
 
 	const [target] = args;
 	if (typeof target === 'string' && /^maps\/(?:.*)(?:.\.json)/u.test(target)) {
