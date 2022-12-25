@@ -1,8 +1,11 @@
+import { Saveables } from '@game-settings';
+
 export type EventHandler<T extends Event> = (event: T) => void;
+export type EventListener = (eventId: string, data?: unknown) => void;
 
 export type InputNodeAttributes<Target extends Event> = { [key: string]: unknown } & {
 	oninput: EventHandler<Target>;
-	id: string;
+	id: Saveables;
 };
 
 export type Callback = (...args: never[]) => unknown;

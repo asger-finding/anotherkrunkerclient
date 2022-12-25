@@ -4,6 +4,9 @@ type Hexadecimal = (string | number);
 /** A representation of a minified boolean value as 0 or 1 or boolean */
 type SlimBoolean = (0 | 1 | boolean);
 
+/** RGB array type */
+export type Color = [number, number, number];
+
 export interface MapExport {
 
 	/**

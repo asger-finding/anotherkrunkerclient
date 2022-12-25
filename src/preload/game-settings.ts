@@ -1,9 +1,19 @@
-import { InputNodeAttributes } from '@client';
+import { EventListener, InputNodeAttributes } from '@client';
 import store from '@store';
 
-const { log } = console;
-
-type ShowWindow = (windowId: number) => void;
+enum Frames {
+	MAINFRAME,
+	SUBFRAME
+}
+export enum Saveables {
+	MAP_ATTRIBUTES = 'mapAttributes',
+	SKY_TOP_COLOR = 'skyTopColor',
+	SKY_MIDDLE_COLOR = 'skyMiddleColor',
+	SKY_BOTTOM_COLOR = 'skyBottomColor'
+}
+export enum EventListenerTypes {
+	WRITE_SETTING
+}
 
 export default class Settings {
 
@@ -11,15 +21,20 @@ export default class Settings {
 
 	itemElements: HTMLElement[] = [];
 
-	savedSettings: Record<string, unknown> = {};
+	saved: { [key in Saveables]?: unknown } = {};
 
-	nativeShowWindow: ShowWindow;
+	savables = Saveables;
+
+	private writeSettingEventListeners: Array<EventListener>;
 
 	/**
 	 * Initialize the base settings exclusively for store
 	 */
-	init(): void {
-		this.savedSettings = store.get(Settings.prefix) as typeof this.savedSettings;
+	initSubFrame(): void {
+		Settings.expectFrame(Frames.SUBFRAME);
+
+		this.saved = store.get(Settings.prefix) as typeof this.saved;
+		this.writeSettingEventListeners = [];
 	}
 
 	/**
@@ -28,13 +43,14 @@ export default class Settings {
 	 * @param DOMContentLoadedPromise A promise that will be resolved when the DOM is loaded
 	 */
 	async initMainFrame(DOMContentLoadedPromise: Promise<void>): Promise<void> {
-		Settings.checkFrame(false);
+		Settings.expectFrame(Frames.MAINFRAME);
 
-		[this.savedSettings] = await Promise.all([
+		this.writeSettingEventListeners = [];
+		[this.saved] = await Promise.all([
 			store.get(Settings.prefix),
 			DOMContentLoadedPromise,
 			this.generateSettings()
-		]) as [typeof this.savedSettings, ...Array<unknown>];
+		]) as [typeof this.saved, ...Array<unknown>];
 
 		const interval = setInterval(() => {
 			const instructions = document.getElementById('instructions');
@@ -48,11 +64,11 @@ export default class Settings {
 	/**
 	 * Check if the frame aligns to what is expected. Else, throw an error.
 	 * 
-	 * @param expectSubframe If process.isMainFrame should return false.
+	 * @param expected If process.isMainFrame should return false.
 	 */
-	private static checkFrame(expectSubframe: boolean) {
-		if (process.isMainFrame && expectSubframe) throw new Error('Saw main frame and expected sub frame');
-		if (!process.isMainFrame && !expectSubframe) throw new Error('Saw sub frame and expected main frame');
+	private static expectFrame(expected: Frames) {
+		if (process.isMainFrame && Frames.SUBFRAME === expected) throw new Error('Saw main frame and expected sub frame');
+		if (!process.isMainFrame && Frames.MAINFRAME === expected) throw new Error('Saw sub frame and expected main frame');
 	}
 
 	/**
@@ -60,7 +76,7 @@ export default class Settings {
 	 * @param instructions The krunker instructions element
 	 */
 	private observeInstructions(instructions: HTMLDivElement) {
-		Settings.checkFrame(false);
+		Settings.expectFrame(Frames.MAINFRAME);
 
 		new MutationObserver((_mutations, observer) => {
 			observer.disconnect();
@@ -211,7 +227,7 @@ export default class Settings {
 	 * @returns The generated settings elements
 	 */
 	generateSettings(): Node[] {
-		Settings.checkFrame(false);
+		Settings.expectFrame(Frames.MAINFRAME);
 
 		const parenter = {
 			set(target: Record<string, unknown>, prop: string, value: unknown) {
@@ -234,76 +250,87 @@ export default class Settings {
 			id: 'client',
 			requiresRestart: true
 		}, {
-			title: 'Auto-reload',
-			type: 'checkbox',
-			inputNodeAttributes: {
-				id: 'autoReload',
-				/**
-				 *
-				 */
-				oninput: evt => this.writeSetting('autoReload', (<HTMLInputElement>evt.target).checked)
-			}
-		}, {
-			title: 'Auto-reload delay',
-			type: 'slider',
-			inputNodeAttributes: {
-				id: 'autoReloadDelay',
-				min: 0,
-				max: 10,
-				step: 1,
-				/**
-				 *
-				 */
-				oninput: evt => this.writeSetting('autoReloadDelay', (<HTMLInputElement>evt.target).value)
-			}
-		}, {
-			title: 'Auto-reload delay unit',
-			type: 'select',
-			inputNodeAttributes: {
-				id: 'autoReloadDelayUnit',
-				/**
-				 *
-				 */
-				oninput: evt => this.writeSetting('autoReloadDelayUnit', (<HTMLInputElement>evt.target).value)
-			},
-			options: {
-				Seconds: 's',
-				Minutes: 'm',
-				Hours: 'h'
-			}
-		}, {
 			title: 'Map Attributes (JSON)',
 			type: 'text',
 			inputNodeAttributes: {
-				id: 'mapAttributes',
+				id: Saveables.MAP_ATTRIBUTES,
+
 				/**
-				 *
+				 * Get and validate map attribute JSON.
+				 * 
+				 * @param evt Input event
+				 * @returns void
 				 */
-				oninput: (evt, ...args) => {
+				oninput: evt => {
 					const { value } = <HTMLInputElement>evt.target;
 
-					log(evt, args);
 					// Validate the JSON
 					try {
 						JSON.parse(value);
 					} catch {
 						// eslint-disable-next-line no-alert
-						alert('Invalid JSON, not saved');
-						return;
+						return alert('Invalid JSON');
 					}
 
-					this.writeSetting('mapAttributes', (<HTMLInputElement>evt.target).value);
+					return this.writeSetting(Saveables.MAP_ATTRIBUTES, (<HTMLInputElement>evt.target).value);
 				}
 			}
-		}, {
-			title: 'Skybox image',
-			type: 'text',
+		},
+		{
+			title: 'Skydome Top Color',
+			type: 'color',
 			inputNodeAttributes: {
-				id: 'skyboxImage',
+				id: Saveables.SKY_TOP_COLOR,
+
 				/**
-				 *
+				 * Set top sky color
+				 * 
+				 * @param evt Input event
+				 * @returns void
 				 */
-				oninput: evt => this.writeSetting('backgroundImage', (<HTMLInputElement>evt.target).value)
+				oninput: evt => {
+					const { value } = <HTMLInputElement>evt.target;
+
+					return this.writeSetting(Saveables.SKY_TOP_COLOR, value);
+				}
+			}
+		},
+		{
+			title: 'Skydome Middle Color',
+			type: 'color',
+			inputNodeAttributes: {
+				id: Saveables.SKY_MIDDLE_COLOR,
+
+				/**
+				 * Set middle sky color
+				 * 
+				 * @param evt Input event
+				 * @returns void
+				 */
+				oninput: evt => {
+					const { value } = <HTMLInputElement>evt.target;
+
+					return this.writeSetting(Saveables.SKY_MIDDLE_COLOR, value);
+				}
+			}
+		},
+		{
+			title: 'Skydome Bottom Color',
+			type: 'color',
+			inputNodeAttributes: {
+				id: Saveables.SKY_BOTTOM_COLOR,
+
+				/**
+				 * Set bottom sky color
+				 * 
+				 * @param evt Input event
+				 * @returns void
+				 */
+				oninput: evt => {
+					const { value } = <HTMLInputElement>evt.target;
+
+					return this.writeSetting(Saveables.SKY_BOTTOM_COLOR, value);
+				}
 			}
 		});
 
@@ -317,8 +344,8 @@ export default class Settings {
 	 * @param key The setting to get
 	 * @returns Saved value or null
 	 */
-	public getSetting(key: string): unknown | null {
-		return this.savedSettings[key] ?? store.get(`${ Settings.prefix }.${ key }`, null);
+	public getSetting(key: Saveables): unknown | null {
+		return this.saved[key] ?? store.get(`${ Settings.prefix }.${ key }`, null);
 	}
 
 	/**
@@ -327,13 +354,45 @@ export default class Settings {
 	 * @param key Key to save value to
 	 * @param value Value to write to key
 	 */
-	private writeSetting(key: string, value: unknown): void {
+	private writeSetting(key: Saveables, value: unknown): void {
 		if (typeof value !== 'undefined' && value !== null) {
 			store.set(`${ Settings.prefix }.${ key }`, value);
-			this.savedSettings[key] = value;
+			this.saved[key] = value;
+			this.emitEvent(EventListenerTypes.WRITE_SETTING, key, value);
 		}
+	}
 
-		log(this.savedSettings);
+	/**
+	 * Push an event listener to the class
+	 * 
+	 * @param type Event listener type
+	 * @param eventListener Event listener callback function
+	 */
+	public addEventListener(type: EventListenerTypes, eventListener: EventListener): void {
+		switch (type) {
+			case EventListenerTypes.WRITE_SETTING:
+				this.writeSettingEventListeners.push(eventListener);
+				break;
+			default:
+				break;
+		}
+	}
+
+	/**
+	 * Emit a new event to settings event listeners
+	 * 
+	 * @param type Event type
+	 * @param eventId The id for the event to distinguish them
+	 * @param data Optional data attached
+	 */
+	private emitEvent(type: EventListenerTypes, eventId: string, data?: unknown): void {
+		switch (type) {
+			case EventListenerTypes.WRITE_SETTING:
+				for (const eventListener of this.writeSettingEventListeners) eventListener(eventId, data);
+				break;
+			default:
+				break;
+		}
 	}
 
 	/**
@@ -354,7 +413,7 @@ export default class Settings {
 		inputNodeAttributes: InputNodeAttributes<Event | MouseEvent>;
 		options?: Record<string, string>
 	}[]): HTMLElement[] {
-		Settings.checkFrame(false);
+		Settings.expectFrame(Frames.MAINFRAME);
 
 		const header = document.createElement('div');
 		header.classList.add('setHed');
@@ -458,7 +517,7 @@ export default class Settings {
 
 		const input = Object.assign(document.createElement('input'), inputNodeAttributes);
 		input.type = 'checkbox';
-		input.id = `check_${ inputNodeAttributes.id }`;
+		input.id = inputNodeAttributes.id;
 
 		input.checked = this.getSetting(inputNodeAttributes.id) as boolean ?? inputNodeAttributes.checked ?? false;
 
@@ -482,7 +541,7 @@ export default class Settings {
 		const input = Object.assign(document.createElement('input'), inputNodeAttributes);
 		input.style.borderWidth = '0px';
 		input.classList.add('sliderVal');
-		input.id = `slid_input_${ inputNodeAttributes.id }`;
+		input.id = inputNodeAttributes.id;
 		input.type = 'number';
 
 		const div = document.createElement('div');
@@ -490,7 +549,7 @@ export default class Settings {
 
 		const slider = Object.assign(document.createElement('input'), inputNodeAttributes);
 		slider.classList.add('sliderM');
-		slider.id = `slid_${ inputNodeAttributes.id }`;
+		slider.id = inputNodeAttributes.id;
 		slider.type = 'range';
 
 		slider.addEventListener('input', () => {
@@ -545,7 +604,7 @@ export default class Settings {
 	private createColor(title: string, inputNodeAttributes: InputNodeAttributes<Event>) {
 		const input = Object.assign(document.createElement('input'), inputNodeAttributes);
 		input.style.float = 'right';
-		input.id = `slid_${ inputNodeAttributes.id }`;
+		input.id = inputNodeAttributes.id;
 		input.type = 'color';
 		input.name = 'color';
 
@@ -565,7 +624,7 @@ export default class Settings {
 	private createText(title: string, inputNodeAttributes: InputNodeAttributes<Event>) {
 		const input = Object.assign(document.createElement('input'), inputNodeAttributes);
 		input.classList.add('inputGrey2');
-		input.id = `slid_${ inputNodeAttributes.id }`;
+		input.id = inputNodeAttributes.id;
 		input.type = 'text';
 		input.name = 'text';
 
