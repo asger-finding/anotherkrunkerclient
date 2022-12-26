@@ -132,10 +132,9 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 	}
 });
 
-(() => {
-	const jsonParse = JSON.parse;
+(nativeParse => {
 	JSON.parse = function(...args: unknown[]) {
-		const result = jsonParse.apply(this, args as never);
+		const result = nativeParse.apply(this, args as never);
 
 		if (result.name && result.spawns) {
 			/**
@@ -162,8 +161,9 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 
 		return result;
 	};
+})(JSON.parse);
 
-	const nativeFetch = fetch;
+(nativeFetch => {
 	window.fetch = async function(...args: unknown[]) {
 		const result = await nativeFetch.apply(this, args as never);
 
@@ -186,4 +186,4 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 
 		return result;
 	};
-})();
+})(fetch);
