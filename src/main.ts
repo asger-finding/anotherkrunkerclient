@@ -7,6 +7,7 @@ import {
 	TABS,
 	TARGET_GAME_URL
 } from '@constants';
+import { Saveables, StoreConstants } from '@settings-backend';
 import WindowUtils, { getDefaultConstructorOptions } from '@window-utils';
 import { app, ipcMain, protocol, session } from 'electron';
 import { join, resolve } from 'path';
@@ -16,6 +17,7 @@ import fetch from 'node-fetch';
 import { promises as fs } from 'fs';
 import getFlags from '@flags';
 import { info } from '@logger';
+import store from '@store';
 
 // eslint-disable-next-line no-console
 console.log(`${ CLIENT_NAME }  Copyright (C) 2022  ${ CLIENT_AUTHOR }
@@ -132,7 +134,6 @@ class Application {
 	/** Register resource swapper file protocols */
 	private static registerFileProtocols(): void {
 		// Register resource swapper file protocols.
-		// TODO: User-defined protocol source / swapper location
 		const protocolSource = global.resourceswapProtocolSource;
 
 		protocol.registerFileProtocol(CLIENT_NAME, ({ url }, callback) => {
@@ -156,8 +157,9 @@ class Application {
 }
 
 // Register the protocol source for the resource swapper.
-// TODO: User-specified protocol source in settings.
-global.resourceswapProtocolSource = join(app.getPath('documents'), `/${ CLIENT_NAME }`);
+global.resourceswapProtocolSource = store.get(`${ StoreConstants.PREFIX }.${ Saveables.RESOURCE_SWAPPER_PATH }`) as string
+	|| join(app.getPath('documents'), `/${ CLIENT_NAME }`);
+
 protocol.registerSchemesAsPrivileged([
 	{
 		scheme: CLIENT_NAME,

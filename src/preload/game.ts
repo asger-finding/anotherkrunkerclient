@@ -1,12 +1,12 @@
 import { Color, MapExport } from '@krunker';
-import { MESSAGES } from '@constants';
-import { Saveables } from '@settings-backend';
-import Settings from '@game-settings';
+import { DEFAULT_SWAPPER_PATH, MESSAGES } from '@constants';
+import { EventListenerTypes, Saveables } from '@settings-backend';
+import { parse, resolve } from 'path';
+import GameSettings from '@game-settings';
 import TwitchChat from '@twitch-chat';
 import { promises as fs } from 'fs';
 import { hexToRGB } from '@color-utils';
 import { ipcRenderer } from 'electron';
-import { resolve } from 'path';
 
 /**
  * Return a promise for when/if the DOM content has loaded
@@ -16,9 +16,157 @@ const ensureContentLoaded = () => new Promise<void>(promiseResolve => {
 	else document.addEventListener('DOMContentLoaded', () => promiseResolve());
 });
 
-const settings = new Settings();
+const gameSettings = new GameSettings();
 
 if (process.isMainFrame) {
+	gameSettings.itemElements.push(...gameSettings.createSection({
+		title: 'Client',
+		id: 'client',
+		requiresRestart: true
+	}, {
+		title: 'Twitch Integration',
+		type: 'checkbox',
+		inputNodeAttributes: {
+			id: Saveables.INTEGRATE_WITH_TWITCH,
+
+			/**
+			 * Toggle Twitch chat integration
+			 * 
+			 * @param evt Input event
+			 * @returns void
+			 */
+			oninput: evt => {
+				const { value } = <HTMLInputElement>evt.target;
+
+				return gameSettings.writeSetting(Saveables.INTEGRATE_WITH_TWITCH, value);
+			}
+		}
+	}, {
+		title: 'Resource Swapper Path',
+		type: 'text',
+		inputNodeAttributes: {
+			id: Saveables.RESOURCE_SWAPPER_PATH,
+			placeholder: 'default path',
+
+			/**
+			 * User-specified path to the resource swapper
+			 * 
+			 * @param evt Input event
+			 * @returns void
+			 */
+			oninput: evt => {
+				const element = evt.target as HTMLInputElement;
+				const { value } = element;
+
+				// Validate the path
+				if (typeof value === 'string') {
+					let filePath = value;
+					if (filePath.length > 248) return false;
+
+					const { root } = parse(filePath);
+					if (root) filePath = filePath.slice(root.length);
+
+					if (!/[<>:"|?*]/u.test(filePath)) {
+						element.classList.remove('inputRed2');
+						return gameSettings.writeSetting(Saveables.RESOURCE_SWAPPER_PATH, value);
+					}
+				}
+
+				element.classList.add('inputRed2');
+				return false;
+			}
+		}
+	}), ...gameSettings.createSection({
+		title: 'Game Modification',
+		id: 'gameModding',
+		requiresRestart: false
+	}, {
+		title: 'Map Attributes (JSON)',
+		type: 'text',
+		inputNodeAttributes: {
+			id: Saveables.MAP_ATTRIBUTES,
+			value: '{}',
+
+			/**
+			 * Get and validate map attribute JSON.
+			 * 
+			 * @param evt Input event
+			 * @returns void
+			 */
+			oninput: evt => {
+				const element = evt.target as HTMLInputElement;
+				const { value } = element;
+
+				// Validate the JSON
+				try { JSON.parse(value); } catch {
+					element.classList.add('inputRed2');
+					return false;
+				}
+				element.classList.remove('inputRed2');
+
+				return gameSettings.writeSetting(Saveables.MAP_ATTRIBUTES, value);
+			}
+		}
+	},
+	{
+		title: 'Skydome Top Color',
+		type: 'color',
+		inputNodeAttributes: {
+			id: Saveables.SKY_TOP_COLOR,
+
+			/**
+			 * Set top sky color
+			 * 
+			 * @param evt Input event
+			 * @returns void
+			 */
+			oninput: evt => {
+				const { value } = <HTMLInputElement>evt.target;
+
+				return gameSettings.writeSetting(Saveables.SKY_TOP_COLOR, value);
+			}
+		}
+	},
+	{
+		title: 'Skydome Middle Color',
+		type: 'color',
+		inputNodeAttributes: {
+			id: Saveables.SKY_MIDDLE_COLOR,
+
+			/**
+			 * Set middle sky color
+			 * 
+			 * @param evt Input event
+			 * @returns void
+			 */
+			oninput: evt => {
+				const { value } = <HTMLInputElement>evt.target;
+
+				return gameSettings.writeSetting(Saveables.SKY_MIDDLE_COLOR, value);
+			}
+		}
+	},
+	{
+		title: 'Skydome Bottom Color',
+		type: 'color',
+		inputNodeAttributes: {
+			id: Saveables.SKY_BOTTOM_COLOR,
+
+			/**
+			 * Set bottom sky color
+			 * 
+			 * @param evt Input event
+			 * @returns void
+			 */
+			oninput: evt => {
+				const { value } = <HTMLInputElement>evt.target;
+
+				return gameSettings.writeSetting(Saveables.SKY_BOTTOM_COLOR, value);
+			}
+		}
+	}));
+
+
 	(async function() {
 		const [css] = await Promise.all([
 			fs.readFile(resolve(__dirname, '../renderer/styles/main.css'), 'utf8'),
@@ -45,8 +193,10 @@ if (process.isMainFrame) {
 		}
 	});
 
-	const twitchChat = new TwitchChat();
-	twitchChat.init();
+	if (gameSettings.getSetting(Saveables.INTEGRATE_WITH_TWITCH, 'off') === 'on') {
+		const twitchChat = new TwitchChat();
+		twitchChat.init();
+	}
 }
 
 /**
@@ -54,14 +204,11 @@ if (process.isMainFrame) {
  * 
  * @returns Top, middle and bottom saved colors in rgb format
  */
-const getSavedSkycolor = (): [string, string, string] => {
-	const {
-		[Saveables.SKY_TOP_COLOR]: topHex,
-		[Saveables.SKY_MIDDLE_COLOR]: middleHex,
-		[Saveables.SKY_BOTTOM_COLOR]: bottomHex
-	} = settings.savedCache as Record<Saveables, string>;
-	return [topHex, middleHex, bottomHex];
-};
+const getSavedSkycolor = (): [string, string, string] => ([
+	gameSettings.getSetting(Saveables.SKY_TOP_COLOR, '#0a0b0c'),
+	gameSettings.getSetting(Saveables.SKY_MIDDLE_COLOR, '#0a0b0c'),
+	gameSettings.getSetting(Saveables.SKY_BOTTOM_COLOR, '#0a0b0c')
+] as ReturnType<typeof getSavedSkycolor>);
 
 type ThreeRenderer = {
 	getContext: () => WebGL2RenderingContext;
@@ -110,7 +257,7 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 				const [program] = args as [ThreeProgram];
 
 				if (program.cacheKey.includes('firstColor')) {
-					settings.addEventListener(Settings.eventListenerTypes.ON_WRITE_SETTING, eventId => {
+					gameSettings.addEventListener(EventListenerTypes.ON_WRITE_SETTING, eventId => {
 						const [top, middle, bottom] = hexToRGB(1, ...getSavedSkycolor());
 						if (eventId === Saveables.SKY_TOP_COLOR
 							|| eventId === Saveables.SKY_MIDDLE_COLOR
@@ -142,16 +289,12 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 			 * Proxy the map settings so whenever they're accessed,
 			 * we can pass values and reference mapSettings.
 			 */
-			const mapSettings = JSON.parse((settings.savedCache.mapAttributes as string | undefined) ?? '{}') as Partial<MapExport>;
-			const [topHex, middleHex, bottomHex] = getSavedSkycolor();
+			const mapSettings = JSON.parse(gameSettings.getSetting(Saveables.MAP_ATTRIBUTES, '{}') as string) as Partial<MapExport>;
+			const [skyDomeCol0, skyDomeCol1, skyDomeCol2] = getSavedSkycolor();
 			return new Proxy({
 				...result,
 				...mapSettings,
-				...{
-					skyDomeCol0: topHex,
-					skyDomeCol1: middleHex,
-					skyDomeCol2: bottomHex
-				}
+				...{ skyDomeCol0, skyDomeCol1, skyDomeCol2 }
 			}, {
 				get(target: MapExport, key: keyof MapExport) {
 					return mapSettings[key] ?? target[key];
@@ -170,20 +313,16 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 		const [target] = args;
 		if (typeof target === 'string' && /^maps\/(?:.*)(?:.\.json)/u.test(target)) {
 			const json = await (result.clone()).json();
-			const mapSettings = JSON.parse((settings.savedCache.mapAttributes as string | undefined) ?? '{}') as Partial<MapExport>;
 
-			const [topHex, middleHex, bottomHex] = getSavedSkycolor();
+			const mapSettings = JSON.parse(gameSettings.getSetting(Saveables.MAP_ATTRIBUTES, '{}') as string) as Partial<MapExport>;
+			const [skyDomeCol0, skyDomeCol1, skyDomeCol2] = getSavedSkycolor();
 			return new Response(JSON.stringify({
 				...json,
 				...mapSettings,
-				...{
-					skyDomeCol0: topHex,
-					skyDomeCol1: middleHex,
-					skyDomeCol2: bottomHex
-				}
+				...{ skyDomeCol0, skyDomeCol1, skyDomeCol2 }
 			}));
 		}
 
 		return result;
 	};
-})(fetch);
+})(window.fetch);

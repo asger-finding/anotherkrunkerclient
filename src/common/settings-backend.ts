@@ -1,11 +1,16 @@
 import { EventListener } from '@client';
 import store from '@store';
 
+export enum StoreConstants {
+	PREFIX = 'settings'
+}
 export enum Saveables {
 	MAP_ATTRIBUTES = 'mapAttributes',
 	SKY_TOP_COLOR = 'skyTopColor',
 	SKY_MIDDLE_COLOR = 'skyMiddleColor',
-	SKY_BOTTOM_COLOR = 'skyBottomColor'
+	SKY_BOTTOM_COLOR = 'skyBottomColor',
+	INTEGRATE_WITH_TWITCH = 'twitchIntegration',
+	RESOURCE_SWAPPER_PATH = 'resourceSwapperPath'
 }
 export enum EventListenerTypes {
 	ON_READ_SETTING,
@@ -16,11 +21,9 @@ type SettingsObject = { [key in Saveables]?: unknown };
 export default class SettingsBackend {
 
 	// settings store prefix
-	private static readonly prefix = 'settings';
+	private static readonly prefix = StoreConstants.PREFIX;
 
 	public static readonly saveables = Saveables;
-
-	public static readonly eventListenerTypes = EventListenerTypes;
 
 	public savedCache: SettingsObject = {};
 

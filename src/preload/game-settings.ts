@@ -1,12 +1,12 @@
-import SettingsBackend, { Saveables } from '@settings-backend';
 import { InputNodeAttributes } from '@client';
+import SettingsBackend from '@settings-backend';
 
 enum Frames {
 	MAINFRAME,
 	SUBFRAME
 }
 
-export default class Settings extends SettingsBackend {
+export default class GameSettings extends SettingsBackend {
 
 	itemElements: HTMLElement[] = [];
 
@@ -27,10 +27,7 @@ export default class Settings extends SettingsBackend {
 	 * @param DOMContentLoadedPromise A promise that will be resolved when the DOM is loaded
 	 */
 	private async mainFrameInit(DOMContentLoadedPromise: Promise<void>) {
-		await Promise.all([
-			DOMContentLoadedPromise,
-			this.generateSettings()
-		]);
+		await DOMContentLoadedPromise;
 
 		const interval = setInterval(() => {
 			const instructions = document.getElementById('instructions');
@@ -60,7 +57,7 @@ export default class Settings extends SettingsBackend {
 	 * @param instructions The krunker instructions element
 	 */
 	private observeInstructions(instructions: HTMLDivElement) {
-		Settings.expectFrame(Frames.MAINFRAME);
+		GameSettings.expectFrame(Frames.MAINFRAME);
 
 		new MutationObserver((_mutations, observer) => {
 			observer.disconnect();
@@ -208,106 +205,6 @@ export default class Settings extends SettingsBackend {
 	}
 
 	/**
-	 * @returns The generated settings elements
-	 */
-	generateSettings(): Node[] {
-		Settings.expectFrame(Frames.MAINFRAME);
-
-		// Placeholder section
-		const clientSection = this.createSection({
-			title: 'Client',
-			id: 'client',
-			requiresRestart: true
-		}, {
-			title: 'Map Attributes (JSON)',
-			type: 'text',
-			inputNodeAttributes: {
-				id: Saveables.MAP_ATTRIBUTES,
-				value: '{}',
-
-				/**
-				 * Get and validate map attribute JSON.
-				 * 
-				 * @param evt Input event
-				 * @returns void
-				 */
-				oninput: evt => {
-					const { value } = <HTMLInputElement>evt.target;
-
-					// Validate the JSON
-					try {
-						JSON.parse(value);
-					} catch {
-						return false;
-					}
-
-					return this.writeSetting(Saveables.MAP_ATTRIBUTES, (<HTMLInputElement>evt.target).value);
-				}
-			}
-		},
-		{
-			title: 'Skydome Top Color',
-			type: 'color',
-			inputNodeAttributes: {
-				id: Saveables.SKY_TOP_COLOR,
-
-				/**
-				 * Set top sky color
-				 * 
-				 * @param evt Input event
-				 * @returns void
-				 */
-				oninput: evt => {
-					const { value } = <HTMLInputElement>evt.target;
-
-					return this.writeSetting(Saveables.SKY_TOP_COLOR, value);
-				}
-			}
-		},
-		{
-			title: 'Skydome Middle Color',
-			type: 'color',
-			inputNodeAttributes: {
-				id: Saveables.SKY_MIDDLE_COLOR,
-
-				/**
-				 * Set middle sky color
-				 * 
-				 * @param evt Input event
-				 * @returns void
-				 */
-				oninput: evt => {
-					const { value } = <HTMLInputElement>evt.target;
-
-					return this.writeSetting(Saveables.SKY_MIDDLE_COLOR, value);
-				}
-			}
-		},
-		{
-			title: 'Skydome Bottom Color',
-			type: 'color',
-			inputNodeAttributes: {
-				id: Saveables.SKY_BOTTOM_COLOR,
-
-				/**
-				 * Set bottom sky color
-				 * 
-				 * @param evt Input event
-				 * @returns void
-				 */
-				oninput: evt => {
-					const { value } = <HTMLInputElement>evt.target;
-
-					return this.writeSetting(Saveables.SKY_BOTTOM_COLOR, value);
-				}
-			}
-		});
-
-		const items = this.itemElements = [...clientSection];
-		return items;
-	}
-
-	/**
 	 * @param sectionData the section body data
 	 * @param sectionData.title the section title
 	 * @param sectionData.id the section id
@@ -325,7 +222,7 @@ export default class Settings extends SettingsBackend {
 		inputNodeAttributes: InputNodeAttributes<Event | MouseEvent>;
 		options?: Record<string, string>
 	}[]): HTMLElement[] {
-		Settings.expectFrame(Frames.MAINFRAME);
+		GameSettings.expectFrame(Frames.MAINFRAME);
 
 		const header = document.createElement('div');
 		header.classList.add('setHed');
@@ -352,7 +249,7 @@ export default class Settings extends SettingsBackend {
 
 		/** On header click, toggle the section */
 		header.onclick = () => {
-			Settings.collapseFolder(header);
+			GameSettings.collapseFolder(header);
 		};
 
 		const body = document.createElement('div');
@@ -438,7 +335,7 @@ export default class Settings extends SettingsBackend {
 
 		label.append(input, span);
 
-		return Settings.createWrapper(title, label);
+		return GameSettings.createWrapper(title, label);
 	}
 
 	/**
@@ -475,7 +372,7 @@ export default class Settings extends SettingsBackend {
 
 		div.append(slider);
 
-		return Settings.createWrapper(title, div, input);
+		return GameSettings.createWrapper(title, div, input);
 	}
 
 	/**
@@ -502,7 +399,7 @@ export default class Settings extends SettingsBackend {
 
 		select.value = this.getSetting(inputNodeAttributes.id, inputNodeAttributes.value ?? '') as string;
 
-		return Settings.createWrapper(title, select);
+		return GameSettings.createWrapper(title, select);
 	}
 
 	/**
@@ -522,7 +419,7 @@ export default class Settings extends SettingsBackend {
 
 		input.value = this.getSetting(inputNodeAttributes.id, inputNodeAttributes.value ?? '#0a0b0c') as string;
 
-		return Settings.createWrapper(title, input);
+		return GameSettings.createWrapper(title, input);
 	}
 
 	/**
@@ -542,7 +439,7 @@ export default class Settings extends SettingsBackend {
 
 		input.value = this.getSetting(inputNodeAttributes.id, inputNodeAttributes.value ?? '') as string;
 
-		return Settings.createWrapper(title, input);
+		return GameSettings.createWrapper(title, input);
 	}
 
 	/**

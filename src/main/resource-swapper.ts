@@ -45,7 +45,10 @@ export default class {
 				}
 
 				// Redirect to the local resource.
-				callback({ redirectURL: `${ CLIENT_NAME }:/${ path.startsWith('/assets/') ? path.substring(7) : path }` });
+				callback({
+					redirectURL: `${ CLIENT_NAME }:/${ path.startsWith('/assets/') ? path.substring(7) : path }`,
+					confirmed: true
+				});
 			});
 		}
 
