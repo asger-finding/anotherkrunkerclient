@@ -27,6 +27,7 @@
             "@logger": ["src/common/logger"],
             "@color-utils": ["src/common/color-utils"],
             "@store": ["src/common/store"],
+            "@settings-backend": ["src/common/settings-backend"],
 
             // preload
             "@game-settings": ["src/preload/game-settings"],

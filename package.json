@@ -24,6 +24,7 @@
     "@color-utils": "src/common/color-utils",
     "@logger": "src/common/logger",
     "@constants": "src/common/constants",
+    "@settings-backend": "src/common/settings-backend",
     "@store": "src/common/store",
     "@flags": "src/main/flags",
     "@game-settings": "src/preload/game-settings",

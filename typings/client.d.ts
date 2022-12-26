@@ -1,4 +1,4 @@
-import { Saveables } from '@game-settings';
+import { Saveables } from '@settings-backend';
 
 export type EventHandler<T extends Event> = (event: T) => void;
 export type EventListener = (eventId: string, data?: unknown) => void;

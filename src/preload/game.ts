@@ -1,6 +1,7 @@
 import { Color, MapExport } from '@krunker';
-import Settings, { EventListenerTypes, Saveables } from '@game-settings';
 import { MESSAGES } from '@constants';
+import { Saveables } from '@settings-backend';
+import Settings from '@game-settings';
 import TwitchChat from '@twitch-chat';
 import { promises as fs } from 'fs';
 import { hexToRGB } from '@color-utils';
@@ -16,8 +17,6 @@ const ensureContentLoaded = () => new Promise<void>(promiseResolve => {
 });
 
 const settings = new Settings();
-if (process.isMainFrame) settings.initMainFrame(ensureContentLoaded());
-else settings.initSubFrame();
 
 if (process.isMainFrame) {
 	(async function() {
@@ -60,8 +59,24 @@ const getSavedSkycolor = (): [string, string, string] => {
 		[Saveables.SKY_TOP_COLOR]: topHex,
 		[Saveables.SKY_MIDDLE_COLOR]: middleHex,
 		[Saveables.SKY_BOTTOM_COLOR]: bottomHex
-	} = settings.saved as Record<Saveables, string>;
+	} = settings.savedCache as Record<Saveables, string>;
 	return [topHex, middleHex, bottomHex];
+};
+
+type ThreeRenderer = {
+	getContext: () => WebGL2RenderingContext;
+	[key: string]: unknown;
+};
+type ThreeProgram = {
+	getUniforms: () => {
+		seq: [never];
+		map: Record<string, Record<string, never> & {
+			addr: WebGLUniformLocation;
+		}>
+	}
+	cacheKey: string;
+	program: WebGLProgram;
+	[key: string]: unknown;
 };
 
 /**
@@ -73,20 +88,18 @@ const getSavedSkycolor = (): [string, string, string] => {
  * @param middleColor Middle color of the skydome
  * @param endColor Bottom color of the skydome
  */
-const setSkycolor = (renderer: any, skydomeProgram: any, firstColor: Color, middleColor: Color, endColor: Color): void => {
-	if (skydomeProgram) {
-		const gl: WebGL2RenderingContext = renderer.getContext();
-		const initialProgram = renderer.getContext().getParameter(renderer.getContext().CURRENT_PROGRAM);
-		const { map } = skydomeProgram.getUniforms();
+const setSkycolor = (renderer: ThreeRenderer, skydomeProgram: ThreeProgram, firstColor: Color, middleColor: Color, endColor: Color): void => {
+	const gl: WebGL2RenderingContext = renderer.getContext();
+	const initialProgram = renderer.getContext().getParameter(renderer.getContext().CURRENT_PROGRAM);
+	const { map } = skydomeProgram.getUniforms();
 
-		if (map.firstColor && map.middleColor && map.endColor) {
-			gl.useProgram(skydomeProgram.program);
-			gl.uniform3f(map.firstColor.addr, ...firstColor);
-			gl.uniform3f(map.middleColor.addr, ...middleColor);
-			gl.uniform3f(map.endColor.addr, ...endColor);
+	if (map.firstColor && map.middleColor && map.endColor) {
+		gl.useProgram(skydomeProgram.program);
+		gl.uniform3f(map.firstColor.addr, ...firstColor);
+		gl.uniform3f(map.middleColor.addr, ...middleColor);
+		gl.uniform3f(map.endColor.addr, ...endColor);
 
-			gl.useProgram(initialProgram);
-		}
+		gl.useProgram(initialProgram);
 	}
 };
 
@@ -94,13 +107,10 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 	set(renderer) {
 		Reflect.defineProperty(renderer.info.programs, 'push', {
 			value(...args: unknown[]) {
-				const [program] = args;
+				const [program] = args as [ThreeProgram];
 
-				if ((program as {
-					cacheKey: string;
-					[key: string]: unknown;
-				}).cacheKey.includes('firstColor')) {
-					settings.addEventListener(EventListenerTypes.WRITE_SETTING, eventId => {
+				if (program.cacheKey.includes('firstColor')) {
+					settings.addEventListener(Settings.eventListenerTypes.ON_WRITE_SETTING, eventId => {
 						const [top, middle, bottom] = hexToRGB(1, ...getSavedSkycolor());
 						if (eventId === Saveables.SKY_TOP_COLOR
 							|| eventId === Saveables.SKY_MIDDLE_COLOR
@@ -133,7 +143,7 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 			 * Proxy the map settings so whenever they're accessed,
 			 * we can pass values and reference mapSettings.
 			 */
-			const mapSettings = JSON.parse((settings.saved.mapAttributes as string | undefined) ?? '{}') as Partial<MapExport>;
+			const mapSettings = JSON.parse((settings.savedCache.mapAttributes as string | undefined) ?? '{}') as Partial<MapExport>;
 			const [topHex, middleHex, bottomHex] = getSavedSkycolor();
 			return new Proxy({
 				...result,
@@ -160,7 +170,7 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 		const [target] = args;
 		if (typeof target === 'string' && /^maps\/(?:.*)(?:.\.json)/u.test(target)) {
 			const json = await (result.clone()).json();
-			const mapSettings = JSON.parse((settings.saved.mapAttributes as string | undefined) ?? '{}') as Partial<MapExport>;
+			const mapSettings = JSON.parse((settings.savedCache.mapAttributes as string | undefined) ?? '{}') as Partial<MapExport>;
 
 			const [topHex, middleHex, bottomHex] = getSavedSkycolor();
 			return new Response(JSON.stringify({

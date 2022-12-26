@@ -1,56 +1,36 @@
-import { EventListener, InputNodeAttributes } from '@client';
-import store from '@store';
+import SettingsBackend, { Saveables } from '@settings-backend';
+import { InputNodeAttributes } from '@client';
 
 enum Frames {
 	MAINFRAME,
 	SUBFRAME
 }
-export enum Saveables {
-	MAP_ATTRIBUTES = 'mapAttributes',
-	SKY_TOP_COLOR = 'skyTopColor',
-	SKY_MIDDLE_COLOR = 'skyMiddleColor',
-	SKY_BOTTOM_COLOR = 'skyBottomColor'
-}
-export enum EventListenerTypes {
-	WRITE_SETTING
-}
 
-export default class Settings {
-
-	static prefix = 'settings';
+export default class Settings extends SettingsBackend {
 
 	itemElements: HTMLElement[] = [];
 
-	saved: { [key in Saveables]?: unknown } = {};
-
-	savables = Saveables;
-
-	private writeSettingEventListeners: Array<EventListener>;
-
 	/**
-	 * Initialize the base settings exclusively for store
-	 */
-	initSubFrame(): void {
-		Settings.expectFrame(Frames.SUBFRAME);
-
-		this.saved = store.get(Settings.prefix) as typeof this.saved;
-		this.writeSettingEventListeners = [];
-	}
-
-	/**
-	 * Initialize the store for main frame
+	 * Construct the 
 	 * 
 	 * @param DOMContentLoadedPromise A promise that will be resolved when the DOM is loaded
 	 */
-	async initMainFrame(DOMContentLoadedPromise: Promise<void>): Promise<void> {
-		Settings.expectFrame(Frames.MAINFRAME);
+	constructor(DOMContentLoadedPromise: Promise<void> = Promise.resolve()) {
+		super();
 
-		this.writeSettingEventListeners = [];
-		[this.saved] = await Promise.all([
-			store.get(Settings.prefix),
+		if (process.isMainFrame) this.mainFrameInit(DOMContentLoadedPromise);
+	}
+
+	/**
+	 * Initialize the store for the main frame.
+	 * 
+	 * @param DOMContentLoadedPromise A promise that will be resolved when the DOM is loaded
+	 */
+	private async mainFrameInit(DOMContentLoadedPromise: Promise<void>) {
+		await Promise.all([
 			DOMContentLoadedPromise,
 			this.generateSettings()
-		]) as [typeof this.saved, ...Array<unknown>];
+		]);
 
 		const interval = setInterval(() => {
 			const instructions = document.getElementById('instructions');
@@ -61,14 +41,18 @@ export default class Settings {
 		}, 100);
 	}
 
+
 	/**
 	 * Check if the frame aligns to what is expected. Else, throw an error.
 	 * 
 	 * @param expected If process.isMainFrame should return false.
+	 * @returns True if it hasn't thrown an error
 	 */
-	private static expectFrame(expected: Frames) {
+	private static expectFrame(expected: Frames): boolean {
 		if (process.isMainFrame && Frames.SUBFRAME === expected) throw new Error('Saw main frame and expected sub frame');
-		if (!process.isMainFrame && Frames.MAINFRAME === expected) throw new Error('Saw sub frame and expected main frame');
+		else if (!process.isMainFrame && Frames.MAINFRAME === expected) throw new Error('Saw sub frame and expected main frame');
+
+		return true;
 	}
 
 	/**
@@ -229,21 +213,6 @@ export default class Settings {
 	generateSettings(): Node[] {
 		Settings.expectFrame(Frames.MAINFRAME);
 
-		const parenter = {
-			set(target: Record<string, unknown>, prop: string, value: unknown) {
-				if (value instanceof Object) {
-					const proxy: typeof target = new Proxy({ parent: target }, parenter);
-					for (const key in value) proxy[key] = value[key];
-
-					target[prop] = proxy;
-					return proxy;
-				}
-
-				target[prop] = value;
-				return value;
-			}
-		};
-
 		// Placeholder section
 		const clientSection = this.createSection({
 			title: 'Client',
@@ -268,8 +237,7 @@ export default class Settings {
 					try {
 						JSON.parse(value);
 					} catch {
-						// eslint-disable-next-line no-alert
-						return alert('Invalid JSON');
+						return false;
 					}
 
 					return this.writeSetting(Saveables.MAP_ATTRIBUTES, (<HTMLInputElement>evt.target).value);
@@ -336,63 +304,6 @@ export default class Settings {
 
 		const items = this.itemElements = [...clientSection];
 		return items;
-	}
-
-	/**
-	 * Get a setting from cache, if false try the config file, or return `null`
-	 * 
-	 * @param key The setting to get
-	 * @returns Saved value or null
-	 */
-	public getSetting(key: Saveables): unknown | null {
-		return this.saved[key] ?? store.get(`${ Settings.prefix }.${ key }`, null);
-	}
-
-	/**
-	 * Save setting to the store
-	 * 
-	 * @param key Key to save value to
-	 * @param value Value to write to key
-	 */
-	private writeSetting(key: Saveables, value: unknown): void {
-		if (typeof value !== 'undefined' && value !== null) {
-			store.set(`${ Settings.prefix }.${ key }`, value);
-			this.saved[key] = value;
-			this.emitEvent(EventListenerTypes.WRITE_SETTING, key, value);
-		}
-	}
-
-	/**
-	 * Push an event listener to the class
-	 * 
-	 * @param type Event listener type
-	 * @param eventListener Event listener callback function
-	 */
-	public addEventListener(type: EventListenerTypes, eventListener: EventListener): void {
-		switch (type) {
-			case EventListenerTypes.WRITE_SETTING:
-				this.writeSettingEventListeners.push(eventListener);
-				break;
-			default:
-				break;
-		}
-	}
-
-	/**
-	 * Emit a new event to settings event listeners
-	 * 
-	 * @param type Event type
-	 * @param eventId The id for the event to distinguish them
-	 * @param data Optional data attached
-	 */
-	private emitEvent(type: EventListenerTypes, eventId: string, data?: unknown): void {
-		switch (type) {
-			case EventListenerTypes.WRITE_SETTING:
-				for (const eventListener of this.writeSettingEventListeners) eventListener(eventId, data);
-				break;
-			default:
-				break;
-		}
 	}
 
 	/**

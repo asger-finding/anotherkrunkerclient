@@ -308,7 +308,7 @@ export default class TwitchChat {
 
 	/** Save the game chat state to store and set it upon load. */
 	private navigateToChatTab() {
-		window.addEventListener('beforeunload', () => {
+		addEventListener('beforeunload', () => {
 			store.set('gameChatState', this.chatState);
 		});
 

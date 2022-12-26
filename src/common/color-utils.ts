@@ -67,7 +67,7 @@ export function* rainbow(frequency: number, startIndex: number, multiplier: numb
 export const hexToRGB = (maxValue: number, ...hexCodes: string[]): Array<Color> => {
 	const result: Array<Color> = [];
 	for (const hex of hexCodes) {
-		const regexResult = hex.padEnd(7, '#')
+		const regexResult = hex.padEnd(7, '0')
 			.match(/^#?(?<red>[\da-f]{2})(?<green>[\da-f]{2})(?<blue>[\da-f]{2})$/iu);
 
 		const divider = 255 / maxValue;
@@ -82,6 +82,8 @@ export const hexToRGB = (maxValue: number, ...hexCodes: string[]): Array<Color> 
 				parseInt(green, 16) / divider,
 				parseInt(blue, 16) / divider
 			]);
+
+			continue;
 		}
 
 		// Dark fallback colour
