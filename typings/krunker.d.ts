@@ -698,11 +698,4 @@ export interface MapExport {
 	 */
 	outputEncoding: 0 | 1;
 
-	/**
-	 * Possibly deprecated or requires a different render engine.
-	 * 
-	 * @default 2
-	 * @deprecated
-	 */
-	gammaFactor: number;
 }

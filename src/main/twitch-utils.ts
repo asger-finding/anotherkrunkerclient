@@ -69,7 +69,7 @@ export default class {
 						<body>
 							<noscript><h2>You must enable JavaScript to use Twitch oauth!</h2></noscript>
 					
-							<h2>You may close this window</h2>
+							<h2>Twitch Authenticated — you may close this window</h2>
 					
 							<script>
 								if (location.hash) {
