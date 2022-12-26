@@ -16,7 +16,7 @@ type SettingsObject = { [key in Saveables]?: unknown };
 export default class SettingsBackend {
 
 	// settings store prefix
-	private static readonly prefix: string = 'settings';
+	private static readonly prefix = 'settings';
 
 	public static readonly saveables = Saveables;
 
@@ -36,7 +36,7 @@ export default class SettingsBackend {
 	 */
 	constructor() {
 		// Save the settings to an object cache, so we don't have to read the file every time.
-		this.savedCache = store.get(SettingsBackend.prefix) as typeof this.savedCache;
+		this.savedCache = store.get(SettingsBackend.prefix) ?? {} as typeof this.savedCache;
 
 		// Clone the cache without reference, so we can compare for changes before unload
 		// and potentially write to the store
@@ -53,11 +53,17 @@ export default class SettingsBackend {
 	 * Get a setting property by its key. Look in cache and fallback to the store.
 	 * 
 	 * @param key Key to look up
-	 * @returns Saved data or null
+	 * @param defaultValue Value fallback
+	 * @returns Saved data or fallback value
 	 */
-	public getSetting(key: Saveables): SettingsObject[Saveables] {
-		return this.savedCache[key]
-			?? store.get(`${ SettingsBackend.prefix }.${ key }`, null);
+	public getSetting(key: Saveables, defaultValue: unknown): SettingsObject[Saveables] {
+		const saved = this.savedCache[key]
+			?? store.get(`${ SettingsBackend.prefix }.${ key }`, defaultValue);
+
+		// For stability reasons, we write to the save file if we had to fallback completely.
+		if (saved === defaultValue) this.writeSetting(key, saved);
+
+		return saved;
 	}
 
 	/**

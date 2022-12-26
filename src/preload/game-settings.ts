@@ -223,6 +223,7 @@ export default class Settings extends SettingsBackend {
 			type: 'text',
 			inputNodeAttributes: {
 				id: Saveables.MAP_ATTRIBUTES,
+				value: '{}',
 
 				/**
 				 * Get and validate map attribute JSON.
@@ -430,7 +431,7 @@ export default class Settings extends SettingsBackend {
 		input.type = 'checkbox';
 		input.id = inputNodeAttributes.id;
 
-		input.checked = this.getSetting(inputNodeAttributes.id) as boolean ?? inputNodeAttributes.checked ?? false;
+		input.checked = this.getSetting(inputNodeAttributes.id, inputNodeAttributes.checked ?? false) as boolean;
 
 		const span = document.createElement('span');
 		span.classList.add('slider');
@@ -470,7 +471,7 @@ export default class Settings extends SettingsBackend {
 			slider.value = input.value;
 		});
 
-		input.value = slider.value = this.getSetting(inputNodeAttributes.id) as string ?? inputNodeAttributes.value ?? '';
+		input.value = slider.value = this.getSetting(inputNodeAttributes.id, inputNodeAttributes.value ?? '') as string;
 
 		div.append(slider);
 
@@ -499,7 +500,7 @@ export default class Settings extends SettingsBackend {
 			}
 		}
 
-		select.value = this.getSetting(inputNodeAttributes.id) as string ?? inputNodeAttributes.value ?? '';
+		select.value = this.getSetting(inputNodeAttributes.id, inputNodeAttributes.value ?? '') as string;
 
 		return Settings.createWrapper(title, select);
 	}
@@ -519,7 +520,7 @@ export default class Settings extends SettingsBackend {
 		input.type = 'color';
 		input.name = 'color';
 
-		input.value = this.getSetting(inputNodeAttributes.id) as string ?? inputNodeAttributes.value ?? '';
+		input.value = this.getSetting(inputNodeAttributes.id, inputNodeAttributes.value ?? '#0a0b0c') as string;
 
 		return Settings.createWrapper(title, input);
 	}
@@ -539,7 +540,7 @@ export default class Settings extends SettingsBackend {
 		input.type = 'text';
 		input.name = 'text';
 
-		input.value = this.getSetting(inputNodeAttributes.id) as string ?? inputNodeAttributes.value ?? '';
+		input.value = this.getSetting(inputNodeAttributes.id, inputNodeAttributes.value ?? '') as string;
 
 		return Settings.createWrapper(title, input);
 	}
