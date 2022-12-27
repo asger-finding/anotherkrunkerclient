@@ -32,19 +32,12 @@ jobs:
           cache-dependency-path: yarn.lock
 
       - name: Run build script
-        run: node .github/build-binaries.js
+        run: chmod +x build.sh && build.sh
 
       - name: Artifact binaries
         uses: actions/upload-artifact@v3
         with:
           name: binaries
           path: |
-            binaries/*.exe
-
-            binaries/*.dmg
-            binaries/*.pkg
-
-            binaries/*.AppImage
-            binaries/*.deb
-            binaries/*.rpm
+            binaries/*
           if-no-files-found: error
