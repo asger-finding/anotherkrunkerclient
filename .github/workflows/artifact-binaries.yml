@@ -32,7 +32,7 @@ jobs:
           cache-dependency-path: yarn.lock
 
       - name: Run build script
-        run: chmod +x build.sh && build.sh
+        run: chmod +x build.sh && ./build.sh --yes
 
       - name: Artifact binaries
         uses: actions/upload-artifact@v3

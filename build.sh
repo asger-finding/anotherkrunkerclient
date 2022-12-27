@@ -35,9 +35,9 @@ else
         brew install rpm;
     fi
 
-    yarn install --frozen-lockfile &&
+    yarn install &&
 
-    if inquire "$SCRIPT_NAME_PRINT: Should node modules be minified?"; then
+    if [[ "$*" == *"yes"* ]] || inquire "$SCRIPT_NAME_PRINT: Should node modules be minified?"; then
         yarn add -D js-yaml modclean minify-all-js node-prune --frozen-lockfile &&
 
         yarn prebundle &&
