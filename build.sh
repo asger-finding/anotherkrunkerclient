@@ -1,70 +1,91 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
-SCRIPT_NAME_PRINT="\x1b[32mbuild.sh\x1b[0m"
-DISTRIBUTION_FOLDER="dist"
-BINARY_FOLDER="binaries"
+readonly SCRIPT_NAME_PRINT="\x1b[32mbuild.sh\x1b[0m"
+readonly DISTRIBUTION_FOLDER="dist"
+readonly BINARY_FOLDER="binaries"
+
+print()
+{
+    # Bypass output suppression
+    echo -e "$SCRIPT_NAME_PRINT: $1" >&3
+}
 
 setup_directories()
 {
-    echo -e "$SCRIPT_NAME_PRINT: Deleting and re-creating dist and binary folders"
+    print "Deleting and re-creating dist and binary folders"
     rm -rf $DISTRIBUTION_FOLDER $BINARY_FOLDER
     mkdir $DISTRIBUTION_FOLDER $BINARY_FOLDER
 }
 
-inquire() {
+inquire()
+{
     while true; do
-        echo -n -e "$1 [Y/n]: "
+        echo -n -e "$1 [Y/n]: " >&3
         read -p "" yn
         case $yn in
             [Yy]* ) return 0;;
             [Nn]* ) return 1;;
-            * ) echo -e "$SCRIPT_NAME_PRINT: Please supply y (yes) or n (no).";;
+            * ) print "Please supply y (yes) or n (no).";;
         esac
     done
 }
 
+if [[ "$*" == *"supress-output"* ]]; then
+    exec 3>&1
+    exec >/dev/null
+    print "Supressing output"
+else
+    exec 3>&1
+fi
+
 if ! type "yarn" > /dev/null; then
-    echo -e "$SCRIPT_NAME_PRINT: yarn not found ..."
+    print "yarn not found ..."
     exit
 else
     setup_directories &&
 
     # If it's a darwin environment, install rpm
     if [[ "$OSTYPE" =~ ^darwin ]] && [ ! type "rpm" > /dev/null ]; then
-        echo -e "Darwin environment does not have rpm, installing ..."
+        print "Darwin environment doesn't have rpm, installing ..."
         brew install rpm;
     fi
 
+    # Install dependencies
     yarn install &&
 
-    if [[ "$*" == *"yes"* ]] || inquire "$SCRIPT_NAME_PRINT: Should node modules be minified?"; then
+    # Check for dependency minify parameter or query the user on it
+    if [[ "$*" == *"minify-deps"* ]] || inquire "$SCRIPT_NAME_PRINT: Should node modules be minified?"; then
+        # Add dependencies for code minifying
         yarn add -D js-yaml modclean minify-all-js node-prune --frozen-lockfile &&
 
-        yarn prebundle &&
+        # Compile the project
+        gulp --state=production &&
 
-        echo -e "$SCRIPT_NAME_PRINT: Minifying node modules ..."
+        print "Minifying node modules. This might take a while..."
         yarn minify-all-js ./node_modules -j -M > /dev/null &&
         yarn modclean -r -n default:safe &&
         yarn node-prune
     else
-        echo -e "$SCRIPT_NAME_PRINT: Skipping minification"
-        yarn prebundle
+        print "Skipping minification"
+
+        # Compile the project
+        gulp --state=production
     fi
 
     if [[ "$OSTYPE" =~ ^darwin ]]; then
-        echo -e "$SCRIPT_NAME_PRINT: Building for Windows, Mac and Linux."
+        print "Building for Windows, Mac and Linux."
         yarn electron-builder --win --linux --mac;
     else
-        echo -e "$SCRIPT_NAME_PRINT: Building for Windows and Linux. Only a darwin environment can build for Mac."
+        print "Building for Windows and Linux. Only a darwin environment can build for Mac."
         yarn electron-builder --win --linux;
     fi
 
-    yarn postinstall &&
-
-    # Find the binaries and copy them to the
+    # Find the binaries and copy them to the binary folder
     paths=($(find $DISTRIBUTION_FOLDER -maxdepth 1 -iregex '.*\(exe\|appimage\|dmg\|rpm\|deb\)'))
-
     for i in "${paths[@]}"
-        do cp $i ./$BINARY_FOLDER
+        do cp $i ./$BINARY_FOLDER;
     done
+
+    DONE=$(ls ./$BINARY_FOLDER | wc -l)
+    print "Done! Compiled $DONE programs"
 fi
