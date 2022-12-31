@@ -95,25 +95,26 @@ export default class {
 					this.recursiveSwap(name);
 				} else {
 					// browserfps.com has the server name as the subdomain instead of 'assets', so we must take that into account.
-					// `*://storage.googleapis.com/assets.krunker.io${ name }*(\\?*)`,
 
 					// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns
-					const tests = [
+					this.urls.push(...[
 						`*://storage.googleapis.com/assets.krunker.io${ name }?*`,
 						`*://storage.googleapis.com/assets.krunker.io${ name }`,
 						`*://storage.googleapis.com/user-assets.krunker.io${ name }?*`,
-						`*://storage.googleapis.com/user-assets.krunker.io${ name }`
-					];
-					this.urls.push(...(/^\/(?:models|textures|sound|scares|videos)(?:$|\/)/u.test(name)
-						? tests
-						: [
-							...tests,
-							`*://comp.${ TARGET_GAME_DOMAIN }${ name }?*`,
-							`*://comp.${ TARGET_GAME_DOMAIN }/assets/${ name }?*`,
-							`*://*.${ TARGET_GAME_DOMAIN }${ name }`,
-							`*://*.${ TARGET_GAME_DOMAIN }${ name }?*`
-						]
-					));
+						`*://storage.googleapis.com/user-assets.krunker.io${ name }`,
+						.../\/(?:models|textures|sound|scares|videos|css)(?:$|\/)/u.test(name)
+							? [
+								`*://*.${ TARGET_GAME_DOMAIN }${ name }`,
+								`*://*.${ TARGET_GAME_DOMAIN }${ name }?*`,
+								`*://*/*.${ TARGET_GAME_DOMAIN }${ name }`,
+								`*://*/*.${ TARGET_GAME_DOMAIN }${ name }?*`,
+								`*://*.${ TARGET_GAME_DOMAIN }/*${ name }`,
+								`*://*.${ TARGET_GAME_DOMAIN }/*${ name }?*`,
+								`*://*/*.${ TARGET_GAME_DOMAIN }/*${ name }`,
+								`*://*/*.${ TARGET_GAME_DOMAIN }/*${ name }?*`
+							]
+							: []
+					]);
 				}
 			}
 		} catch (err) {
