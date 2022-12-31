@@ -2,6 +2,7 @@ import { Saveables } from '@settings-backend';
 
 export type EventHandler<T extends Event> = (event: T) => void;
 export type EventListener = (eventId: string, data?: unknown) => void;
+export type KrunkerDomains = 'krunker.io' | 'browserfps.com';
 
 export type InputNodeAttributes<Target extends Event> = { [key: string]: unknown } & {
 	oninput: EventHandler<Target>;

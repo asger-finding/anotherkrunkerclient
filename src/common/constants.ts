@@ -1,6 +1,9 @@
-import { Author, WindowData } from '@client';
+import { Author, KrunkerDomains, WindowData } from '@client';
+import SettingsBackend, { Saveables } from '@settings-backend';
 import { author, productName, repository, version } from '../../package.json';
 import { app } from 'electron';
+
+const settings = new SettingsBackend();
 
 // The author field in package.json may appear as either a string or an object.
 // Ensure its of type string
@@ -17,7 +20,7 @@ export {
 // Permalink to the license
 export const CLIENT_LICENSE_PERMALINK = 'https://yerl.org/ZKZ8V';
 
-export const TARGET_GAME_DOMAIN: 'krunker.io' | 'browserfps.com' = 'krunker.io';
+export const TARGET_GAME_DOMAIN = settings.getSetting(Saveables.GAME_FRONTEND, 'krunker.io') as KrunkerDomains;
 export const TARGET_GAME_URL = `https://${ TARGET_GAME_DOMAIN }/`;
 export const QUICKJOIN_URL_QUERY_PARAM = 'quickjoin';
 

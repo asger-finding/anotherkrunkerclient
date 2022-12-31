@@ -5,12 +5,13 @@ export enum StoreConstants {
 	PREFIX = 'settings'
 }
 export enum Saveables {
+	INTEGRATE_WITH_TWITCH = 'twitchIntegration',
+	RESOURCE_SWAPPER_PATH = 'resourceSwapperPath',
+	GAME_FRONTEND = 'gameFrontend',
 	MAP_ATTRIBUTES = 'mapAttributes',
 	SKY_TOP_COLOR = 'skyTopColor',
 	SKY_MIDDLE_COLOR = 'skyMiddleColor',
 	SKY_BOTTOM_COLOR = 'skyBottomColor',
-	INTEGRATE_WITH_TWITCH = 'twitchIntegration',
-	RESOURCE_SWAPPER_PATH = 'resourceSwapperPath',
 	GAME_CHAT_STATE = 'gameChatState'
 }
 export enum EventListenerTypes {
@@ -28,7 +29,7 @@ export default class SettingsBackend {
 
 	public savedCache: SettingsObject = {};
 
-	private readonly initialSavedCache: SettingsObject = this.savedCache;
+	private anythingChanged = false;
 
 	private eventListeners: Array<{
 		type: EventListenerTypes,
@@ -42,14 +43,10 @@ export default class SettingsBackend {
 		// Save the settings to an object cache, so we don't have to read the file every time.
 		this.savedCache = store.get(SettingsBackend.prefix) ?? {} as typeof this.savedCache;
 
-		// Clone the cache without reference, so we can compare for changes before unload
-		// and potentially write to the store
-		this.initialSavedCache = JSON.parse(JSON.stringify(this.savedCache));
-
 		if (process.isMainFrame) {
 			addEventListener('beforeunload', () => {
-				if (this.savedCache !== this.initialSavedCache) store.set(SettingsBackend.prefix, this.savedCache);
-			}, { once: true });
+				if (this.anythingChanged) store.set(SettingsBackend.prefix, this.savedCache);
+			});
 		}
 	}
 
@@ -61,15 +58,16 @@ export default class SettingsBackend {
 	 * @returns Saved data or fallback value
 	 */
 	public getSetting(key: Saveables, defaultValue: unknown): SettingsObject[Saveables] {
+		const random = Math.random();
 		const saved = this.savedCache[key]
-			?? store.get(`${ SettingsBackend.prefix }.${ key }`, defaultValue);
+			?? store.get(`${ SettingsBackend.prefix }.${ key }`, random);
 
 		// For stability reasons, we write to the save file if we had to fallback completely.
-		if (saved === defaultValue) this.writeSetting(key, saved);
+		if (saved === random) this.writeSetting(key, saved, true);
 
 		this.emitEvent(EventListenerTypes.ON_READ_SETTING, key, saved);
 
-		return saved;
+		return saved === random ? defaultValue : saved;
 	}
 
 	/**
@@ -81,6 +79,8 @@ export default class SettingsBackend {
 	 */
 	public writeSetting(key: Saveables, value: SettingsObject[Saveables], writeToFile?: boolean): void {
 		this.savedCache[key] = value;
+		this.anythingChanged = true;
+
 		if (writeToFile) store.set(`${ SettingsBackend.prefix }.${ key }`, value);
 
 		this.emitEvent(EventListenerTypes.ON_WRITE_SETTING, key);

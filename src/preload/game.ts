@@ -2,6 +2,7 @@ import { Color, MapExport } from '@krunker';
 import { EventListenerTypes, Saveables } from '@settings-backend';
 import { parse, resolve } from 'path';
 import GameSettings from '@game-settings';
+import { KrunkerDomains } from '@client';
 import { MESSAGES } from '@constants';
 import TwitchChat from '@twitch-chat';
 import { promises as fs } from 'fs';
@@ -75,6 +76,30 @@ if (process.isMainFrame) {
 				element.classList.add('inputRed2');
 				return false;
 			}
+		}
+	}, {
+		title: 'Game Frontend',
+		type: 'select',
+		inputNodeAttributes: {
+			id: Saveables.GAME_FRONTEND,
+			value: <KrunkerDomains>'krunker.io',
+
+			/**
+			 * Dropdown selector for krunker.io or browserfps.com
+			 * 
+			 * @param evt Input event
+			 * @returns void
+			 */
+			oninput: evt => {
+				const element = evt.target as HTMLInputElement;
+				const { value } = element;
+
+				return gameSettings.writeSetting(Saveables.GAME_FRONTEND, value);
+			}
+		},
+		options: <Record<KrunkerDomains, KrunkerDomains>>{
+			'krunker.io': 'krunker.io',
+			'browserfps.com': 'browserfps.com'
 		}
 	}), ...gameSettings.createSection({
 		title: 'Game Modification',
@@ -283,7 +308,7 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 	JSON.parse = function(...args: unknown[]) {
 		const result = nativeParse.apply(this, args as never);
 
-		if (result.name && result.spawns) {
+		if (typeof result === 'object' && result.name && result.spawns) {
 			/**
 			 * Merge the parsed map with the client map settings.
 			 * Proxy the map settings so whenever they're accessed,

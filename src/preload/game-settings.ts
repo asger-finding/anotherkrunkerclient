@@ -388,16 +388,19 @@ export default class GameSettings extends SettingsBackend {
 		const select = Object.assign(document.createElement('select'), inputNodeAttributes);
 		select.classList.add('inputGrey2');
 
+		let fallbackValue = '';
 		if (options) {
 			for (const [key, value] of Object.entries(options)) {
 				const option = document.createElement('option');
 				option.value = key;
 				option.innerText = value;
 				select.append(option);
+
+				if (!fallbackValue) fallbackValue = key;
 			}
 		}
 
-		select.value = this.getSetting(inputNodeAttributes.id, inputNodeAttributes.value ?? '') as string;
+		select.value = this.getSetting(inputNodeAttributes.id, inputNodeAttributes.value ?? fallbackValue) as string;
 
 		return GameSettings.createWrapper(title, select);
 	}
