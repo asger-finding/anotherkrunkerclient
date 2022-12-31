@@ -1,8 +1,8 @@
 import { Color, MapExport } from '@krunker';
-import { DEFAULT_SWAPPER_PATH, MESSAGES } from '@constants';
 import { EventListenerTypes, Saveables } from '@settings-backend';
 import { parse, resolve } from 'path';
 import GameSettings from '@game-settings';
+import { MESSAGES } from '@constants';
 import TwitchChat from '@twitch-chat';
 import { promises as fs } from 'fs';
 import { hexToRGB } from '@color-utils';

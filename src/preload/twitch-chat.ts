@@ -1,11 +1,8 @@
-import {
-	MESSAGES,
-	TWITCH
-} from '@constants';
+import { MESSAGES, TWITCH } from '@constants';
+import SettingsBackend, { Saveables } from '@settings-backend';
 import { ChatUserstate } from 'tmi.js';
 import { SimplifiedTwitchMessage } from '@client';
 import { ipcRenderer } from 'electron';
-import store from '@store';
 
 type ViewerStates = 'subscriber' | 'vip' | 'moderator' | 'broadcaster';
 type AvailableStates = 'public' | 'groups' | typeof TWITCH.MATERIAL_ICON;
@@ -83,6 +80,8 @@ export default class TwitchChat {
 
 	private nativeSwitchChat: SwitchChat;
 
+	private settingsBackend = new SettingsBackend();
+
 	/**
 	 * RegExes to test incoming messages against to trigger a chat action.
 	 * 
@@ -134,20 +133,24 @@ export default class TwitchChat {
 			configurable: true,
 
 			/**
-			 * Save the native switchChat function and replace it with a custom one. Save the chat elements to the class.
+			 * Save the native switchChat function and replace it with a hook. Save the chat elements to the class.
 			 * 
 			 * @param nativeSwitchChat The native switchChat function.
 			 */
 			set: async(nativeSwitchChat: SwitchChat) => {
 				// At this point, the chat has been initialized
-				this.saveElements();
-				this.nativeSwitchChat = nativeSwitchChat;
+				ipcRenderer.invoke(MESSAGES.TWITCH_GET_INFO).then(result => {
+					this.twitchInfo = result;
+				});
 
-				Reflect.defineProperty(window, 'switchChat', <{ value: SwitchChat }>{ value: switchChatHook });
+				this.nativeSwitchChat = nativeSwitchChat;
+				this.saveElements();
+
+				// Write the hook to the native function
+				Reflect.defineProperty(window, 'switchChat', { value: switchChatHook });
 
 				// Navigate to the correct chat tab
-				this.twitchInfo = await ipcRenderer.invoke(MESSAGES.TWITCH_GET_INFO);
-				this.navigateToChatTab();
+				this.loadInitialChatTab();
 			},
 			get() {
 				return switchChatHook;
@@ -198,12 +201,14 @@ export default class TwitchChat {
 	}
 
 	/**
-	 * Toggle the chat tab
+	 * Handle the HTML and styling for changing the tab
+	 * 
+	 * Hook for the native switchChat function
 	 * 
 	 * @param chatSwitchElement The element that triggered the chat tab switch.
 	 */
 	private switchChat(chatSwitchElement: HTMLDivElement) {
-		this.setOrder();
+		this.setChatTabOrder();
 
 		const currentTab = (chatSwitchElement.getAttribute('data-tab') ?? 'public') as AvailableStates;
 		this.chatState = this.chatStates[(this.chatStates.indexOf(currentTab) + 1) % this.chatStates.length];
@@ -295,7 +300,7 @@ export default class TwitchChat {
 	}
 
 	/** Resolve the order of the chat tabs depending on whether teams are enabled or not. */
-	private setOrder() {
+	private setChatTabOrder() {
 		const testElement = document.createElement('div');
 		testElement.setAttribute('data-tab', 'public');
 		this.nativeSwitchChat(testElement);
@@ -306,20 +311,22 @@ export default class TwitchChat {
 			: ['public', TWITCH.MATERIAL_ICON];
 	}
 
-	/** Save the game chat state to store and set it upon load. */
-	private navigateToChatTab() {
+	/** Save the game chat state to settings and set it upon load. */
+	private loadInitialChatTab() {
 		addEventListener('beforeunload', () => {
-			store.set('gameChatState', this.chatState);
+			const savedState = this.settingsBackend.getSetting(Saveables.GAME_CHAT_STATE, 'public');
+			if (savedState !== this.chatState) this.settingsBackend.writeSetting(Saveables.GAME_CHAT_STATE, this.chatState, true);
 		});
 
 		const chatSwitchElement = document.getElementById('chatSwitch') as HTMLDivElement;
-		const savedState = store.get('gameChatState') ?? 'public';
+		const savedState = this.settingsBackend.getSetting(Saveables.GAME_CHAT_STATE, 'public');
 
 		if (savedState === TWITCH.MATERIAL_ICON) {
-			let iterations = 0;
-			while (chatSwitchElement.getAttribute('data-tab') !== TWITCH.MATERIAL_ICON && iterations < 10) {
-				this.switchChat(chatSwitchElement);
-				iterations++;
+			for (let i = 0; i < 5; i++) {
+				if (chatSwitchElement.getAttribute('data-tab') !== TWITCH.MATERIAL_ICON) {
+					this.switchChat(chatSwitchElement);
+					break;
+				}
 			}
 		}
 	}

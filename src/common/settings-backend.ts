@@ -10,7 +10,8 @@ export enum Saveables {
 	SKY_MIDDLE_COLOR = 'skyMiddleColor',
 	SKY_BOTTOM_COLOR = 'skyBottomColor',
 	INTEGRATE_WITH_TWITCH = 'twitchIntegration',
-	RESOURCE_SWAPPER_PATH = 'resourceSwapperPath'
+	RESOURCE_SWAPPER_PATH = 'resourceSwapperPath',
+	GAME_CHAT_STATE = 'gameChatState'
 }
 export enum EventListenerTypes {
 	ON_READ_SETTING,
@@ -65,6 +66,8 @@ export default class SettingsBackend {
 
 		// For stability reasons, we write to the save file if we had to fallback completely.
 		if (saved === defaultValue) this.writeSetting(key, saved);
+
+		this.emitEvent(EventListenerTypes.ON_READ_SETTING, key, saved);
 
 		return saved;
 	}

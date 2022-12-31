@@ -101,9 +101,7 @@ export default class {
 					return resolve(result);
 				}
 				return res.end();
-			}).listen(TWITCH.PORT, () => {
-				openExternal(url);
-			});
+			}).listen(TWITCH.PORT, () => openExternal(url));
 
 			// Close the server after 5 minutes
 			return setTimeout(() => {
