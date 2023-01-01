@@ -98,8 +98,9 @@ else
 
     # Find the binaries and copy them to the binary folder
     paths=($(find $DISTRIBUTION_FOLDER -maxdepth 1 -iregex '.*\(exe\|appimage\|dmg\|rpm\|deb\)'))
-    for i in "${paths[@]}"
-        do cp $i ./$BINARY_FOLDER;
+    for i in "${paths[@]}"; do
+        print "Copying $(basename "$i") to $BINARY_FOLDER";
+        cp $i ./$BINARY_FOLDER;
     done
 
     DONE=$(ls ./$BINARY_FOLDER | wc -l)
