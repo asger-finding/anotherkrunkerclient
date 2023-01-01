@@ -1,6 +1,7 @@
 #!/bin/bash
 
-readonly SCRIPT_NAME_PRINT="\x1b[32mbuild.sh\x1b[0m"
+readonly SCRIPT_NAME=`basename "$0"`
+readonly SCRIPT_NAME_PRINT="\x1b[32m$SCRIPT_NAME\x1b[0m"
 readonly DISTRIBUTION_FOLDER="dist"
 readonly BINARY_FOLDER="binaries"
 
@@ -20,11 +21,11 @@ setup_directories()
 inquire()
 {
     while true; do
-        echo -n -e "$1 [Y/n]: " >&3
+        echo -e -n "$SCRIPT_NAME_PRINT: $1 [y/n]: " >&3
         read -p "" yn
         case $yn in
-            [Yy]* ) return 0;;
-            [Nn]* ) return 1;;
+            [Yy]* ) echo 1; return;;
+            [Nn]* ) echo 0; return;;
             * ) print "Please supply y (yes) or n (no).";;
         esac
     done
@@ -33,6 +34,7 @@ inquire()
 if [[ "$*" == *"supress-output"* ]]; then
     exec 3>&1
     exec >/dev/null
+    exec 2>/dev/null
     print "Supressing output"
 else
     exec 3>&1
@@ -53,13 +55,23 @@ else
     # Install dependencies
     yarn install &&
 
+    if [[ "$*" != *"minify-deps"* ]] && [[ "$*" != *"no-minify-deps"* ]]; then
+        print "No argument for minifying provided. Querying user."
+
+        shouldMinify=$(inquire "Should node modules be minified?")
+    elif [[ "$*" == *"no-minify-deps"* ]]; then
+        shouldMinify=0;
+    else
+        shouldMinify=1;
+    fi
+
     # Check for dependency minify parameter or query the user on it
-    if [[ "$*" == *"minify-deps"* ]] || inquire "$SCRIPT_NAME_PRINT: Should node modules be minified?"; then
+    if [[ $shouldMinify == 1 ]]; then
         # Add dependencies for code minifying
         yarn add -D js-yaml modclean minify-all-js node-prune --frozen-lockfile &&
 
         # Compile the project
-        gulp --state=production &&
+        yarn run gulp --state=production &&
 
         print "Minifying node modules. This might take a while..."
         yarn minify-all-js ./node_modules -j -M > /dev/null &&
@@ -69,7 +81,7 @@ else
         print "Skipping minification"
 
         # Compile the project
-        gulp --state=production
+        yarn run gulp --state=production
     fi
 
     if [[ "$OSTYPE" =~ ^darwin ]]; then
