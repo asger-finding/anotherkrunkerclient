@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# TODO:
+# * Argument with value to determine node module minifcation rather than two different arguments
+# * --help for more information
+
 readonly SCRIPT_NAME=`basename "$0"`
 readonly SCRIPT_NAME_PRINT="\x1b[32m$SCRIPT_NAME\x1b[0m"
 readonly DISTRIBUTION_FOLDER="dist"
