@@ -46,7 +46,7 @@ export default class {
 
 				// Redirect to the local resource.
 				callback({
-					redirectURL: `${ CLIENT_NAME }:/${ path.startsWith('/assets/') ? path.substring(7) : path }`,
+					redirectURL: `${ CLIENT_NAME }:/${ path.startsWith('/assets/') ? path.substring(7) : path }`.replace('/crxfs/', ''),
 					confirmed: true
 				});
 			});
@@ -88,32 +88,20 @@ export default class {
 	private recursiveSwap(prefix: string): void {
 		try {
 			for (const dirent of readdirSync(join(this.target, prefix), { withFileTypes: true })) {
-				const name = `${ prefix }/${ dirent.name }`;
+				const filePath = `${ prefix }/${ dirent.name }`;
 
 				// If the file is a directory, swap it recursively.
 				if (dirent.isDirectory()) {
-					this.recursiveSwap(name);
+					this.recursiveSwap(filePath);
 				} else {
 					// browserfps.com has the server name as the subdomain instead of 'assets', so we must take that into account.
 
 					// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns
 					this.urls.push(...[
-						`*://storage.googleapis.com/assets.krunker.io${ name }?*`,
-						`*://storage.googleapis.com/assets.krunker.io${ name }`,
-						`*://storage.googleapis.com/user-assets.krunker.io${ name }?*`,
-						`*://storage.googleapis.com/user-assets.krunker.io${ name }`,
-						.../\/(?:models|textures|sound|scares|videos|css)(?:$|\/)/u.test(name)
-							? [
-								`*://*.${ TARGET_GAME_DOMAIN }${ name }`,
-								`*://*.${ TARGET_GAME_DOMAIN }${ name }?*`,
-								`*://*/*.${ TARGET_GAME_DOMAIN }${ name }`,
-								`*://*/*.${ TARGET_GAME_DOMAIN }${ name }?*`,
-								`*://*.${ TARGET_GAME_DOMAIN }/*${ name }`,
-								`*://*.${ TARGET_GAME_DOMAIN }/*${ name }?*`,
-								`*://*/*.${ TARGET_GAME_DOMAIN }/*${ name }`,
-								`*://*/*.${ TARGET_GAME_DOMAIN }/*${ name }?*`
-							]
-							: []
+						`*://*.${ TARGET_GAME_DOMAIN }${ filePath }*`,
+						`*://*/*.${ TARGET_GAME_DOMAIN }${ filePath }*`,
+						`*://*.${ TARGET_GAME_DOMAIN }/*${ filePath }*`,
+						`*://*/*.${ TARGET_GAME_DOMAIN }/*${ filePath }*`
 					]);
 				}
 			}
