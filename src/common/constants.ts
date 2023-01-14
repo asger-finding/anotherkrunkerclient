@@ -30,6 +30,7 @@ export enum TWITCH {
 	PORT = 33333,
 	MATERIAL_ICON = 'live_tv'
 }
+export const TWITCH_GET_CHANNELINFO_INTERVAL = 60_000;
 
 // If not contained, it will throw an error whenever Constants is referenced outside the main process.
 export const IS_DEVELOPMENT = process.type === 'browser' ? !app.isPackaged : null;

@@ -1,4 +1,4 @@
-import { MESSAGES, TWITCH } from '@constants';
+import { MESSAGES, TWITCH, TWITCH_GET_CHANNELINFO_INTERVAL } from '@constants';
 import SettingsBackend, { Saveables } from '@settings-backend';
 import { ChatUserstate } from 'tmi.js';
 import { SimplifiedTwitchMessage } from '@client';
@@ -18,11 +18,11 @@ type TwitchMessageItem = {
  * @example
  * const condition = {
  *     // Does message start with '!hello'
- *     condition: /^!ping$/i,
+ *     regexCondition: /^!ping$/i,
  * 
  *     mustBeLive: true,
  *     onlyOwnChannel: false,
- *     // Callback to execute if the condition is met
+ *     // Callback to execute if the regex condition is met
  *     call: (chatUserstate: ChatUserstate, message: string) => {
  *         TwitchChat.sendTwitchMessage(`Pong, ${chatUserstate.username}!`);
  *     }
@@ -31,7 +31,7 @@ type TwitchMessageItem = {
 interface ConditionFields {
 
 	/** RegExp to match the message. */
-	condition: RegExp;
+	regexCondition: RegExp;
 
 	/**
 	 * Command can only be triggered on the authenticated user's own channel.
@@ -51,7 +51,7 @@ interface ConditionFields {
 	whoCanTrigger?: Array<ViewerStates>;
 
 	/** The call to make if all conditions are met. */
-	call: (userState: ChatUserstate, message: string) => void;
+	call: (ctxt: TwitchChat, userState: ChatUserstate, message: string) => void;
 }
 
 export default class TwitchChat {
@@ -84,34 +84,25 @@ export default class TwitchChat {
 
 	/**
 	 * RegExes to test incoming messages against to trigger a chat action.
-	 * 
-	 * @example
-	 * const condition = {
-	 *     // Does message start with '!hello'
-	 *     condition: /^!ping$/i,
-	 *     // Callback to execute if the condition is met
-	 *     call: (chatUserstate: ChatUserstate, message: string) => {
-	 *         TwitchChat.sendTwitchMessage(`Pong, ${chatUserstate.username}!`);
-	 *     }
-	 * }
 	 */
 	private static conditions: Array<ConditionFields> = [
 		{
-			condition: /^!link(?: (?:.*))?$/ui,
+			regexCondition: /^!link(?: (?:.*))?$/ui,
 			onlyOwnChannel: true,
 			mustBeLive: true,
-			call(userState) {
+			call(ctxt, userState) {
+				if (!ctxt.settingsBackend.getSetting(Saveables.ALLOW_TWITCH_LINK_COMMAND, false)) return;
 				const { search } = new URL(location.href);
 
 				if (search.startsWith('?game=')) TwitchChat.sendTwitchMessage(`@${ userState.username } — ${ location.href }`);
 			}
 		},
 		{
-			condition: /^!ping$/ui,
-			onlyOwnChannel: false,
-			mustBeLive: true,
+			regexCondition: /^!ping$/ui,
+			onlyOwnChannel: true,
+			mustBeLive: false,
 			whoCanTrigger: ['moderator', 'broadcaster'],
-			call(userState) {
+			call(_ctxt, userState) {
 				TwitchChat.sendTwitchMessage(`@${ userState.username }, pong!`);
 			}
 		}
@@ -139,10 +130,8 @@ export default class TwitchChat {
 			 */
 			set: async(nativeSwitchChat: SwitchChat) => {
 				// At this point, the chat has been initialized
-				ipcRenderer.invoke(MESSAGES.TWITCH_GET_INFO).then(result => {
-					this.twitchInfo = result;
-				});
 
+				this.periodicallyRefreshTwitchChannelInfo();
 				this.nativeSwitchChat = nativeSwitchChat;
 				this.saveElements();
 
@@ -156,6 +145,23 @@ export default class TwitchChat {
 				return switchChatHook;
 			}
 		});
+	}
+
+	/**
+	 * Get Twitch channel info and refresh it periodically
+	 */
+	private periodicallyRefreshTwitchChannelInfo() {
+		/**
+		 * Call ipcMain to get Twitch Channel info
+		 * 
+		 * @returns void
+		 */
+		const invoke = () => ipcRenderer.invoke(MESSAGES.TWITCH_GET_INFO).then(result => {
+			this.twitchInfo = result;
+		});
+		invoke();
+
+		setInterval(invoke, TWITCH_GET_CHANNELINFO_INTERVAL);
 	}
 
 	/**
@@ -196,7 +202,7 @@ export default class TwitchChat {
 				if (!userBadges.some(badge => allowed.includes(badge))) continue;
 			}
 
-			if (condition.condition.test(item.message)) condition.call(item.chatUserstate, item.message);
+			if (condition.regexCondition.test(item.message)) condition.call(this, item.chatUserstate, item.message);
 		}
 	}
 
@@ -315,7 +321,7 @@ export default class TwitchChat {
 	private loadInitialChatTab() {
 		addEventListener('beforeunload', () => {
 			const savedState = this.settingsBackend.getSetting(Saveables.GAME_CHAT_STATE, 'public');
-			if (savedState !== this.chatState) this.settingsBackend.writeSetting(Saveables.GAME_CHAT_STATE, this.chatState, true);
+			if (savedState !== this.chatState) this.settingsBackend.writeSetting(Saveables.GAME_CHAT_STATE, this.chatState);
 		});
 
 		const chatSwitchElement = document.getElementById('chatSwitch') as HTMLDivElement;

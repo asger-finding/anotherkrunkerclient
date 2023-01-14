@@ -60,8 +60,8 @@ export function* rainbow(frequency: number, startIndex: number, multiplier: numb
 /**
  * Convert a hex color value to an rgb array.
  * 
- * @param hexCodes Hex input(s)
  * @param maxValue The max value to represent color brightness; 1-255.
+ * @param hexCodes Hex input(s)
  * @returns [r, g, b] array or fallback
  */
 export const hexToRGB = (maxValue: number, ...hexCodes: string[]): Array<Color> => {

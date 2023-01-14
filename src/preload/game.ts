@@ -37,9 +37,9 @@ if (process.isMainFrame) {
 			 * @returns void
 			 */
 			oninput: evt => {
-				const { value } = <HTMLInputElement>evt.target;
+				const { checked } = <HTMLInputElement>evt.target;
 
-				return gameSettings.writeSetting(Saveables.INTEGRATE_WITH_TWITCH, value);
+				return gameSettings.writeSetting(Saveables.INTEGRATE_WITH_TWITCH, checked);
 			}
 		}
 	}, {
@@ -100,6 +100,29 @@ if (process.isMainFrame) {
 		options: <Record<KrunkerDomains, KrunkerDomains>>{
 			'krunker.io': 'krunker.io',
 			'browserfps.com': 'browserfps.com'
+		}
+	}), ...gameSettings.createSection({
+		title: 'Non-restart settings',
+		id: 'noReload',
+		requiresRestart: false
+	}, {
+		title: 'Reply to !link in Twitch chat',
+		type: 'checkbox',
+		inputNodeAttributes: {
+			id: Saveables.ALLOW_TWITCH_LINK_COMMAND,
+			value: 'off',
+
+			/**
+			 * Toggle whether !link is active
+			 * 
+			 * @param evt Input event
+			 * @returns void
+			 */
+			oninput: evt => {
+				const { checked } = <HTMLInputElement>evt.target;
+
+				return gameSettings.writeSetting(Saveables.ALLOW_TWITCH_LINK_COMMAND, checked);
+			}
 		}
 	}), ...gameSettings.createSection({
 		title: 'Game Modification',
@@ -218,7 +241,7 @@ if (process.isMainFrame) {
 		}
 	});
 
-	if (gameSettings.getSetting(Saveables.INTEGRATE_WITH_TWITCH, 'off') === 'on') {
+	if (gameSettings.getSetting(Saveables.INTEGRATE_WITH_TWITCH, false)) {
 		const twitchChat = new TwitchChat();
 		twitchChat.init();
 	}

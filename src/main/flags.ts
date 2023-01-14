@@ -87,7 +87,7 @@ const getGPU = async(): Promise<PartialGPU | null> => {
 		if (!('deviceId' in device) || typeof device.deviceId !== 'number') return null;
 	}
 
-	return gpuInfo;
+	return gpuInfo as PartialGPU;
 };
 
 /**
