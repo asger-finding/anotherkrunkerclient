@@ -7,7 +7,6 @@
 readonly SCRIPT_NAME=`basename "$0"`
 readonly SCRIPT_NAME_PRINT="\x1b[32m$SCRIPT_NAME\x1b[0m"
 readonly DISTRIBUTION_FOLDER="dist"
-readonly BINARY_FOLDER="binaries"
 
 print()
 {
@@ -17,9 +16,9 @@ print()
 
 setup_directories()
 {
-    print "Deleting and re-creating dist and binary folders"
-    rm -rf $DISTRIBUTION_FOLDER $BINARY_FOLDER
-    mkdir $DISTRIBUTION_FOLDER $BINARY_FOLDER
+    print "Clearing dist folder"
+    rm -rf $DISTRIBUTION_FOLDER
+    mkdir $DISTRIBUTION_FOLDER
 }
 
 inquire()
@@ -96,13 +95,6 @@ else
         yarn electron-builder --win --linux;
     fi
 
-    # Find the binaries and copy them to the binary folder
     paths=($(find $DISTRIBUTION_FOLDER -maxdepth 1 -iregex '.*\(exe\|appimage\|dmg\|rpm\|deb\)'))
-    for i in "${paths[@]}"; do
-        print "Copying $(basename "$i") to $BINARY_FOLDER";
-        cp $i ./$BINARY_FOLDER;
-    done
-
-    DONE=$(ls ./$BINARY_FOLDER | wc -l)
-    print "Done! Compiled $DONE programs"
+    print "Done! Compiled ${#paths[@]} programs"
 fi

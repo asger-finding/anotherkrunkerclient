@@ -31,13 +31,25 @@ jobs:
           cache: yarn
           cache-dependency-path: yarn.lock
 
-      - name: Run build script
-        run: chmod +x build.sh && ./build.sh --yes
+      # Install necessary system dependencies to compile on Linux
+      - name: Install system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt update
+          sudo apt install libc6-dev-i386 gcc-multilib g++-multilib
 
-      - name: Artifact binaries
+      - name: Run build script
+        run: chmod +x build.sh && ./build.sh --minify
+
+      - name: Artifact app binaries
         uses: actions/upload-artifact@v3
         with:
           name: binaries
           path: |
-            binaries/*
+            binaries/*.exe
+            binaries/*.dmg
+            binaries/*.pkg
+            binaries/*.AppImage
+            binaries/*.deb
+            binaries/*.rpm
           if-no-files-found: error

@@ -1,4 +1,4 @@
-name: Build and package binaries
+name: Build and package application
 
 on:
   workflow_dispatch:
@@ -63,12 +63,5 @@ jobs:
           path: ${{ env.LOCALAPPDATA }}\electron-builder\cache
           key: ${{ runner.os }}-electron-builder-cache-v2-${{ hashFiles(format('{0}{1}', github.workspace, '\yarn.lock')) }}
 
-      - name: Build stable binary
-        run: |
-          yarn install
-          yarn bundle
-
-      - name: Build latest binary
-        run: |
-          yarn add -D electron@^12
-          yarn bundle
+      - name: Run build script
+        run: chmod +x build.sh && ./build.sh --minify
