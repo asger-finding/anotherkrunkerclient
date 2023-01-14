@@ -64,4 +64,4 @@ jobs:
           key: ${{ runner.os }}-electron-builder-cache-v2-${{ hashFiles(format('{0}{1}', github.workspace, '\yarn.lock')) }}
 
       - name: Run build script
-        run: chmod +x build.sh && ./build.sh --minify
+        run: yarn build --minify

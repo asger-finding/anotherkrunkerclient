@@ -34,15 +34,17 @@ A full release (v1.xx) will be considered when everything in this feature tracki
 ### Getting started
 
 - Install [yarn](https://yarnpkg.com/) package manager
-- Run `yarn` or `yarn install` to install the dependencies
+- Run `yarn install` to install the project dependencies
 - To start the app, run `yarn start`
 
 To lint, run `yarn lint`  
-To compile the app, run `yarn bundle` (node_modules minification only happens for GitHub actions)
+Read [Pipeline](#pipeline) for a detailed description of compiling the project.
 
-### Notes for development
+### Project file system
 
-Ensure that ESLint is enabled. Avoid all warnings and errors. kebab-case is used for file names. Make sure you respect the folder system of main, window, renderer and config.
+kebab-case is used for file names, but module aliasing is used for imports (read below)
+
+Respect the project folder system of `common` (modules shared between main and renderer), `main` (main process code), `preload` (preload/renderer code), `renderer` (assets used in the renderer process) and `static` (main process assets) 
 
 ### Module aliasing
 
@@ -50,8 +52,8 @@ anotherkrunkerclient uses a home-brew solution for module aliasing in Electron. 
 
 When the source is being built in gulp, the TypeScript files are converted to JavaScript, then run through the homemade module aliasing function that finds `require` calls, takes the first string parameter (only works with literal strings), looks it up in `_moduleAliases` and if found, replaces it with a relative path to the module.
 
-<!--
-TODO:
-Better folder structure for the client — see: https://hashedin.com/blog/create-electron-app-an-electron-react-boilerplate/#folder-structure
-<https://github.com/asger-finding/anotherkrunkerclient/issues/1>
--->
+### Pipeline
+
+anotherkrunkerclient utilizes a similar pipeline to VSCode; using gulp and swc to compile the source TypeScript down to machine-readable JavaScript — and everything else, of course. Files are compiled recursively and dynamically, so when adding files or changing files, you must only update the tsconfig and moduleAliases field.
+
+To build the project, run `yarn build` which calls to the build script. If you provide the parameter `--minify` or `--no-minify`, the shell script will minify the code accordingly. If not, you will be queried. You can silence the build script by passing a `--supress-output` argument.
