@@ -6,7 +6,6 @@ import ResourceSwapper from '@resource-swapper';
 import { exec } from 'child_process';
 import { getSpoofedUA } from '@useragent-spoof';
 import { info } from '@logger';
-import { lt as lessThan } from 'semver';
 import { register } from 'electron-localshortcut';
 import { resolve } from 'path';
 import store from '@store';
@@ -52,6 +51,9 @@ const loadSpoofedURL = async(browserWindow: Electron.BrowserWindow, windowUrl: s
 	if (isElectron) ua = await getSpoofedUA();
 	browserWindow.loadURL(windowUrl, { userAgent: ua || windowUserAgent });
 };
+
+// RegEx expression to match the major, minor and patch version of a valid semver scheme
+const semverRegex = /^(?<major>0|[1-9]+[0-9]*)\.(?<minor>0|[1-9]+[0-9]*)\.(?<patch>0|[1-9]+[0-9]*)(?:-(?:0|[1-9A-Za-z-][0-9A-Za-z-]*)(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/u;
 
 /**
  * Run when navigated (exclude `windowUrl` param) or when navigating (include `windowUrl` param) to a new URL.
@@ -232,9 +234,8 @@ export default class {
 		// Addresses https://stackoverflow.com/q/69969658/11452298 for electron < 13.5.0
 		browserWindow.webContents.openDevTools(mode);
 
-		// Get electron version
-		const electronVersion = process.versions.electron;
-		if (lessThan(electronVersion, '13.5.0')) {
+		const [, major, minor] = (process.versions.electron.match(semverRegex) as [string, string, string]).map(Number);
+		if (major <= 13 && minor < 5) {
 			// devtools-opened takes about 300 ms to fire on a Windows 10 VirtualBox VM with 8 gb of ram and 8 threads.
 			const fallback = setTimeout(() => {
 				// Fallback if openDevTools fails
