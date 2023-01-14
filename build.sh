@@ -59,22 +59,22 @@ else
     # Install dependencies
     yarn install &&
 
-    if [[ "$*" != *"minify-deps"* ]] && [[ "$*" != *"no-minify-deps"* ]]; then
+    if [[ "$*" != *"minify"* ]] && [[ "$*" != *"no-minify"* ]]; then
         print "No argument for minifying provided. Querying user."
 
-        shouldMinify=$(inquire "Should node modules be minified?")
-    elif [[ "$*" == *"no-minify-deps"* ]]; then
+        shouldMinify=$(inquire "Should code be minified?")
+    elif [[ "$*" == *"no-minify"* ]]; then
         shouldMinify=0;
     else
         shouldMinify=1;
     fi
 
-    # Check for dependency minify parameter or query the user on it
+    # Check for minify parameter or query the user on it
     if [[ $shouldMinify == 1 ]]; then
         # Add dependencies for code minifying
         yarn add -D js-yaml modclean minify-all-js node-prune --frozen-lockfile &&
 
-        # Compile the project
+        # Compile the project with minification
         yarn run gulp --state=production &&
 
         print "Minifying node modules. This might take a while..."
@@ -84,8 +84,8 @@ else
     else
         print "Skipping minification"
 
-        # Compile the project
-        yarn run gulp --state=production
+        # Compile the project without minification
+        yarn run gulp
     fi
 
     if [[ "$OSTYPE" =~ ^darwin ]]; then
