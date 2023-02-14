@@ -38,7 +38,7 @@ A full release (v1.xx) will be considered when everything in this feature tracki
 - To start the app, run `yarn start`
 
 To lint, run `yarn lint`  
-Read [Pipeline](#pipeline) for a detailed description of compiling the project.
+Read about the [pipeline](#pipeline) for a detailed description of compiling the project.
 
 ### Project file system
 
