@@ -37,7 +37,7 @@ type InitialMetadata = {
 	unwrap?: MetadataPrimitives['boolean'];
 };
 
-class UserscriptParser {
+export default class UserscriptParser {
 
 	/**
 	 * Parse a userscript with a code block to an object

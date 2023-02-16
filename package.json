@@ -18,6 +18,7 @@
     "lint": "yarn eslint . --ext .ts,.js"
   },
   "_moduleAliases": {
+    "@userscripts": "src/common/userscripts",
     "@twitch-utils": "src/main/twitch-utils",
     "@color-utils": "src/common/color-utils",
     "@logger": "src/common/logger",

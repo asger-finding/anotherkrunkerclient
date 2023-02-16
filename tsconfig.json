@@ -23,6 +23,7 @@
             "@flags": ["src/main/flags"],
 
             // common
+            "@userscripts/*": ["src/common/userscripts/*"],
             "@constants": ["src/common/constants"],
             "@logger": ["src/common/logger"],
             "@color-utils": ["src/common/color-utils"],
