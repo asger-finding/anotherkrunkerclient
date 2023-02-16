@@ -48,7 +48,7 @@ interface ConditionFields {
 	mustBeLive?: boolean;
 
 	/** Who can trigger the condition? Unspecified (the default) means everyone. */
-	whoCanTrigger?: Array<ViewerStates>;
+	whoCanTrigger?: ViewerStates[];
 
 	/** The call to make if all conditions are met. */
 	call: (ctxt: TwitchChat, userState: ChatUserstate, message: string) => void;
@@ -85,7 +85,7 @@ export default class TwitchChat {
 	/**
 	 * RegExes to test incoming messages against to trigger a chat action.
 	 */
-	private static conditions: Array<ConditionFields> = [
+	private static conditions: ConditionFields[] = [
 		{
 			regexCondition: /^!link(?: (?:.*))?$/ui,
 			onlyOwnChannel: true,

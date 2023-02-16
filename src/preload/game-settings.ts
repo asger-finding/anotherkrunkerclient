@@ -1,10 +1,17 @@
 import { InputNodeAttributes } from '@client';
+import { KrunkerWindow } from '@krunker';
 import SettingsBackend from '@settings-backend';
 
 enum Frames {
 	MAINFRAME,
 	SUBFRAME
 }
+
+type SettingTypes = 'checkbox' | 'slider' | 'select' | 'color' | 'text' | 'button';
+type InputTypeToElement<T extends string> =
+	T extends 'checkbox' | 'slider' | 'select' | 'color' | 'text' ? HTMLInputElement :
+		T extends 'button' ? HTMLDivElement :
+			never;
 
 export default class GameSettings extends SettingsBackend {
 
@@ -62,41 +69,6 @@ export default class GameSettings extends SettingsBackend {
 		new MutationObserver((_mutations, observer) => {
 			observer.disconnect();
 
-			interface KrunkerWindow extends Window {
-				windows: [
-					{
-						applyAllWeps: (...args: unknown[]) => void;
-						changeTab: (...args: unknown[]) => void;
-						changeWep: (...args: unknown[]) => void;
-						collapseFolder: (...args: unknown[]) => void;
-						currWep: number;
-						dark: boolean;
-						gen: () => string;
-						genList: (...args: unknown[]) => string;
-						getSettings: (...args: unknown[]) => string;
-						getTabs: (...args: unknown[]) => string;
-						header: string;
-						html: string;
-						label: string;
-						maxH: string;
-						popup: boolean;
-						resetAllWeps: (...args: unknown[]) => void;
-						searchList: () => void;
-						searchMatches: (...args: unknown[]) => boolean;
-						settingSearch: string | null;
-						settingType: string;
-						sticky: boolean;
-						tabIndex: number;
-						tabs: {
-							basic: Array<Record<string, unknown>>;
-							advanced: Array<Record<string, unknown>>;
-						}
-						toggleType: (evt: Event) => void;
-						width: number;
-					},
-					...Record<string, unknown>[]
-				]
-			}
 			const [settingsWindow] = (window as unknown as KrunkerWindow).windows;
 
 			if (settingsWindow.label !== 'settings') throw new Error('Wrong Game Settings index');
@@ -218,10 +190,10 @@ export default class GameSettings extends SettingsBackend {
 		requiresRestart?: boolean;
 	}, ...properties: {
 		title: string;
-		type: 'checkbox' | 'slider' | 'select' | 'color' | 'text';
-		inputNodeAttributes: InputNodeAttributes<Event | MouseEvent>;
+		type: SettingTypes;
+		inputNodeAttributes: InputNodeAttributes<InputTypeToElement<SettingTypes>>;
 		options?: Record<string, string>
-	}[]): HTMLElement[] {
+	}[]): [header: HTMLDivElement, body: HTMLDivElement] {
 		GameSettings.expectFrame(Frames.MAINFRAME);
 
 		const header = document.createElement('div');
@@ -292,8 +264,8 @@ export default class GameSettings extends SettingsBackend {
 	// eslint-disable-next-line complexity
 	private createItemFrom(property: {
 		title: string;
-		type: 'checkbox' | 'slider' | 'select' | 'color' | 'text';
-		inputNodeAttributes: InputNodeAttributes<Event | MouseEvent>;
+		type: SettingTypes;
+		inputNodeAttributes: InputNodeAttributes<InputTypeToElement<SettingTypes>>;
 		options?: Record<string, string>;
 	}): HTMLElement {
 		switch (property.type) {
@@ -307,8 +279,10 @@ export default class GameSettings extends SettingsBackend {
 				return this.createColor(property.title, property.inputNodeAttributes);
 			case 'text':
 				return this.createText(property.title, property.inputNodeAttributes);
+			case 'button':
+				return this.createButton(property.title, property.inputNodeAttributes);
 			default:
-				throw new Error('Unknown property type');
+				throw new TypeError('Unknown property type');
 		}
 	}
 
@@ -320,7 +294,7 @@ export default class GameSettings extends SettingsBackend {
 	 * @param inputNodeAttributes.onclick Event handler
 	 * @returns Wrapper
 	 */
-	private createCheckbox(title: string, inputNodeAttributes: InputNodeAttributes<MouseEvent>) {
+	private createCheckbox(title: string, inputNodeAttributes: InputNodeAttributes<HTMLInputElement>) {
 		const label = document.createElement('label');
 		label.classList.add('switch');
 
@@ -346,7 +320,7 @@ export default class GameSettings extends SettingsBackend {
 	 * @param inputNodeAttributes.oninput Event handler
 	 * @returns Wrapper
 	 */
-	private createSlider(title: string, inputNodeAttributes: InputNodeAttributes<Event>) {
+	private createSlider(title: string, inputNodeAttributes: InputNodeAttributes<HTMLInputElement>) {
 		const input = Object.assign(document.createElement('input'), inputNodeAttributes);
 		input.style.borderWidth = '0px';
 		input.classList.add('sliderVal');
@@ -384,7 +358,7 @@ export default class GameSettings extends SettingsBackend {
 	 * @param options Options to display
 	 * @returns Wrapper
 	 */
-	private createSelect(title: string, inputNodeAttributes: InputNodeAttributes<Event>, options?: Record<string, string>) {
+	private createSelect(title: string, inputNodeAttributes: InputNodeAttributes<HTMLInputElement>, options?: Record<string, string>) {
 		const select = Object.assign(document.createElement('select'), inputNodeAttributes);
 		select.classList.add('inputGrey2');
 
@@ -413,7 +387,7 @@ export default class GameSettings extends SettingsBackend {
 	 * @param inputNodeAttributes.oninput Event handler
 	 * @returns Wrapper
 	 */
-	private createColor(title: string, inputNodeAttributes: InputNodeAttributes<Event>) {
+	private createColor(title: string, inputNodeAttributes: InputNodeAttributes<HTMLInputElement>) {
 		const input = Object.assign(document.createElement('input'), inputNodeAttributes);
 		input.style.float = 'right';
 		input.id = inputNodeAttributes.id;
@@ -433,7 +407,7 @@ export default class GameSettings extends SettingsBackend {
 	 * @param inputNodeAttributes.oninput Event handler
 	 * @returns Wrapper
 	 */
-	private createText(title: string, inputNodeAttributes: InputNodeAttributes<Event>) {
+	private createText(title: string, inputNodeAttributes: InputNodeAttributes<HTMLInputElement>) {
 		const input = Object.assign(document.createElement('input'), inputNodeAttributes);
 		input.classList.add('inputGrey2');
 		input.id = inputNodeAttributes.id;
@@ -446,13 +420,29 @@ export default class GameSettings extends SettingsBackend {
 	}
 
 	/**
-	 * Create an options wrapper with a title
+	 * Create a button input.
+	 *
+	 * @param title Wrapper title
+	 * @param inputNodeAttributes Attributes to apply
+	 * @param inputNodeAttributes.oninput Event handler
+	 * @returns Wrapper
+	 */
+	private createButton(title: string, inputNodeAttributes: InputNodeAttributes<HTMLDivElement>) {
+		const button = Object.assign(document.createElement('div'), inputNodeAttributes);
+		button.classList.add('settingsBtn');
+		button.id = inputNodeAttributes.id;
+
+		return GameSettings.createWrapper(title, button);
+	}
+
+	/**
+	 * Create an options wrapper with a title.
 	 * 
 	 * @param title Wrapper title
 	 * @param children Optional children to append to wrapper
 	 * @returns Wrapper
 	 */
-	private static createWrapper(title: string, ...children: Node[]): HTMLElement {
+	public static createWrapper(title: string, ...children: Node[]): HTMLElement {
 		const wrapper = document.createElement('div');
 		wrapper.classList.add('settName');
 		wrapper.setAttribute('title', title);

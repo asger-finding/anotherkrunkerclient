@@ -4,10 +4,12 @@ import {
 } from '@constants';
 import { error, info, warn } from '@logger';
 import { Client } from 'tmi.js';
+import PatchedStore from '@store';
 import { createServer } from 'http';
 import fetch from 'node-fetch';
 import { openExternal } from '@window-utils';
-import store from '@store';
+
+const store = new PatchedStore();
 
 export default class {
 

@@ -78,6 +78,72 @@ if (process.isMainFrame) {
 			}
 		}
 	}, {
+		title: 'Reset Filter Lists Cache',
+		type: 'button',
+		inputNodeAttributes: {
+			id: Saveables.RESET_FILTER_LISTS_CACHE,
+			innerText: 'Reset',
+
+			/**
+			 * Reset the electron blocker cache
+			 * 
+			 * @returns void
+			 */
+			onclick: async() => {
+				const result: {
+					result: boolean,
+					message?: string
+				} = await ipcRenderer.invoke(MESSAGES.CLEAR_ELECTRON_BLOCKER_CACHE);
+
+				if (result.result) alert('Success in clearing electron blocker cache.\nYour client may take longer to launch next time.');
+				else alert(`Error in clearing electron blocker cache:\n${result.message ?? ''}`);
+			}
+		}
+	}, {
+		title: 'Filter Lists (JSON Array)',
+		type: 'text',
+		inputNodeAttributes: {
+			id: Saveables.USER_FILTER_LISTS,
+			placeholder: '[]',
+
+			/**
+			 * User-specified path to the resource swapper
+			 * 
+			 * @param evt Input event
+			 * @returns void
+			 */
+			// eslint-disable-next-line complexity
+			oninput: evt => {
+				const element = evt.target as HTMLInputElement;
+				let { value } = element;
+
+				// Validate the JSON
+				if (value.length) {
+					try {
+						const parsed = JSON.parse(value);
+						if (!Array.isArray(parsed)) throw new Error('Bad type');
+
+						for (const filterList of parsed) {
+							if (typeof filterList !== 'string') throw new Error(`Item is of type ${typeof filterList}, expected string`);
+							if (filterList.startsWith('swapper://')) continue;
+
+							const url = new URL(filterList);
+							if (url.protocol !== 'https:'
+								&& url.protocol !== 'http:') throw new Error('Bad URL protocol');
+						}
+					} catch (err) {
+						element.classList.add('inputRed2');
+						return false;
+					}
+				} else {
+					value = '[]';
+				}
+				element.classList.remove('inputRed2');
+
+				return gameSettings.writeSetting(Saveables.USER_FILTER_LISTS, value);
+			}
+		}
+	}, {
 		title: 'Game Frontend',
 		type: 'select',
 		inputNodeAttributes: {
@@ -143,12 +209,16 @@ if (process.isMainFrame) {
 			 */
 			oninput: evt => {
 				const element = evt.target as HTMLInputElement;
-				const { value } = element;
+				let { value } = element;
 
 				// Validate the JSON
-				try { JSON.parse(value); } catch {
-					element.classList.add('inputRed2');
-					return false;
+				if (value.length) {
+					try { JSON.parse(value); } catch {
+						element.classList.add('inputRed2');
+						return false;
+					}
+				} else {
+					value = '{}';
 				}
 				element.classList.remove('inputRed2');
 
@@ -213,7 +283,6 @@ if (process.isMainFrame) {
 			}
 		}
 	}));
-
 
 	(async function() {
 		const [css] = await Promise.all([
@@ -327,50 +396,68 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 	}
 });
 
-(nativeParse => {
-	JSON.parse = function(...args: unknown[]) {
-		const result = nativeParse.apply(this, args as never);
+// Disabled until further notice
+(() => {
+	return;
 
-		if (typeof result === 'object' && result.name && result.spawns) {
-			/**
-			 * Merge the parsed map with the client map settings.
-			 * Proxy the map settings so whenever they're accessed,
-			 * we can pass values and reference mapSettings.
-			 */
-			const mapSettings = JSON.parse(gameSettings.getSetting(Saveables.MAP_ATTRIBUTES, '{}') as string) as Partial<MapExport>;
-			const [skyDomeCol0, skyDomeCol1, skyDomeCol2] = getSavedSkycolor();
-			return new Proxy({
-				...result,
-				...mapSettings,
-				...{ skyDomeCol0, skyDomeCol1, skyDomeCol2 }
-			}, {
-				get(target: MapExport, key: keyof MapExport) {
-					return mapSettings[key] ?? target[key];
-				}
-			});
-		}
+	(nativeFetch => {
+		window.fetch = async function(...args: unknown[]) {
+			const result = await nativeFetch.apply(this, args as never);
 
-		return result;
-	};
-})(JSON.parse);
+			const [target] = args;
+			if (typeof target === 'string' && /^maps\/(?:.*)(?:.\.json)/u.test(target)) {
+				const clone = result.clone();
+				const json = await clone.json();
 
-(nativeFetch => {
-	window.fetch = async function(...args: unknown[]) {
-		const result = await nativeFetch.apply(this, args as never);
+				const mapSettings = JSON.parse(gameSettings.getSetting(Saveables.MAP_ATTRIBUTES, '{}') as string) as Partial<MapExport>;
+				const [skyDomeCol0, skyDomeCol1, skyDomeCol2] = getSavedSkycolor();
+				const spoofedString = JSON.stringify({
+					...json,
+					...mapSettings,
+					...{ skyDomeCol0, skyDomeCol1, skyDomeCol2 }
+				});
+				const spoofedStream = new ReadableStream({
+					start(controller) {
+						controller.enqueue(spoofedString);
+						controller.close();
+					}
+				});
 
-		const [target] = args;
-		if (typeof target === 'string' && /^maps\/(?:.*)(?:.\.json)/u.test(target)) {
-			const json = await (result.clone()).json();
+				Reflect.defineProperty(result, 'body', {
+					get() {
+						return spoofedStream;
+					}
+				});
+			}
 
-			const mapSettings = JSON.parse(gameSettings.getSetting(Saveables.MAP_ATTRIBUTES, '{}') as string) as Partial<MapExport>;
-			const [skyDomeCol0, skyDomeCol1, skyDomeCol2] = getSavedSkycolor();
-			return new Response(JSON.stringify({
-				...json,
-				...mapSettings,
-				...{ skyDomeCol0, skyDomeCol1, skyDomeCol2 }
-			}));
-		}
+			return result;
+		};
+	})(window.fetch);
 
-		return result;
-	};
-})(window.fetch);
+	(nativeParse => {
+		JSON.parse = function(...args: unknown[]) {
+			const result = nativeParse.apply(this, args as never);
+
+			if (result instanceof Object && result.name && result.spawns) {
+				/**
+				 * Merge the parsed map with the client map settings.
+				 * Proxy the map settings so whenever they're accessed,
+				 * we can pass values and reference mapSettings.
+				 */
+				const mapSettings = nativeParse(gameSettings.getSetting(Saveables.MAP_ATTRIBUTES, '{}') as string) as Partial<MapExport>;
+				const [skyDomeCol0, skyDomeCol1, skyDomeCol2] = getSavedSkycolor();
+				return new Proxy({
+					...result,
+					...mapSettings,
+					...{ skyDomeCol0, skyDomeCol1, skyDomeCol2 }
+				}, {
+					get(target: MapExport, key: keyof MapExport) {
+						return mapSettings[key] ?? target[key];
+					}
+				});
+			}
+
+			return result;
+		};
+	})(JSON.parse);
+})();

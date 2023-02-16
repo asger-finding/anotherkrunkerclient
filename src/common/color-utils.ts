@@ -64,8 +64,8 @@ export function* rainbow(frequency: number, startIndex: number, multiplier: numb
  * @param hexCodes Hex input(s)
  * @returns [r, g, b] array or fallback
  */
-export const hexToRGB = (maxValue: number, ...hexCodes: string[]): Array<Color> => {
-	const result: Array<Color> = [];
+export const hexToRGB = (maxValue: number, ...hexCodes: string[]): Color[] => {
+	const result: Color[] = [];
 	for (const hex of hexCodes) {
 		const regexResult = hex.padEnd(7, '0')
 			.match(/^#?(?<red>[\da-f]{2})(?<green>[\da-f]{2})(?<blue>[\da-f]{2})$/iu);

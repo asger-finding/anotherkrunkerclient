@@ -55,6 +55,7 @@ export const TABS = {
 export enum MESSAGES {
 	GAME_DONE = 'game-done',
 	EXIT_CLIENT = 'exit-client',
+	CLEAR_ELECTRON_BLOCKER_CACHE = 'clearElectronBlockerCache',
 	TWITCH_GET_INFO = 'twitch-get-info',
 	TWITCH_MESSAGE_SEND = 'twitch-message-send',
 	TWITCH_MESSAGE_RECEIVE = 'twitch-message-receive'

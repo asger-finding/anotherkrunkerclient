@@ -1,17 +1,22 @@
 import { Saveables } from '@settings-backend';
 
-export type EventHandler<T extends Event> = (event: T) => void;
 export type EventListener = (eventId: string, data?: unknown) => void;
 export type KrunkerDomains = 'krunker.io' | 'browserfps.com';
 
-export type InputNodeAttributes<Target extends Event> = { [key: string]: unknown } & {
-	oninput: EventHandler<Target>;
+export type InputNodeAttributes<Target extends HTMLElement> = {
 	id: Saveables;
-};
+} & Partial<Target>;
 
 export type Callback = (...args: never[]) => unknown;
 
 export type AsyncReturnType<Target extends (...args: unknown[]) => Promise<unknown>> = Awaited<ReturnType<Target>>;
+
+export type RequiredFieldsOnly<T> = {
+	[K in keyof T as T[K] extends Required<T>[K] ? K : never]: T[K];
+};
+export type UnrequiredFieldsOnly<T> = {
+	[K in keyof T as T[K] extends Required<T>[K] ? never : K]: T[K];
+};
 
 declare global {
 	namespace NodeJS {
@@ -64,14 +69,14 @@ export type SimplifiedTwitchMessage = {
 };
 
 export interface PartialGPU {
-	gpuDevice: Array<{
+	gpuDevice: {
 		active: boolean;
 		vendorId: number;
 		deviceId: number;
-	}>;
+	}[];
 }
 
-export type Flags = Array<[string] | [string, string]>;
+export type Flags = ([string] | [string, string])[];
 
 export type Author = string | {
 	name: string;

@@ -1,8 +1,9 @@
+import PatchedStore from '@store';
 import { USERAGENT_LIFETIME } from '@constants';
 import { info } from '@logger';
-import store from '@store';
 
 const storeSchema = 'userAgentSpoof';
+const store = new PatchedStore();
 
 /**
  * Get the current operating system and return it in a format matching a UA.

@@ -2,13 +2,15 @@ import { AsyncReturnType, DefaultConstructorOptions, WindowData, WindowSaveData 
 import { BrowserWindow, app, dialog } from 'electron';
 import { TABS, getURLData } from '@constants';
 import GameUtils from '@game-utils';
+import PatchedStore from '@store';
 import ResourceSwapper from '@resource-swapper';
 import { exec } from 'child_process';
 import { getSpoofedUA } from '@useragent-spoof';
 import { info } from '@logger';
 import { register } from 'electron-localshortcut';
 import { resolve } from 'path';
-import store from '@store';
+
+const store = new PatchedStore();
 
 /**
  * Returns the default window options, with sizing for the given tab.
@@ -67,11 +69,6 @@ export const navigate = (browserWindow: BrowserWindow & { resourceSwapper?: Reso
 	const { isKrunker } = getURLData(windowUrl ?? browserWindow.webContents.getURL());
 
 	if (isKrunker) {
-		// Hide the captcha bar that krunker may spawn.
-		browserWindow.webContents.once('did-frame-finish-load', () => {
-			browserWindow.webContents.insertCSS('body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }');
-		});
-
 		// Assign the BrowserWindow a ResourceSwapper.
 		if (!browserWindow.resourceSwapper) browserWindow.resourceSwapper = new ResourceSwapper(browserWindow);
 		browserWindow.resourceSwapper.start();
