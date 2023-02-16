@@ -1,70 +1,93 @@
-import { AsyncReturnType, WindowData, WindowSaveData } from '@client';
+import { AsyncReturnType, DefaultConstructorOptions, WindowData, WindowSaveData } from '@client';
 import { BrowserWindow, app, dialog } from 'electron';
-import {
-	TABS,
-	getDefaultConstructorOptions,
-	getURLData,
-	preferences
-} from '@constants';
+import { TABS, getURLData } from '@constants';
 import GameUtils from '@game-utils';
+import PatchedStore from '@store';
 import ResourceSwapper from '@resource-swapper';
+import { exec } from 'child_process';
 import { getSpoofedUA } from '@useragent-spoof';
 import { info } from '@logger';
-import { lt as lessThan } from 'semver';
 import { register } from 'electron-localshortcut';
-import { spawn } from 'child_process';
+import { resolve } from 'path';
+
+const store = new PatchedStore();
+
+/**
+ * Returns the default window options, with sizing for the given tab.
+ *
+ * @param tabName The name of the tab to get sizing data for.
+ * @returns The default window constructor options.
+ */
+export const getDefaultConstructorOptions = (tabName?: string): DefaultConstructorOptions => <DefaultConstructorOptions>{
+	movable: true,
+	resizable: true,
+	fullscreenable: true,
+	darkTheme: true,
+	backgroundColor: '#1c1c1c',
+	icon: resolve(__dirname, '../static/icon96x96.png'),
+	webPreferences: {
+		nodeIntegration: false,
+		contextIsolation: true,
+		worldSafeExecuteJavaScript: true,
+		enableRemoteModule: false
+	},
+	...store.get(`window.${ tabName }`, {
+		width: 1280,
+		height: 720,
+		fullscreen: false,
+		maximized: false
+	}) as WindowSaveData
+};
 
 /**
  * Load a URL in the specified window with a spoofed user agent
  *
- * @param browserWindow - The target window to spoof
- * @param windowUrl - URL to load
+ * @param browserWindow The target window to spoof
+ * @param windowUrl URL to load
  */
-async function loadSpoofedURL(browserWindow: Electron.BrowserWindow, windowUrl: string): Promise<void> {
+const loadSpoofedURL = async(browserWindow: Electron.BrowserWindow, windowUrl: string): Promise<void> => {
 	let ua: AsyncReturnType<typeof getSpoofedUA> = '';
 	const windowUserAgent = browserWindow.webContents.getUserAgent();
 	const isElectron = windowUserAgent.includes('Electron');
 
 	if (isElectron) ua = await getSpoofedUA();
 	browserWindow.loadURL(windowUrl, { userAgent: ua || windowUserAgent });
-}
+};
+
+// RegEx expression to match the major, minor and patch version of a valid semver scheme
+const semverRegex = /^(?<major>0|[1-9]+[0-9]*)\.(?<minor>0|[1-9]+[0-9]*)\.(?<patch>0|[1-9]+[0-9]*)(?:-(?:0|[1-9A-Za-z-][0-9A-Za-z-]*)(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/u;
 
 /**
  * Run when navigated (exclude `windowUrl` param) or when navigating (include `windowUrl` param) to a new URL.
  * Spoofs the user agent, loads the URL, and triggers site-specific behavior.
  *
- * @param browserWindow - The target window
- * @param windowUrl - URL to load, if any
+ * @param browserWindow The target window
+ * @param windowUrl URL to load, if any
  */
-export function navigate(browserWindow: BrowserWindow & { resourceSwapper?: ResourceSwapper }, windowUrl?: string): void {
+export const navigate = (browserWindow: BrowserWindow & { resourceSwapper?: ResourceSwapper }, windowUrl?: string): void => {
 	if (windowUrl) loadSpoofedURL(browserWindow, windowUrl);
 	const { isKrunker } = getURLData(windowUrl ?? browserWindow.webContents.getURL());
 
 	if (isKrunker) {
-		// Hide the captcha bar in the window that krunker may spawn.
-		browserWindow.webContents.once('did-frame-finish-load', () => {
-			browserWindow.webContents.insertCSS('body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }');
-		});
-
 		// Assign the BrowserWindow a ResourceSwapper.
 		if (!browserWindow.resourceSwapper) browserWindow.resourceSwapper = new ResourceSwapper(browserWindow);
 		browserWindow.resourceSwapper.start();
 	}
-}
+};
 
 /**
  * Open an outlink in the default browser.
  * Fix for `shell.openExternal()` in some electron versions.
  *
- * @param externalUrl - The URL to open externally
+ * @param externalUrl The URL to open externally
  */
-export function openExternal(externalUrl: string): void {
+export const openExternal = (externalUrl: string): void => {
 	let command = 'xdg-open';
 	if (process.platform === 'darwin') command = 'open';
 	if (process.platform === 'win32') command = 'explorer';
 
-	spawn(command, [externalUrl]);
-}
+	exec(`${ command } "${ externalUrl }"`);
+};
 
 export default class {
 
@@ -73,8 +96,8 @@ export default class {
 	 * Register shortcuts for the window. If show is true in parameters, show the window.  
 	 * If the window is a Krunker tab, set the window scaling preferences.
 	 *
-	 * @param constructorOptions - The options to pass to the window constructor
-	 * @param windowURL - The URL to load in the window
+	 * @param constructorOptions The options to pass to the window constructor
+	 * @param windowURL The URL to load in the window
 	 * @returns Newly generated window instance
 	 */
 	public static async createWindow(constructorOptions: Electron.BrowserWindowConstructorOptions, windowURL?: string): Promise<Electron.BrowserWindow> {
@@ -82,7 +105,7 @@ export default class {
 		const browserWindow = new BrowserWindow(constructorOptions);
 
 		if (windowURL) navigate(browserWindow, windowURL);
-		if (preferences.get(`window.${ windowData.tab }.maximized`)) browserWindow.maximize();
+		if (store.get(`window.${ windowData.tab }.maximized`)) browserWindow.maximize();
 
 		browserWindow.removeMenu();
 
@@ -96,7 +119,7 @@ export default class {
 	/**
 	 * Register global shortcuts for the window. Should be done before dom-ready
 	 *
-	 * @param browserWindow - The window to register the event on
+	 * @param browserWindow The window to register the event on
 	 */
 	private static registerShortcuts(browserWindow: Electron.BrowserWindow): void {
 		const { webContents } = browserWindow;
@@ -106,8 +129,8 @@ export default class {
 		register(browserWindow, 'Esc', () => webContents.executeJavaScript('document.exitPointerLock()', true));
 		register(browserWindow, 'Alt+F4', () => browserWindow.close());
 		register(browserWindow, 'F11', () => browserWindow.setFullScreen(!browserWindow.isFullScreen()));
-		register(browserWindow, ['F5', 'Ctrl+R'], () => webContents.reload());
-		register(browserWindow, ['Ctrl+F5', 'Ctrl+Shift+R'], () => webContents.reloadIgnoringCache());
+		register(browserWindow, ['F5', 'Ctrl+R'], () => { webContents.reload(); navigate(browserWindow); });
+		register(browserWindow, ['Ctrl+F5', 'Ctrl+Shift+R'], () => { webContents.reloadIgnoringCache(); navigate(browserWindow); });
 		register(browserWindow, ['F12', 'Ctrl+Shift+I'], () => this.openDevToolsWithFallback(browserWindow));
 	}
 
@@ -115,9 +138,9 @@ export default class {
 	 * Create electron event listeners for the window.  
 	 * Some one-time events are triggered onces, some are triggered on every event.
 	 *
-	 * @param constructorOptions - The parameters the window was created with
-	 * @param browserWindow - Target window
-	 * @param windowData - Data from Constants.getURLData on the target window URL
+	 * @param constructorOptions The parameters the window was created with
+	 * @param browserWindow Target window
+	 * @param windowData Data from Constants.getURLData on the target window URL
 	 */
 	private static registerEventListeners(constructorOptions: Electron.BrowserWindowConstructorOptions, browserWindow: Electron.BrowserWindow, windowData: WindowData): void {
 		const { webContents } = browserWindow;
@@ -131,7 +154,7 @@ export default class {
 					fullscreen: browserWindow.isFullScreen(),
 					maximized: browserWindow.isMaximized()
 				};
-				for (const [key, value] of Object.entries(windowPreferences)) preferences.set(`window.${ windowData.tab }.${ key }`, value);
+				for (const [key, value] of Object.entries(windowPreferences)) store.set(`window.${ windowData.tab }.${ key }`, value);
 			});
 		}
 
@@ -185,7 +208,7 @@ export default class {
 	/**
 	 * If the tab matches the switch case, apply tab-specific methods to the window.
 	 *
-	 * @param windowData - Data from Constants.getURLData on the target window URL
+	 * @param windowData Data from Constants.getURLData on the target window URL
 	 * @returns A function that returns a void promise when all is done
 	 */
 	private static createSpecialWindow(windowData: WindowData): ((browserWindow: Electron.BrowserWindow) => Promise<void>) | null {
@@ -201,16 +224,15 @@ export default class {
 	 * Attempt to open the DevTools for the window.
 	 * If it refuses to open after 500 ms, use a fallback method.
 	 *
-	 * @param browserWindow - The window to open the DevTools in
-	 * @param mode - The mode to open the DevTools in
+	 * @param browserWindow The window to open the DevTools in
+	 * @param mode The mode to open the DevTools in
 	 */
 	public static openDevToolsWithFallback(browserWindow: Electron.BrowserWindow, mode?: Electron.OpenDevToolsOptions): void {
 		// Addresses https://stackoverflow.com/q/69969658/11452298 for electron < 13.5.0
 		browserWindow.webContents.openDevTools(mode);
 
-		// Get electron version
-		const electronVersion = process.versions.electron;
-		if (lessThan(electronVersion, '13.5.0')) {
+		const [, major, minor] = (process.versions.electron.match(semverRegex) as [string, string, string]).map(Number);
+		if (major <= 13 && minor < 5) {
 			// devtools-opened takes about 300 ms to fire on a Windows 10 VirtualBox VM with 8 gb of ram and 8 threads.
 			const fallback = setTimeout(() => {
 				// Fallback if openDevTools fails
@@ -228,9 +250,9 @@ export default class {
 	}
 
 	/**
-	 * Destroy the splash window.
+	 * Destroy the target window.
 	 *
-	 * @param browserWindow - The window to destroy
+	 * @param browserWindow The window to destroy
 	 */
 	public static destroyWindow(browserWindow: Electron.BrowserWindow): void {
 		info('Destroying a window instance');

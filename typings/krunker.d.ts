@@ -4,6 +4,45 @@ type Hexadecimal = (string | number);
 /** A representation of a minified boolean value as 0 or 1 or boolean */
 type SlimBoolean = (0 | 1 | boolean);
 
+/** RGB array type */
+export type Color = [number, number, number];
+
+export interface KrunkerWindow extends Window {
+	windows: [
+		{
+			applyAllWeps: (...args: unknown[]) => void;
+			changeTab: (...args: unknown[]) => void;
+			changeWep: (...args: unknown[]) => void;
+			collapseFolder: (...args: unknown[]) => void;
+			currWep: number;
+			dark: boolean;
+			gen: () => string;
+			genList: (...args: unknown[]) => string;
+			getSettings: (...args: unknown[]) => string;
+			getTabs: (...args: unknown[]) => string;
+			header: string;
+			html: string;
+			label: string;
+			maxH: string;
+			popup: boolean;
+			resetAllWeps: (...args: unknown[]) => void;
+			searchList: () => void;
+			searchMatches: (...args: unknown[]) => boolean;
+			settingSearch: string | null;
+			settingType: string;
+			sticky: boolean;
+			tabIndex: number;
+			tabs: {
+				basic: Record<string, unknown>[];
+				advanced: Record<string, unknown>[];
+			}
+			toggleType: (evt: Event) => void;
+			width: number;
+		},
+		...Record<string, unknown>[]
+	];
+}
+
 export interface MapExport {
 
 	/**
@@ -26,7 +65,7 @@ export interface MapExport {
 	 * 
 	 * Referenced in {@link MapExport.objects.ci} and {@link MapExport.objects.ei}
 	 */
-	colors: Array<Hexadecimal>;
+	colors: Hexadecimal[];
 
 	/**
 	 * Array relating to {@link MapExport.objects} containing the 3 axis scale values for all objects.  
@@ -37,11 +76,11 @@ export interface MapExport {
 	 * // foo.si = 0;  ->  foo has dimensions [1, 2, 3];
 	 * // bar.si = 1;  ->  bar has dimensions [6, 7, 8];
 	 */
-	xyz: Array<number>;
+	xyz: number[];
 
 	// https://docs.krunker.io/#/./files/scene?id=adding-3d-objects
 	/** Objects in the map. */
-	objects: Array<{
+	objects: {
 
 		/**
 		 * Object index used to define the object's size.  
@@ -92,7 +131,7 @@ export interface MapExport {
 		cpx?: SlimBoolean;
 
 		/** Object geometry. */
-		tris?: Array<number>;
+		tris?: number[];
 
 		/**
 		 * Is object wall jumpable?
@@ -379,7 +418,7 @@ export interface MapExport {
 		 * @default 0
 		 */
 		i?: number;
-	}>;
+	}[];
 
 	// Config is sent to the client via a webhook (api.krunker.io/webhooks/general/maps/config?mn=<MAP_NAME>)
 	config: {
@@ -489,8 +528,8 @@ export interface MapExport {
 			physPow: number;
 		}>
 	};
-	camPos: Array<number | boolean>;
-	spawns: Array<Array<unknown>>;
+	camPos: (number | boolean)[];
+	spawns: unknown[][];
 
 	/**
 	 * The ambient sound of the map.
@@ -665,35 +704,34 @@ export interface MapExport {
 	fogD: number;
 
 	/** 
+	 * See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.physicallyCorrectLights THREE.js: WebGLRenderer.physicallyCorrectLights}
+	 * 
 	 * @default 'map-dependent'
-	 * @remarks See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.physicallyCorrectLights THREE.js: WebGLRenderer.physicallyCorrectLights}
 	 */
 	correctLights: boolean;
 
 	/**
+	 * See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.toneMapping THREE.js: WebGLRenderer.toneMapping}  
+	 * 
 	 * @default 0 (THREE.NoToneMapping)
-	 * @remarks See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.toneMapping THREE.js: WebGLRenderer.toneMapping}  
 	 */
 	toneMapping: 0 | 1 | 2 | 3 | 4;
 
 	/**
+	 * See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.toneMappingExposure THREE.js: WebGLRenderer.toneMappingExposure}
+	 * 
 	 * @default 1
-	 * @remarks See {@link https://threejs.org/docs/#api/en/renderers/WebGLRenderer.toneMappingExposure THREE.js: WebGLRenderer.toneMappingExposure}
 	 */
 	toneMappingExposure: number;
 
 	/**
 	 * 0: `LinearEncoding`  
 	 * 1: `sRGBEncoding`
+	 * 
+	 * See {@link https://threejs.org/docs/#api/en/constants/Textures THREE.js: Encoding}
 	 *
 	 * @default 0 (THREE.LinearEncoding)
-	 * @remarks See {@link https://threejs.org/docs/#api/en/constants/Textures THREE.js: Encoding}
 	 */
 	outputEncoding: 0 | 1;
 
-	/**
-	 * @default 2
-	 * @remarks Possibly deprecated or requires a different render engine.
-	 */
-	gammaFactor: number;
 }

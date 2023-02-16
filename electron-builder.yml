@@ -18,8 +18,6 @@ directories:
   output: dist
 
 forceCodeSigning: false
-# artifactName is set programatically in .github/build-binaries when artifacting distribution builds.
-# Client name is pulled from productName in package.json.
 artifactName: anotherkrunkerclient-${os}-${arch}.${ext}
 
 win:

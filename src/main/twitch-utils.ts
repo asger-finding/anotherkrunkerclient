@@ -1,25 +1,30 @@
 import {
 	IS_DEVELOPMENT,
-	TWITCH_CLIENT_ID,
-	TWITCH_PORT,
-	preferences
+	TWITCH
 } from '@constants';
 import { error, info, warn } from '@logger';
 import { Client } from 'tmi.js';
+import PatchedStore from '@store';
 import { createServer } from 'http';
 import fetch from 'node-fetch';
 import { openExternal } from '@window-utils';
+
+const store = new PatchedStore();
 
 export default class {
 
 	/**
 	 * Create a new Twitch client.
 	 * 
-	 * @returns Promise for a tmi.js client instance.
+	 * @returns Promise for a tmi.js client instance or null if failed.
 	 */
-	public static async createClient(): Promise<Client> {
+	public static async createClient(): Promise<Client | null> {
+		info('Initializing Twitch client');
+
 		const token = await this.getAccessToken();
 		const username = await this.getUsername(token);
+
+		if (username === null) return null;
 
 		return new Client({
 			options: { debug: IS_DEVELOPMENT ?? false },
@@ -28,15 +33,14 @@ export default class {
 				username,
 				password: `oauth:${ token }`
 			},
-			// TODO: Any channel can be selected
 			channels: [username]
 		});
 	}
 
-	/** @returns Promise for Twitch oauth token, either saved in the preferences or fetched from the Twitch API. */
+	/** @returns Promise for Twitch oauth token, either saved in the store or fetched from the Twitch API. */
 	private static getAccessToken(): Promise<string> {
 		return new Promise((resolve, reject) => {
-			const cachedToken = preferences.get('twitch.token');
+			const cachedToken = store.get('twitch.token');
 			if (typeof cachedToken === 'string') return resolve(cachedToken);
 
 			// Create a random state string to prevent csrf attacks
@@ -47,9 +51,9 @@ export default class {
 
 			// Create oauth url
 			const url = `https://id.twitch.tv/oauth2/authorize?client_id=${
-				TWITCH_CLIENT_ID
+				TWITCH.CLIENT_ID
 			}&redirect_uri=http://localhost:${
-				TWITCH_PORT
+				TWITCH.PORT
 			}&state=${
 				state
 			}&response_type=token&scope=chat:read+chat:edit`;
@@ -67,7 +71,7 @@ export default class {
 						<body>
 							<noscript><h2>You must enable JavaScript to use Twitch oauth!</h2></noscript>
 					
-							<h2>You may close this window</h2>
+							<h2>Twitch Authenticated — you may close this window</h2>
 					
 							<script>
 								if (location.hash) {
@@ -75,7 +79,7 @@ export default class {
 									const state = location.hash.match(/state=(.*)&/)[1];
 									if (state !== '${ state }') throw new Error('State mismatch');
 	
-									fetch('http://localhost:${ TWITCH_PORT }/token?token=' + token, {
+									fetch('http://localhost:${ TWITCH.PORT }/token?token=' + token, {
 										method: 'GET',
 										headers: {
 											'Content-Type': 'application/json'
@@ -99,12 +103,10 @@ export default class {
 					return resolve(result);
 				}
 				return res.end();
-			}).listen(TWITCH_PORT, () => {
-				openExternal(url);
-			});
+			}).listen(TWITCH.PORT, () => openExternal(url));
 
 			// Close the server after 5 minutes
-			setTimeout(() => {
+			return setTimeout(() => {
 				server.close();
 
 				return reject(new Error('Timeout'));
@@ -115,7 +117,7 @@ export default class {
 	/**
 	 * Handles the Twitch oauth token url with a regex.
 	 * 
-	 * @param url - url string
+	 * @param url url string
 	 * @returns Twitch oauth token or an error if the token was not found.
 	 */
 	private static handleTokenUrl(url: string | undefined): string | Error {
@@ -123,28 +125,41 @@ export default class {
 
 		if (!token) return new Error('No token');
 
-		preferences.set('twitch.token', token);
+		store.set('twitch.token', token);
 		return token;
 	}
 
 	/**
 	 * Get the username of the Twitch authenticated user.
 	 * 
-	 * @param token - Twitch oauth token
+	 * @param token Twitch oauth token
+	 * @param attempts Prevent infinite loop by limiting attempts
 	 * @returns Promise for Twitch username from the Twitch API.
 	 */
-	private static async getUsername(token: string): Promise<string> {
+	private static async getUsername(token: string, attempts = 0): Promise<string | null> {
+		if (attempts > 2) return null;
+
 		// We should not cache the username, as it can be changed.
 		const login: string = await fetch('https://api.twitch.tv/helix/users', {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${ token }`,
-				'Client-ID': TWITCH_CLIENT_ID
+				'Client-ID': TWITCH.CLIENT_ID as string
 			}
 		}).then(res => res.json())
-			.then(({ data }) => data[0].login);
+			.then(async({ data }) => {
+				if (typeof data === 'undefined') {
+					info('Invalid Twitch token cache');
 
-		preferences.set('twitch.username', login);
+					// Invalidate token cache
+					store.delete('twitch.token');
+
+					return this.getUsername(await this.getAccessToken(), attempts + 1);
+				}
+				return data[0].login;
+			});
+
+		store.set('twitch.username', login);
 
 		return login;
 	}
@@ -156,14 +171,13 @@ export default class {
 	 */
 	public static async isLive() {
 		const token = await this.getAccessToken();
-		// TODO: Any streamer can be checked for live status.
 		const username = await this.getUsername(token);
 
 		return fetch(`https://api.twitch.tv/helix/streams?user_login=${ username }`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${ token }`,
-				'Client-ID': TWITCH_CLIENT_ID
+				'Client-ID': TWITCH.CLIENT_ID as string
 			}
 		}).then(res => res.json())
 			.then(({ data }) => data.length > 0);

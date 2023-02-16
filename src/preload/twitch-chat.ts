@@ -1,16 +1,11 @@
-import {
-	TWITCH_GET_INFO,
-	TWITCH_MATERIAL_ICON,
-	TWITCH_MESSAGE_RECEIVE,
-	TWITCH_MESSAGE_SEND,
-	preferences
-} from '@constants';
+import { MESSAGES, TWITCH, TWITCH_GET_CHANNELINFO_INTERVAL } from '@constants';
+import SettingsBackend, { Saveables } from '@settings-backend';
 import { ChatUserstate } from 'tmi.js';
 import { SimplifiedTwitchMessage } from '@client';
 import { ipcRenderer } from 'electron';
 
 type ViewerStates = 'subscriber' | 'vip' | 'moderator' | 'broadcaster';
-type AvailableStates = 'public' | 'groups' | typeof TWITCH_MATERIAL_ICON;
+type AvailableStates = 'public' | 'groups' | typeof TWITCH.MATERIAL_ICON;
 type SwitchChat = (element: HTMLDivElement) => void;
 type TwitchMessageItem = {
 	chatUserstate: ChatUserstate;
@@ -23,11 +18,11 @@ type TwitchMessageItem = {
  * @example
  * const condition = {
  *     // Does message start with '!hello'
- *     condition: /^!ping$/i,
+ *     regexCondition: /^!ping$/i,
  * 
  *     mustBeLive: true,
  *     onlyOwnChannel: false,
- *     // Callback to execute if the condition is met
+ *     // Callback to execute if the regex condition is met
  *     call: (chatUserstate: ChatUserstate, message: string) => {
  *         TwitchChat.sendTwitchMessage(`Pong, ${chatUserstate.username}!`);
  *     }
@@ -36,7 +31,7 @@ type TwitchMessageItem = {
 interface ConditionFields {
 
 	/** RegExp to match the message. */
-	condition: RegExp;
+	regexCondition: RegExp;
 
 	/**
 	 * Command can only be triggered on the authenticated user's own channel.
@@ -53,10 +48,10 @@ interface ConditionFields {
 	mustBeLive?: boolean;
 
 	/** Who can trigger the condition? Unspecified (the default) means everyone. */
-	whoCanTrigger?: Array<ViewerStates>;
+	whoCanTrigger?: ViewerStates[];
 
 	/** The call to make if all conditions are met. */
-	call: (userState: ChatUserstate, message: string) => void;
+	call: (ctxt: TwitchChat, userState: ChatUserstate, message: string) => void;
 }
 
 export default class TwitchChat {
@@ -85,36 +80,29 @@ export default class TwitchChat {
 
 	private nativeSwitchChat: SwitchChat;
 
+	private settingsBackend = new SettingsBackend();
+
 	/**
 	 * RegExes to test incoming messages against to trigger a chat action.
-	 * 
-	 * @example
-	 * const condition = {
-	 *     // Does message start with '!hello'
-	 *     condition: /^!ping$/i,
-	 *     // Callback to execute if the condition is met
-	 *     call: (chatUserstate: ChatUserstate, message: string) => {
-	 *         TwitchChat.sendTwitchMessage(`Pong, ${chatUserstate.username}!`);
-	 *     }
-	 * }
 	 */
-	private static conditions: Array<ConditionFields> = [
+	private static conditions: ConditionFields[] = [
 		{
-			condition: /^!link(?: (?:.*))?$/ui,
+			regexCondition: /^!link(?: (?:.*))?$/ui,
 			onlyOwnChannel: true,
 			mustBeLive: true,
-			call(userState) {
+			call(ctxt, userState) {
+				if (!ctxt.settingsBackend.getSetting(Saveables.ALLOW_TWITCH_LINK_COMMAND, false)) return;
 				const { search } = new URL(location.href);
 
 				if (search.startsWith('?game=')) TwitchChat.sendTwitchMessage(`@${ userState.username } — ${ location.href }`);
 			}
 		},
 		{
-			condition: /^!ping$/ui,
-			onlyOwnChannel: false,
-			mustBeLive: true,
+			regexCondition: /^!ping$/ui,
+			onlyOwnChannel: true,
+			mustBeLive: false,
 			whoCanTrigger: ['moderator', 'broadcaster'],
-			call(userState) {
+			call(_ctxt, userState) {
 				TwitchChat.sendTwitchMessage(`@${ userState.username }, pong!`);
 			}
 		}
@@ -122,12 +110,12 @@ export default class TwitchChat {
 
 	/** Set up the event listener for the Twitch chat. */
 	constructor() {
-		ipcRenderer.on(TWITCH_MESSAGE_RECEIVE, (_evt, item: TwitchMessageItem) => this.filterTwitchMessage(item));
+		ipcRenderer.on(MESSAGES.TWITCH_MESSAGE_RECEIVE, (_evt, item: TwitchMessageItem) => this.filterTwitchMessage(item));
 	}
 
 	/** Initialize the Twitch chat. */
 	public init() {
-		/** @param chatSwitchElement - The element that triggered the chat tab switch. */
+		/** @param chatSwitchElement The element that triggered the chat tab switch. */
 		const switchChatHook: SwitchChat = chatSwitchElement => {
 			this.switchChat(chatSwitchElement);
 		};
@@ -136,20 +124,22 @@ export default class TwitchChat {
 			configurable: true,
 
 			/**
-			 * Save the native switchChat function and replace it with a custom one. Save the chat elements to the class.
+			 * Save the native switchChat function and replace it with a hook. Save the chat elements to the class.
 			 * 
-			 * @param nativeSwitchChat - The native switchChat function.
+			 * @param nativeSwitchChat The native switchChat function.
 			 */
 			set: async(nativeSwitchChat: SwitchChat) => {
 				// At this point, the chat has been initialized
-				this.saveElements();
-				this.nativeSwitchChat = nativeSwitchChat;
 
-				Reflect.defineProperty(window, 'switchChat', <{ value: SwitchChat }>{ value: switchChatHook });
+				this.periodicallyRefreshTwitchChannelInfo();
+				this.nativeSwitchChat = nativeSwitchChat;
+				this.saveElements();
+
+				// Write the hook to the native function
+				Reflect.defineProperty(window, 'switchChat', { value: switchChatHook });
 
 				// Navigate to the correct chat tab
-				this.twitchInfo = await ipcRenderer.invoke(TWITCH_GET_INFO);
-				this.navigateToChatTab();
+				this.loadInitialChatTab();
 			},
 			get() {
 				return switchChatHook;
@@ -158,10 +148,27 @@ export default class TwitchChat {
 	}
 
 	/**
+	 * Get Twitch channel info and refresh it periodically
+	 */
+	private periodicallyRefreshTwitchChannelInfo() {
+		/**
+		 * Call ipcMain to get Twitch Channel info
+		 * 
+		 * @returns void
+		 */
+		const invoke = () => ipcRenderer.invoke(MESSAGES.TWITCH_GET_INFO).then(result => {
+			this.twitchInfo = result;
+		});
+		invoke();
+
+		setInterval(invoke, TWITCH_GET_CHANNELINFO_INTERVAL);
+	}
+
+	/**
 	 * Iterate through conditions and call the callbacks if the condition is met.
 	 * Append the message to the chat list.
 	 * 
-	 * @param item - The Twitch message context
+	 * @param item The Twitch message context
 	 */
 	private filterTwitchMessage(item: TwitchMessageItem): void {
 		this.iterateOverConditions(item);
@@ -179,7 +186,7 @@ export default class TwitchChat {
 	/**
 	 * Iterate over the Twitch command conditions and call the callbacks if the condition is met.
 	 *
-	 * @param item - The Twitch message context
+	 * @param item The Twitch message context
 	 */
 	// eslint-disable-next-line complexity
 	private iterateOverConditions(item: TwitchMessageItem) {
@@ -195,22 +202,24 @@ export default class TwitchChat {
 				if (!userBadges.some(badge => allowed.includes(badge))) continue;
 			}
 
-			if (condition.condition.test(item.message)) condition.call(item.chatUserstate, item.message);
+			if (condition.regexCondition.test(item.message)) condition.call(this, item.chatUserstate, item.message);
 		}
 	}
 
 	/**
-	 * Toggle the chat tab
+	 * Handle the HTML and styling for changing the tab
 	 * 
-	 * @param chatSwitchElement - The element that triggered the chat tab switch.
+	 * Hook for the native switchChat function
+	 * 
+	 * @param chatSwitchElement The element that triggered the chat tab switch.
 	 */
 	private switchChat(chatSwitchElement: HTMLDivElement) {
-		this.setOrder();
+		this.setChatTabOrder();
 
 		const currentTab = (chatSwitchElement.getAttribute('data-tab') ?? 'public') as AvailableStates;
 		this.chatState = this.chatStates[(this.chatStates.indexOf(currentTab) + 1) % this.chatStates.length];
 
-		if (this.chatState === TWITCH_MATERIAL_ICON) {
+		if (this.chatState === TWITCH.MATERIAL_ICON) {
 			this.chatInputClone.style.display = 'inline';
 			this.chatListClone.style.display = 'block';
 			this.chatInput.style.display = 'none';
@@ -264,7 +273,7 @@ export default class TwitchChat {
 	/**
 	 * Create a new in-game chat message and append it to the cloned chat list.
 	 * 
-	 * @param message - The Twitch message and username.
+	 * @param message The Twitch message and username.
 	 */
 	private appendTwitchMessage(message: SimplifiedTwitchMessage): void {
 		if (this.chatListClone.firstElementChild && this.chatListClone.children.length > 200) this.chatListClone.removeChild(this.chatListClone.firstElementChild);
@@ -297,31 +306,33 @@ export default class TwitchChat {
 	}
 
 	/** Resolve the order of the chat tabs depending on whether teams are enabled or not. */
-	private setOrder() {
+	private setChatTabOrder() {
 		const testElement = document.createElement('div');
 		testElement.setAttribute('data-tab', 'public');
 		this.nativeSwitchChat(testElement);
 
 		// If the data-tab is toggled to groups by the game, then teams are enabled
 		this.chatStates = testElement.getAttribute('data-tab') === 'groups'
-			? ['public', 'groups', TWITCH_MATERIAL_ICON]
-			: ['public', TWITCH_MATERIAL_ICON];
+			? ['public', 'groups', TWITCH.MATERIAL_ICON]
+			: ['public', TWITCH.MATERIAL_ICON];
 	}
 
-	/** Save the game chat state to preferences and set it upon load. */
-	private navigateToChatTab() {
-		window.addEventListener('beforeunload', () => {
-			preferences.set('gameChatState', this.chatState);
+	/** Save the game chat state to settings and set it upon load. */
+	private loadInitialChatTab() {
+		addEventListener('beforeunload', () => {
+			const savedState = this.settingsBackend.getSetting(Saveables.GAME_CHAT_STATE, 'public');
+			if (savedState !== this.chatState) this.settingsBackend.writeSetting(Saveables.GAME_CHAT_STATE, this.chatState);
 		});
 
 		const chatSwitchElement = document.getElementById('chatSwitch') as HTMLDivElement;
-		const savedState = preferences.get('gameChatState') ?? 'public';
+		const savedState = this.settingsBackend.getSetting(Saveables.GAME_CHAT_STATE, 'public');
 
-		if (savedState === TWITCH_MATERIAL_ICON) {
-			let iterations = 0;
-			while (chatSwitchElement.getAttribute('data-tab') !== TWITCH_MATERIAL_ICON && iterations < 10) {
-				this.switchChat(chatSwitchElement);
-				iterations++;
+		if (savedState === TWITCH.MATERIAL_ICON) {
+			for (let i = 0; i < 5; i++) {
+				if (chatSwitchElement.getAttribute('data-tab') !== TWITCH.MATERIAL_ICON) {
+					this.switchChat(chatSwitchElement);
+					break;
+				}
 			}
 		}
 	}
@@ -354,10 +365,10 @@ export default class TwitchChat {
 	/**
 	 * Send a Twitch message to the chat.
 	 * 
-	 * @param message - The message to send.
+	 * @param message The message to send.
 	 */
 	private static async sendTwitchMessage(message: string) {
-		ipcRenderer.send(TWITCH_MESSAGE_SEND, message);
+		ipcRenderer.send(MESSAGES.TWITCH_MESSAGE_SEND, message);
 	}
 
 }
