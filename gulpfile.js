@@ -51,7 +51,7 @@ function moduleAlias() {
 
 		for (const instance of requireAliases) {
 			const resolvedTarget = resolve(__dirname, instance.target);
-			const path = `./${ relative(resolve(__dirname, filePath), resolvedTarget).substring(3) }` + instance.optionalPath;
+			const path = (`./${ relative(resolve(__dirname, filePath), resolvedTarget).substring(3) }` + instance.optionalPath).replace(/\\/g, '/');
 			const diff = path.length - (instance.alias.length + instance.optionalPath.length);
 
 			fileContent = fileContent.slice(0, instance.start) + fileContent.slice(instance.end);

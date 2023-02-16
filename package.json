@@ -70,6 +70,6 @@
     "postcss": "latest",
     "sass": "latest",
     "typescript": "latest",
-    "yargs": "^17.4.0"
+    "yargs": "^17.6.0"
   }
 }
