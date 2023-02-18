@@ -1,4 +1,4 @@
-import { EventListener } from '@client';
+import { EventListener } from '@typings/client';
 import PatchedStore from '@store';
 
 export enum StoreConstants {

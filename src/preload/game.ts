@@ -1,8 +1,8 @@
-import { Color, MapExport } from '@krunker';
+import { Color, MapExport } from '@typings/krunker';
 import { EventListenerTypes, Saveables } from '@settings-backend';
 import { parse, resolve } from 'path';
 import GameSettings from '@game-settings';
-import { KrunkerDomains } from '@client';
+import { KrunkerDomains } from '@typings/client';
 import { MESSAGES } from '@constants';
 import TwitchChat from '@twitch-chat';
 import { promises as fs } from 'fs';

@@ -1,73 +1,41 @@
-import { RequiredFieldsOnly, UnrequiredFieldsOnly } from '@client';
-
-interface MetadataPrimitives {
-	string: string | null;
-	boolean: boolean;
-	array: string[];
-	object: Record<string, string>;
-}
-
-type ValueTypes =
-	| typeof UserscriptParser.stringType
-	| typeof UserscriptParser.booleanType
-	| typeof UserscriptParser.arrayType
-	| typeof UserscriptParser.objectType;
-
-type InitialMetadata = {
-	name: MetadataPrimitives['string'];
-	version: MetadataPrimitives['string'];
-	desc: MetadataPrimitives['string'];
-	description: MetadataPrimitives['string'];
-	namespace: MetadataPrimitives['string'];
-	homepage: MetadataPrimitives['string'];
-	runAt: MetadataPrimitives['string'];
-
-	include: MetadataPrimitives['array'];
-	exclude: MetadataPrimitives['array'];
-	match: MetadataPrimitives['array'];
-	excludeMatch: MetadataPrimitives['array'];
-	require: MetadataPrimitives['array'];
-	resource: MetadataPrimitives['object'];
-	grant: MetadataPrimitives['array'];
-
-	antifeature?: MetadataPrimitives['array'];
-	compatible?: MetadataPrimitives['array'];
-	connect?: MetadataPrimitives['array'];
-	noframes?: MetadataPrimitives['boolean'];
-	unwrap?: MetadataPrimitives['boolean'];
-};
+import { ImmutableValue, MetaValueTypes, Userscript } from '@typings/userscripts';
 
 export default class UserscriptParser {
 
 	/**
 	 * Parse a userscript with a code block to an object
 	 * 
-	 * @param code Userscript code to parse
+	 * @param rawUserscript Userscript code to parse
 	 * @returns Parsed metadata block as object
 	 */
-	public static parse(code: string): Partial<InitialMetadata & {
-		resources?: InitialMetadata['resource'];
-	}> {
-		const metadata: Partial<InitialMetadata> = {};
+	public static parse(rawUserscript: string): Userscript.ParsedUserscript {
+		const metadata: Userscript.RawMeta = {};
 
 		// Initialize meta data using default values
-		for (const key of Object.keys(this.metaTypes) as (keyof RequiredFieldsOnly<InitialMetadata>)[]) {
+		for (const key of Object.keys(this.metaTypes) as (keyof MetaValueTypes.RequiredValues)[]) {
 			const defaultValue = this.metaTypes[key].default();
 			Object.assign(metadata, { [key]: defaultValue });
 		}
 
 		// Extract meta block from the code
-		const matched = code.match(this.metadataRegex);
-		if (!matched || !matched.groups) return metadata;
+		const matched = rawUserscript.match(this.metadataRegex);
+		if (!matched || !matched.groups) {
+			return {
+				meta: metadata as Userscript.Meta,
+				metablock: '',
+				content: rawUserscript
+			};
+		}
+		const { metablock } = matched.groups;
 
 		// Parse meta data and update the meta object
-		(matched.groups.body ?? '').replace(/(?:^|\n)\s*\/\/\x20(?<key>@\S+)(?<value>.*)/gu, (_match, rawKey: string, rawValue: string) => {
+		metablock.replace(/(?:^|\n)\s*\/\/\x20(?<key>@\S+)(?<value>.*)/gu, (_match, rawKey: string, rawValue: string) => {
 			const [keyName, locale] = rawKey.slice(1).split(':');
 
 			// Transform bad key values such as run-at into runAt
 			const camelCaseKey = keyName.replace(/[-_](?<_>\w)/gu, (_m, after) => after.toUpperCase());
 
-			const key = (locale ? `${camelCaseKey}:${locale.toLowerCase()}` : camelCaseKey) as keyof InitialMetadata;
+			const key = (locale ? `${camelCaseKey}:${locale.toLowerCase()}` : camelCaseKey) as keyof Userscript.Meta;
 			const value = rawValue.trim();
 			const metaType = {
 				...this.metaTypes,
@@ -77,7 +45,7 @@ export default class UserscriptParser {
 				? metaType.default()
 				: metadata[key];
 
-			Object.assign(metadata, { [key]: metaType.transform(<never>oldValue, value) });
+			Object.assign(metadata, { [key]: metaType.transform(<never>oldValue, <never>value) });
 
 			return '';
 		});
@@ -89,33 +57,37 @@ export default class UserscriptParser {
 		};
 		delete transformed.resource;
 
-		return transformed;
+		return {
+			meta: transformed as unknown as Userscript.Meta,
+			metablock,
+			content: rawUserscript.slice(metablock.length)
+		};
 	}
 
 	/**
 	 * Regex expression that parses the metadata block in a code snippet
 	 */
-	private static readonly metadataRegex = /(?:(?:^|\n)\s*\/\/\x20==UserScript==)(?<body>[\s\S]*?\n)\s*\/\/\x20==\/UserScript==|$/u;
+	private static readonly metadataRegex = /(?:(?:^|\n)\s*\/\/\x20==UserScript==)(?<metablock>[\s\S]*?\n)\s*\/\/\x20==\/UserScript==|$/u;
 
 	/* eslint-disable jsdoc/require-jsdoc */
 	/**
 	 * Any value type that's immutable after being set
 	 */
-	static readonly stringType = {
-		default: (): MetadataPrimitives['string'] => null,
-		transform: (result: string, value: string): Exclude<MetadataPrimitives['string'], null> => (result === null ? value : result)
+	static readonly stringType: ImmutableValue<string> = {
+		default: () => null,
+		transform: (result, value) => (result === null ? value : result)
 	};
 
 	/** Simple boolean type that defaults to false, and can transform to true */
-	static readonly booleanType = {
-		default: (): MetadataPrimitives['boolean'] => false,
-		transform: (): MetadataPrimitives['boolean'] => true
+	static readonly booleanType: ImmutableValue<boolean> = {
+		default: () => false,
+		transform: () => true
 	};
 
 	/** Array type with an empty array as default */
-	static readonly arrayType = {
-		default: (): MetadataPrimitives['array'] => [],
-		transform: (result: string[], value: string): MetadataPrimitives['array'] => {
+	static readonly arrayType: ImmutableValue<string[]> = {
+		default: () => [],
+		transform: (result, value) => {
 			result.push(value);
 			return result;
 		}
@@ -130,9 +102,9 @@ export default class UserscriptParser {
 	 * //   someSite: "https://example.com"
 	 * // }
 	 */
-	static readonly objectType = {
-		default: (): MetadataPrimitives['object'] => ({}),
-		transform: (result: Record<string, string>, value: string): MetadataPrimitives['object'] => {
+	static readonly objectType: ImmutableValue<Record<string, string>> = {
+		default: () => ({}),
+		transform: (result, value) => {
 			const { propKey, propValue } = value.match(/^(?<propKey>\w\S*)\s+(?<propValue>.*)/u)?.groups ?? {};
 			if (propKey && propValue) result[propKey] = propValue;
 
@@ -141,30 +113,29 @@ export default class UserscriptParser {
 	};
 	/* eslint-enable jsdoc/require-jsdoc */
 
-	private static readonly metaTypes: Record<keyof RequiredFieldsOnly<InitialMetadata>, ValueTypes> = {
-		name: this.stringType,
-		version: this.stringType,
-		desc: this.stringType,
-		description: this.stringType,
-		namespace: this.stringType,
-		homepage: this.stringType,
-		runAt: this.stringType,
-
-		include: this.arrayType,
+	private static readonly metaTypes: MetaValueTypes.RequiredValues = {
 		exclude: this.arrayType,
-		match: this.arrayType,
 		excludeMatch: this.arrayType,
+		grant: this.arrayType,
+		include: this.arrayType,
+		match: this.arrayType,
+		name: this.stringType,
 		require: this.arrayType,
-		resource: this.objectType,
-		grant: this.arrayType
+		resources: this.objectType
 	};
 
-	private static readonly metaOptionalTypes: Record<keyof UnrequiredFieldsOnly<InitialMetadata>, ValueTypes> = {
-		antifeature: this.arrayType,
-		compatible: this.arrayType,
-		connect: this.arrayType,
+	private static readonly metaOptionalTypes: MetaValueTypes.OptionalValues = {
+		description: this.stringType,
+		downloadURL: this.stringType,
+		homepageURL: this.stringType,
+		icon: this.stringType,
+		injectInto: this.stringType,
+		namespace: this.stringType,
 		noframes: this.booleanType,
-		unwrap: this.booleanType
+		supportURL: this.stringType,
+		unwrap: this.booleanType,
+		version: this.stringType,
+		runAt: this.stringType
 	};
 
 }

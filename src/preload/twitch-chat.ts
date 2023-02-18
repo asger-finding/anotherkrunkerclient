@@ -1,7 +1,7 @@
 import { MESSAGES, TWITCH, TWITCH_GET_CHANNELINFO_INTERVAL } from '@constants';
 import SettingsBackend, { Saveables } from '@settings-backend';
 import { ChatUserstate } from 'tmi.js';
-import { SimplifiedTwitchMessage } from '@client';
+import { SimplifiedTwitchMessage } from '@typings/client';
 import { ipcRenderer } from 'electron';
 
 type ViewerStates = 'subscriber' | 'vip' | 'moderator' | 'broadcaster';

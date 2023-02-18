@@ -1,5 +1,5 @@
-import { InputNodeAttributes } from '@client';
-import { KrunkerWindow } from '@krunker';
+import { InputNodeAttributes } from '@typings/client';
+import { KrunkerWindow } from '@typings/krunker';
 import SettingsBackend from '@settings-backend';
 
 enum Frames {

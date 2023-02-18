@@ -1,4 +1,4 @@
-import { Author, KrunkerDomains, WindowData } from '@client';
+import { Author, KrunkerDomains, WindowData } from '@typings/client';
 import SettingsBackend, { Saveables } from '@settings-backend';
 import { author, productName, repository, version } from '../../package.json';
 import { app } from 'electron';
