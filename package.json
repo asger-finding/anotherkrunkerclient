@@ -52,7 +52,7 @@
     "acorn": "latest",
     "acorn-walk": "latest",
     "del": "^6",
-    "electron": "^10",
+    "electron": "10.4.7",
     "electron-builder": "latest",
     "eslint": "latest",
     "eslint-config-airbnb-typescript": "latest",
@@ -71,5 +71,6 @@
     "sass": "latest",
     "typescript": "latest",
     "yargs": "^17.6.0"
-  }
+  },
+  "packageManager": "yarn@3.4.1"
 }
