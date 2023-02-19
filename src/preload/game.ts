@@ -373,7 +373,7 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 			value(...args: unknown[]) {
 				const [program] = args as [ThreeProgram];
 
-				if (program.cacheKey.includes('firstColor')) {
+				if (program.cacheKey.includes('endColor')) {
 					gameSettings.addEventListener(EventListenerTypes.ON_WRITE_SETTING, eventId => {
 						const [top, middle, bottom] = hexToRGB(1, ...getSavedSkycolor());
 						if (eventId === Saveables.SKY_TOP_COLOR
