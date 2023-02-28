@@ -70,7 +70,7 @@
     "postcss": "latest",
     "sass": "latest",
     "typescript": "latest",
-    "yargs": "^17.6.0"
+    "yargs": "^17.7.1"
   },
   "packageManager": "yarn@3.4.1"
 }
