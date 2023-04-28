@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # TODO:
 # * Argument with value to determine node module minifcation rather than two different arguments
@@ -71,7 +71,7 @@ else
     # Check for minify parameter or query the user on it
     if [[ $shouldMinify == 1 ]]; then
         # Add dependencies for code minifying
-        yarn add -D modclean minify-all-js node-prune --frozen-lockfile &&
+        yarn add -D modclean minify-all-js node-prune &&
 
         # Compile the project with minification
         yarn run gulp --state=production &&

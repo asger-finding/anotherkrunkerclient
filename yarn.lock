@@ -968,9 +968,9 @@ __metadata:
     acorn: latest
     acorn-walk: latest
     del: ^6
-    electron: 10.4.7
     electron-builder: latest
     electron-localshortcut: latest
+    electron-nightly: 12.0.0-nightly.20200914
     electron-store: latest
     eslint: latest
     eslint-config-airbnb-typescript: latest
@@ -3172,6 +3172,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"electron-nightly@npm:12.0.0-nightly.20200914":
+  version: 12.0.0-nightly.20200914
+  resolution: "electron-nightly@npm:12.0.0-nightly.20200914"
+  dependencies:
+    "@electron/get": ^1.0.1
+    "@types/node": ^12.0.12
+    extract-zip: ^1.0.3
+  bin:
+    electron: cli.js
+  checksum: 4667eac18d1c0160c3da19f9baf508370b4369c1f0aa49b9ea3c0603d1ccc6781115887fd5cae2e73516d00542f8dd7b697df004b56826929f75bd5d668b5837
+  languageName: node
+  linkType: hard
+
 "electron-osx-sign@npm:^0.6.0":
   version: 0.6.0
   resolution: "electron-osx-sign@npm:0.6.0"
@@ -3224,19 +3237,6 @@ __metadata:
   bin:
     electron: cli.js
   checksum: 57c013a6dc15847a1661197f3a84774dfcbc6b3a5c3f92a4da4bbebe42b8a37eb7891d814315ae61ef28403ae4299e79a21a01a7936e8277cfcc3da9f4282af1
-  languageName: node
-  linkType: hard
-
-"electron@npm:10.4.7":
-  version: 10.4.7
-  resolution: "electron@npm:10.4.7"
-  dependencies:
-    "@electron/get": ^1.0.1
-    "@types/node": ^12.0.12
-    extract-zip: ^1.0.3
-  bin:
-    electron: cli.js
-  checksum: 95f3d590aaf3727a6c036bfddd747bb9126543dc014f64d4b449db3c2aeaa52f0be3786486977a29b595ca8d72b1d9ed61b7f31fc20c0c9f7ef474e95d744bcb
   languageName: node
   linkType: hard
 

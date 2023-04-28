@@ -13,7 +13,7 @@
   "main": "./build/main.js",
   "scripts": {
     "start": "gulp --state=development && electron ./build/main.js",
-    "build": "chmod +x build.sh && ./build.sh",
+    "build": "chmod +x build.sh && ./tools/build.sh",
     "postinstall": "electron-builder install-app-deps",
     "lint": "yarn eslint . --ext .ts,.js"
   },
@@ -52,8 +52,8 @@
     "acorn": "latest",
     "acorn-walk": "latest",
     "del": "^6",
-    "electron": "10.4.7",
     "electron-builder": "latest",
+    "electron-nightly": "12.0.0-nightly.20200914",
     "eslint": "latest",
     "eslint-config-airbnb-typescript": "latest",
     "eslint-config-raven": "^1.0.3",
