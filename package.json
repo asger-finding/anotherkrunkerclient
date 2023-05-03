@@ -13,7 +13,7 @@
   "main": "./build/main.js",
   "scripts": {
     "start": "gulp --state=development && electron ./build/main.js",
-    "build": "chmod +x build.sh && ./tools/build.sh",
+    "build": "chmod +x ./tools/build.sh && ./tools/build.sh",
     "postinstall": "electron-builder install-app-deps",
     "lint": "yarn eslint . --ext .ts,.js"
   },
