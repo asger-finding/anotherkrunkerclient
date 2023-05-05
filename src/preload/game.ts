@@ -100,11 +100,11 @@ if (process.isMainFrame) {
 			}
 		}
 	}, {
-		title: 'Filter Lists (JSON Array)',
+		title: 'Filter Lists',
 		type: 'text',
 		inputNodeAttributes: {
 			id: Saveables.USER_FILTER_LISTS,
-			placeholder: '[]',
+			placeholder: '',
 
 			/**
 			 * User-specified path to the resource swapper
@@ -120,7 +120,7 @@ if (process.isMainFrame) {
 				// Validate the JSON
 				if (value.length) {
 					try {
-						const parsed = JSON.parse(value);
+						const parsed = value.split(',');
 						if (!Array.isArray(parsed)) throw new Error('Bad type');
 
 						for (const filterList of parsed) {
@@ -128,6 +128,7 @@ if (process.isMainFrame) {
 							if (filterList.startsWith('swapper://')) continue;
 
 							const url = new URL(filterList);
+							if (url.href !== filterList) throw new Error('FilterList URL is not properly URL-encoded');
 							if (url.protocol !== 'https:'
 								&& url.protocol !== 'http:') throw new Error('Bad URL protocol');
 						}
@@ -136,7 +137,7 @@ if (process.isMainFrame) {
 						return false;
 					}
 				} else {
-					value = '[]';
+					value = '';
 				}
 				element.classList.remove('inputRed2');
 
@@ -399,7 +400,6 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 // Disabled until further notice
 (() => {
 	return;
-
 	(nativeFetch => {
 		window.fetch = async function(...args: unknown[]) {
 			const result = await nativeFetch.apply(this, args as never);
@@ -411,21 +411,21 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 
 				const mapSettings = JSON.parse(gameSettings.getSetting(Saveables.MAP_ATTRIBUTES, '{}') as string) as Partial<MapExport>;
 				const [skyDomeCol0, skyDomeCol1, skyDomeCol2] = getSavedSkycolor();
-				const spoofedString = JSON.stringify({
+				const spoofedJSON = JSON.stringify({
 					...json,
 					...mapSettings,
 					...{ skyDomeCol0, skyDomeCol1, skyDomeCol2 }
 				});
 				const spoofedStream = new ReadableStream({
 					start(controller) {
-						controller.enqueue(spoofedString);
+						controller.enqueue(spoofedJSON);
 						controller.close();
 					}
 				});
 
-				Reflect.defineProperty(result, 'body', {
-					get() {
-						return spoofedStream;
+				Reflect.defineProperty(result, 'json', {
+					value() {
+						return spoofedJSON;
 					}
 				});
 			}

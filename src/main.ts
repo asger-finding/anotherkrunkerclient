@@ -196,7 +196,8 @@ class Application {
 		const swapperFilterLists: string[] = [];
 
 		// Read the user-defined filter lists. The JSON should already be validated.
-		const urlFilterLists = (JSON.parse(this.store.get(`${StoreConstants.PREFIX}.${Saveables.USER_FILTER_LISTS}`, '[]') as string) as string[])
+		const urlFilterLists = (this.store.get(`${StoreConstants.PREFIX}.${Saveables.USER_FILTER_LISTS}`, '') as string)
+			.split(',')
 			.filter(filterList => {
 				// Iterate over. If an item is prefixed with `swapper://`,
 				// filter it out and push it to the other array
@@ -244,6 +245,5 @@ protocol.registerSchemesAsPrivileged([
 
 if (!app.requestSingleInstanceLock()) { app.quit(); } else {
 	const application = new Application();
-
 	app.whenReady().then(() => application.init());
 }
