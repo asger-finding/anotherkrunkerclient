@@ -8,52 +8,22 @@ export enum GPUVendors {
 	intel = 0x8086
 }
 
-// https://gist.github.com/dodying/34ea4760a699b47825a766051f47d43b
+// Flags source code for chromium 86.0.4234.0 (electron-nightly@12.0.0-nightly.20200914)
+// https://github.com/chromium/chromium/blob/8273a33818244f231767bc6e5e073a2c1fd1bb96/chrome/common/chrome_switches.cc
 const ELECTRON_FLAGS: Flags = [
 
-	// Unlock the frame rate
+	// Solve frame rate being capped to refresh rate
 	['disable-frame-rate-limit'],
-	['disable-gpu-vsync'],
 
-	// Don't require user gesture for autoplay
-	['autoplay-policy', 'no-user-gesture-required'],
+	// Krunker does a bad fps readout if this flag is not applied in chromium > 83
+	// For example, setting frame cap to 60 will show 50 on the in-game fps meter
+	['run-all-compositor-stages-before-draw'],
 
-	// Performance optimization flags.
-	// TODO: client setting for these
-	['enable-highres-timer'],
-	['enable-quic'],
-	['enable-webgl'],
-	['enable-gpu-rasterization'],
-	['enable-zero-copy'],
-	['enable-javascript-harmony'],
-	['enable-future-v8-vm-features'],
-	['enable-webgl2-compute-context'],
-	['enable-accelerated-video-decode'],
-	['enable-native-gpu-memory-buffers'],
-	['enable-oop-rasterization'],
-	['disable-low-end-device-mode'],
-	['disable-dev-shm-usage'],
-	['disable-hang-monitor'],
-	['disable-bundled-ppapi-flash'],
-	['ignore-gpu-blocklist'],
-	['canvas-oop-rasterization'],
-	['no-zygote'],
-	['disable-background-timer-throttling'],
-	['disable-renderer-backgrounding'],
-	['disable-ipc-flooding-protection'],
-	['no-first-run'],
-	['disable-setuid-sandbox'],
-	['disable-background-networking'],
-	['disable-sync'],
-	['metrics-recording-only'],
-	['disable-default-apps'],
-	['canvas-msaa-sample-count', '0'],
-	['gpu-rasterization-msaa-sample-count', '0'],
-	['ppapi-antialiased-text-enabled', 'false'],
-	['disable-canvas-aa'],
-	['disable-2d-canvas-clip-aa'],
-	['enable-gpu-async-worker-context'],
-	['enable-gpu-memory-buffer-video-frames']
+	// Disable some antialiasing for better performance
+	['disable-composited-antialiasing'],
+
+	// Enable hardware acceleration
+	['ignore-gpu-blocklist']
 ];
 
 const isUnix = process.platform !== 'win32' && process.platform !== 'darwin';
@@ -102,10 +72,7 @@ const getGPU = async(): Promise<PartialGPU | null> => {
  */
 const getRecommendedOSFlags = (): Flags => {
 	const OSFlags: Flags = [];
-	if (isUnix) {
-		if (isWaylandNative) OSFlags.push(['enable-features', 'UseOzonePlatform,WebRTCPipeWireCapturer,WaylandWindowDecorations']);
-		else if (isWayland) OSFlags.push(['enable-features', 'WebRTCPipeWireCapturer']);
-	}
+	if (isUnix && isWaylandNative) if (isWaylandNative) OSFlags.push(['enable-features', 'UseOzonePlatform'], ['ozone-platform', 'wayland']);
 
 	return OSFlags;
 };
@@ -196,4 +163,3 @@ const getFlags = async(): Promise<Flags> => {
 };
 
 export default getFlags;
-
