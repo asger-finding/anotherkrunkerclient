@@ -757,10 +757,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^12.0.12":
-  version: 12.20.55
-  resolution: "@types/node@npm:12.20.55"
-  checksum: e4f86785f4092706e0d3b0edff8dca5a13b45627e4b36700acd8dfe6ad53db71928c8dee914d4276c7fd3b6ccd829aa919811c9eb708a2c8e4c6eb3701178c37
+"@types/node@npm:^14.6.2":
+  version: 14.18.47
+  resolution: "@types/node@npm:14.18.47"
+  checksum: 249467fa37e60bb7ce631616a5fea53f3b957a6792c6a09f7db7cdff85a7410c9e657dd9fa54bcc9d878e58f35407ce35169b84556f46b2154f90bc71063e1d0
   languageName: node
   linkType: hard
 
@@ -1075,7 +1075,7 @@ __metadata:
     del: ^6
     electron-builder: next
     electron-localshortcut: latest
-    electron-nightly: 12.0.0-nightly.20200914
+    electron-nightly: 12.0.0-nightly.20201116
     electron-store: latest
     eslint: latest
     eslint-config-airbnb-typescript: latest
@@ -3321,16 +3321,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-nightly@npm:12.0.0-nightly.20200914":
-  version: 12.0.0-nightly.20200914
-  resolution: "electron-nightly@npm:12.0.0-nightly.20200914"
+"electron-nightly@npm:12.0.0-nightly.20201116":
+  version: 12.0.0-nightly.20201116
+  resolution: "electron-nightly@npm:12.0.0-nightly.20201116"
   dependencies:
     "@electron/get": ^1.0.1
-    "@types/node": ^12.0.12
+    "@types/node": ^14.6.2
     extract-zip: ^1.0.3
   bin:
     electron: cli.js
-  checksum: 4667eac18d1c0160c3da19f9baf508370b4369c1f0aa49b9ea3c0603d1ccc6781115887fd5cae2e73516d00542f8dd7b697df004b56826929f75bd5d668b5837
+  checksum: 77b2c7b8dcd1b2f28e173f6f8186e8da85fce2d49175e49cd7b29b7451bb11205a0e2b9041fe5b975ade9edf17bcd96ed341be1479363015180fe980ca5fb75c
   languageName: node
   linkType: hard
 
