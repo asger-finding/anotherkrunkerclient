@@ -70,16 +70,11 @@ else
 
     # Check for minify parameter or query the user on it
     if [[ $shouldMinify == 1 ]]; then
-        # Add dependencies for code minifying
-        yarn add -D modclean minify-all-js node-prune &&
-
         # Compile the project with minification
         yarn run gulp --state=production &&
 
         print "Minifying node modules. This might take a while..."
-        yarn minify-all-js ./node_modules -j -M > /dev/null &&
-        yarn modclean -r -n default:safe &&
-        yarn node-prune
+        chmod +x ./scripts/prune.sh && ./scripts/prune.sh
     else
         print "Skipping minification"
 
