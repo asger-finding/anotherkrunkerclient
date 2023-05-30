@@ -4,6 +4,8 @@
 # * Argument with value to determine node module minifcation rather than two different arguments
 # * --help for more information
 
+source $(dirname "$0")/prune.sh
+
 readonly SCRIPT_NAME=`basename "$0"`
 readonly SCRIPT_NAME_PRINT="\x1b[32m$SCRIPT_NAME\x1b[0m"
 readonly DISTRIBUTION_FOLDER="dist"
@@ -74,7 +76,8 @@ else
         yarn run gulp --state=production &&
 
         print "Minifying node modules. This might take a while..."
-        chmod +x ./scripts/prune.sh && ./scripts/prune.sh
+        remove_redundant_files
+        minify_node_modules
     else
         print "Skipping minification"
 

@@ -2,6 +2,7 @@
 
 # Globs in lowecase to match against in node modules
 FILE_GLOBS=(
+    '*.map'
     '*.bat'
     '*.c'
     '*.cc'
@@ -37,6 +38,7 @@ FILE_GLOBS=(
     '*.tlog'
     '*.todo'
     '*.ts'
+    '*.tsbuildinfo'
     '*.ttf'
     '*.txt'
     '*.vcxproj*'
@@ -44,6 +46,7 @@ FILE_GLOBS=(
     '*.woff'
     '*appveyor.yml'
     '.appveyor.yml'
+    '.airtap.yml'
     '.babelrc'
     '.coveralls.yml'
     '.dir-locals.el'
@@ -76,6 +79,7 @@ FILE_GLOBS=(
     '.lintignore'
     '.npmignore'
     '.npmrc'
+    '.nvmrc'
     '.prettierrc'
     '.prettierrc.js'
     '.prettierrc.json'
@@ -166,49 +170,50 @@ FILE_GLOBS=(
     '_config.yml'
 )
 
-# Find all files in node_modules directory that match the file globs
-shopt -s nocaseglob # enable non-case sensitive matching
-FIND_COMMAND=(find ./node_modules -type f \( -iname "${FILE_GLOBS[0]}" )
-for ((i=1; i<${#FILE_GLOBS[@]}; i++))
-do
-  FIND_COMMAND+=(-o -iname "${FILE_GLOBS[$i]}")
-done
-FIND_COMMAND+=( \))
+remove_redundant_files()
+{
+    # Find all files in node_modules directory that match the file globs
+    shopt -s nocaseglob # enable non-case sensitive matching
+    FIND_COMMAND=(find ./node_modules -type f \( -iname "${FILE_GLOBS[0]}" )
+    for ((i=1; i<${#FILE_GLOBS[@]}; i++)) do
+        FIND_COMMAND+=(-o -iname "${FILE_GLOBS[$i]}")
+    done
 
-FILES_TO_DELETE=$("${FIND_COMMAND[@]}")
+    FIND_COMMAND+=( \))
 
-# Delete the matched files
-if [[ -n "$FILES_TO_DELETE" ]]; then
-  rm $FILES_TO_DELETE
-fi
+    FILES_TO_DELETE=$("${FIND_COMMAND[@]}")
 
-# Find all empty directories in node_modules, including those with Thumbs.db and .DS_Store files
-EMPTY_DIRS=$(find ./node_modules \( -type d -empty \) -o \( -name Thumbs.db -o -name .DS_Store \) -print)
+    # Delete the matched files
+    if [[ -n "$FILES_TO_DELETE" ]]; then
+        rm $FILES_TO_DELETE
+    fi
 
-# Delete the empty directories recursively
-if [[ -n "$EMPTY_DIRS" ]]; then
-  for dir in $EMPTY_DIRS; do
-    rm -r "$dir"
-  done
+    # Find all empty directories in node_modules, including those with Thumbs.db and .DS_Store files
+    EMPTY_DIRS=$(find ./node_modules \( -type d -empty \) -o \( -name Thumbs.db -o -name .DS_Store \) -print)
 
-  # Delete empty parent directories
-  while [[ $(find ./node_modules -type d -empty) ]]; do
-    find ./node_modules -type d -empty -delete
-  done
-fi
+    # Delete the empty directories recursively
+    if [[ -n "$EMPTY_DIRS" ]]; then
+        for dir in $EMPTY_DIRS; do
+            rm -r "$dir"
+        done
 
-exec 3>&1
-exec >/dev/null
-exec 2>/dev/null
+    # Delete empty parent directories
+    while [[ $(find ./node_modules -type d -empty) ]]; do
+        find ./node_modules -type d -empty -delete
+    done
+    fi
+}
 
-yarn swc ./node_modules \
- -q \
- --no-swcrc \
- --source-maps false \
- --sync \
- -C minify=true \
- -C jsc.minify.compress=true \
- -C jsc.minify.mangle=true \
- -C jsc.target='es2022' \
- -C module.type=commonjs \
- -d ./node_modules >/dev/null
+minify_node_modules(){
+    yarn swc ./node_modules \
+    -q \
+    --no-swcrc \
+    --source-maps false \
+    --sync \
+    -C minify=true \
+    -C jsc.minify.compress=true \
+    -C jsc.minify.mangle=true \
+    -C module.type=commonjs \
+    -C jsc.target='es2022' \
+    -d ./node_modules > /dev/null 2>&1
+}
