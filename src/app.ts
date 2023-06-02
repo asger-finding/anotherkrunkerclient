@@ -1,19 +1,23 @@
+
+/** 
+ * Set the app name and the userdata path properly under development.
+ * This must be done before initializing any stores
+ */
 import {
 	CLIENT_AUTHOR,
 	CLIENT_LICENSE_PERMALINK,
 	CLIENT_NAME,
-	IS_DEVELOPMENT,
 	MESSAGES,
 	TABS,
 	TARGET_GAME_URL
 } from '@constants';
 import { ElectronBlocker, fullLists as cliqzFullList } from '@cliqz/adblocker-electron';
 import { Saveables, StoreConstants } from '@settings-backend';
-import Store, { initRenderer } from 'electron-store';
-import WindowUtils, { getDefaultConstructorOptions } from '@window-utils';
+import WindowUtils, { getConstructorOptions } from '@window-utils';
 import { app, ipcMain, protocol, session } from 'electron';
 import { join, resolve } from 'path';
 import PatchedStore from '@store';
+import Store from 'electron-store';
 import TwitchUtils from '@twitch-utils';
 import fetch from 'node-fetch';
 import { promises as fs } from 'fs';
@@ -36,7 +40,6 @@ class Application {
 	 * 
 	 */
 	constructor() {
-		Application.setAppName();
 		Application.registerAppEventListeners();
 		Application.registerIpcEventListeners();
 		Application.setAppFlags();
@@ -60,10 +63,10 @@ class Application {
 		if (client === null) return;
 
 		const gameWindow = await WindowUtils.createWindow({
-			...getDefaultConstructorOptions(TABS.GAME),
+			...getConstructorOptions(TABS.GAME),
 			show: false,
 			webPreferences: {
-				...getDefaultConstructorOptions(TABS.GAME).webPreferences,
+				...getConstructorOptions(TABS.GAME).webPreferences,
 				preload: resolve(__dirname, './preload/game'),
 				contextIsolation: false,
 				nodeIntegrationInSubFrames: true
@@ -147,15 +150,6 @@ class Application {
 
 			return worked;
 		});
-	}
-
-	/** Set the app name and the userdata path properly under development. */
-	private static setAppName(): void {
-		if (IS_DEVELOPMENT) {
-			app.setName(CLIENT_NAME);
-			app.setPath('userData', join(app.getPath('appData'), CLIENT_NAME));
-		}
-		initRenderer();
 	}
 
 	/** Get Electron flags and append them. */
@@ -243,7 +237,5 @@ protocol.registerSchemesAsPrivileged([
 	}
 ]);
 
-if (!app.requestSingleInstanceLock()) { app.quit(); } else {
-	const application = new Application();
-	app.whenReady().then(() => application.init());
-}
+const application = new Application();
+app.whenReady().then(() => application.init());

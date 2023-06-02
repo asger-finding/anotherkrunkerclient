@@ -18,7 +18,7 @@ const store = new PatchedStore();
  * @param tabName The name of the tab to get sizing data for.
  * @returns The default window constructor options.
  */
-export const getDefaultConstructorOptions = (tabName?: string): DefaultConstructorOptions => <DefaultConstructorOptions>{
+export const getConstructorOptions = (tabName?: string): DefaultConstructorOptions => <DefaultConstructorOptions>{
 	movable: true,
 	resizable: true,
 	fullscreenable: true,
@@ -165,7 +165,7 @@ export default class {
 			const newWindowData = getURLData(newWindowURL);
 			if (newWindowData.isKrunker) {
 				if (frameName === '_self') navigate(browserWindow, newWindowURL);
-				else this.createWindow(getDefaultConstructorOptions(newWindowData.tab), newWindowURL);
+				else this.createWindow(getConstructorOptions(newWindowData.tab), newWindowURL);
 			} else {
 				openExternal(newWindowURL);
 			}

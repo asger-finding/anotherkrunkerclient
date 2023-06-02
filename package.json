@@ -10,9 +10,9 @@
   "license": "GPLV3",
   "private": true,
   "repository": "asger-finding/anotherkrunkerclient",
-  "main": "./build/main.js",
+  "main": "./build/preload.js",
   "scripts": {
-    "start": "gulp --state=development && electron ./build/main.js",
+    "start": "gulp --state=development && electron ./build/preload.js",
     "build": "chmod +x ./scripts/build.sh && ./scripts/build.sh",
     "postinstall": "electron-builder install-app-deps",
     "lint": "yarn eslint . --ext .ts,.js"
@@ -24,7 +24,7 @@
     "@logger": "src/common/logger",
     "@constants": "src/common/constants",
     "@settings-backend": "src/common/settings-backend",
-    "@store": "src/common/store",
+    "@store": "src/common/patched-store",
     "@flags": "src/main/flags",
     "@game-settings": "src/preload/game-settings",
     "@twitch-chat": "src/preload/twitch-chat",

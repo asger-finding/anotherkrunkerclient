@@ -27,7 +27,7 @@
             "@constants": ["src/common/constants"],
             "@logger": ["src/common/logger"],
             "@color-utils": ["src/common/color-utils"],
-            "@store": ["src/common/store"],
+            "@store": ["src/common/patched-store"],
             "@settings-backend": ["src/common/settings-backend"],
 
             // preload
