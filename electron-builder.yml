@@ -66,6 +66,9 @@ linux:
     Encoding: UTF-8
 deb:
   compression: bzip2
+rpm:
+  fpm:
+  - "--rpm-rpmbuild-define=_build_id_links none"
 
 mac:
   target:
