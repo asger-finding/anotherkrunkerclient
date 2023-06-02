@@ -14,15 +14,15 @@
 </div>
 
 The be-all and end-all of Krunker client.  
-All good features from other clients crammed into one neat, fast package. Built with boilerplate in mind so you can fork this project to create your own client.
+All good features from other clients are combined into one neat and fast package. This project is designed with boilerplate in mind, allowing you to fork it and create your own client.
 
 ---
 
-## Work-in-progress
+## Work in Progress
 
-A full release (v1.xx) will be considered when everything in this feature tracking [issue](https://github.com/asger-finding/anotherkrunkerclient/issues/1#issue-1167443624) has been addressed.
+A full release (v1.xx) will be considered once all the items in this feature tracking [issue](https://github.com/asger-finding/anotherkrunkerclient/issues/1#issue-1167443624) have been addressed.
 
-## Supported operating systems
+## Supported Operating Systems
 
 - [x] Windows 10
 - [x] Windows 11
@@ -31,29 +31,36 @@ A full release (v1.xx) will be considered when everything in this feature tracki
 
 ## Contributing
 
-### Getting started
+### Getting Started
 
-- Install [yarn](https://yarnpkg.com/) package manager
-- Run `yarn install` to install the project dependencies
-- To start the app, run `yarn start`
+To get started, follow these steps:
 
-To lint, run `yarn lint`  
-Read about the [pipeline](#pipeline) for a detailed description of compiling the project.
+- Install the [yarn](https://yarnpkg.com/) package manager.
+- Run `yarn install` to install the project dependencies.
+- To start the application, run `yarn start`.
 
-### Project file system
+For linting, execute `yarn lint`. For a detailed description of the project compilation process, refer to the [pipeline](#pipeline).
 
-kebab-case is used for file names, but module aliasing is used for imports (read below)
+### Project File System
 
-Respect the project folder system of `common` (modules shared between main and renderer), `main` (main process code), `preload` (preload/renderer code), `renderer` (assets used in the renderer process) and `static` (main process assets) 
+The project file system follows the kebab-case convention for file names.
 
-### Module aliasing
+Please adhere to the project folder system outlined below:
 
-anotherkrunkerclient uses a home-brew solution for module aliasing in Electron. The `_moduleAliases` field in package.json is for defining aliases and their targets.
+- common: Contains modules shared between the main and renderer processes.
+- main: Includes code for the main process.
+- preload: Consists of code for the preload/renderer.
+- renderer: Houses assets used in the renderer process.
+- static: Contains assets for the main process.
 
-When the source is being built in gulp, the TypeScript files are converted to JavaScript, then run through the homemade module aliasing function that finds `require` calls, takes the first string parameter (only works with literal strings), looks it up in `_moduleAliases` and if found, replaces it with a relative path to the module.
+### Module Aliasing
+
+For module aliasing in Electron, anotherkrunkerclient employs a custom solution. The package.json file includes the "_moduleAliases" field, which is used to define aliases and their respective targets.
+
+During the gulp build process, TypeScript files are first converted to JavaScript. Afterward, a homemade module aliasing function is applied. This function searches for "require" calls, extracts the first string parameter (only works with literal strings), looks it up in "_moduleAliases", and replaces it with a relative path to the module if a match is found.
 
 ### Pipeline
 
-anotherkrunkerclient utilizes a similar pipeline to VSCode; using gulp and swc to compile the source TypeScript down to machine-readable JavaScript — and everything else, of course. Files are compiled recursively and dynamically, so when adding files or changing files, you must only update the tsconfig and moduleAliases field.
+anotherkrunkerclient follows a pipeline similar to that of VSCode. It utilizes gulp and swc to compile TypeScript source code into machine-readable JavaScript. This pipeline handles all other necessary operations as well. The compilation occurs recursively and dynamically, meaning that when adding or modifying files, you only need to update the "tsconfig" and "moduleAliases" fields.
 
-To build the project, run `yarn build` which calls to the build script. If you provide the parameter `--minify` or `--no-minify`, the shell script will minify the code accordingly. If not, you will be queried. You can silence the build script by passing a `--supress-output` argument.
+To build the project, execute the command "yarn build," which triggers the build script. If you wish to minify the code, provide the "--minify" parameter or "--no-minify" to skip minification. If no parameter is provided, you will be prompted for your preference. If you want to suppress the output of the build script, include the "--suppress-output" argument.
