@@ -46,7 +46,7 @@ linux:
       arch: [x64]
   icon: media/icon.svg
   category: Games
-  packageCategory: Games
+  packageCategory: net
   executableName: anotherkrunkerclient
   synopsis: The be-all and end-all of Krunker clients
   description:
@@ -62,6 +62,9 @@ linux:
      • Feature-heavy"
   artifactName: anotherkrunkerclient-linux-${arch}.${ext}
   desktop:
+    Name: anotherkrunkerclient
+    StartupWMClass: anotherkrunkerclient
+    Comment: The be-all and end-all of Krunker clients
     StartupNotify: 'false'
     Encoding: UTF-8
 deb:
