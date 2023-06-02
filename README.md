@@ -13,14 +13,13 @@
   <h1>anotherkrunkerclient</h1>
 </div>
 
-The be-all and end-all of Krunker client.  
-All good features from other clients are combined into one neat and fast package. This project is designed with boilerplate in mind, allowing you to fork it and create your own client.
+anotherkrunkerclient is a powerful and versatile Krunker client that combines the best features from various other clients into a single, fast, and streamlined package. This project is designed with flexibility in mind, enabling you to fork it and create your own customized client.
 
 ---
 
-## Work in Progress
+## Project Status
 
-A full release (v1.xx) will be considered once all the items in this feature tracking [issue](https://github.com/asger-finding/anotherkrunkerclient/issues/1#issue-1167443624) have been addressed.
+We are actively working on anotherkrunkerclient and continuously improving its features. We aim to release a stable version (v1.xx) once we have addressed all the items listed in our feature tracking [issue](https://github.com/asger-finding/anotherkrunkerclient/issues/1#issue-1167443624).
 
 ## Supported Operating Systems
 
@@ -33,34 +32,32 @@ A full release (v1.xx) will be considered once all the items in this feature tra
 
 ### Getting Started
 
-To get started, follow these steps:
+To start contributing to anotherkrunkerclient, follow these steps:
 
-- Install the [yarn](https://yarnpkg.com/) package manager.
-- Run `yarn install` to install the project dependencies.
-- To start the application, run `yarn start`.
+1. Install the [yarn](https://yarnpkg.com/) package manager.
+2. Run `yarn install` to install the project dependencies.
+3. Start the application by running `yarn start`.
 
-For linting, execute `yarn lint`. For a detailed description of the project compilation process, refer to the [pipeline](#pipeline).
+For linting, execute `yarn lint`. If you need a detailed description of the project compilation process, refer to the [pipeline](#pipeline) section.
 
-### Project File System
+### File Structure
 
-The project file system follows the kebab-case convention for file names.
+The project's file system follows the kebab-case convention for file names. Please adhere to the outlined folder structure:
 
-Please adhere to the project folder system outlined below:
-
-- common: Contains modules shared between the main and renderer processes.
-- main: Includes code for the main process.
-- preload: Consists of code for the preload/renderer.
-- renderer: Houses assets used in the renderer process.
-- static: Contains assets for the main process.
+- **common**: Contains shared modules between the main and renderer processes.
+- **main**: Includes the main process code.
+- **preload**: Consists of code for the preload/renderer.
+- **renderer**: Houses assets used in the renderer process.
+- **static**: Contains assets for the main process.
 
 ### Module Aliasing
 
-For module aliasing in Electron, anotherkrunkerclient employs a custom solution. The package.json file includes the "_moduleAliases" field, which is used to define aliases and their respective targets.
+For module aliasing in Electron, anotherkrunkerclient employs a custom solution. The package.json file includes a "_moduleAliases" field, which is used to define aliases and their respective targets.
 
 During the gulp build process, TypeScript files are first converted to JavaScript. Afterward, a homemade module aliasing function is applied. This function searches for "require" calls, extracts the first string parameter (only works with literal strings), looks it up in "_moduleAliases", and replaces it with a relative path to the module if a match is found.
 
 ### Pipeline
 
-anotherkrunkerclient follows a pipeline similar to that of VSCode. It utilizes gulp and swc to compile TypeScript source code into machine-readable JavaScript. This pipeline handles all other necessary operations as well. The compilation occurs recursively and dynamically, meaning that when adding or modifying files, you only need to update the "tsconfig" and "moduleAliases" fields.
+anotherkrunkerclient utilizes a pipeline inspired by VSCode, leveraging gulp and swc to compile TypeScript source code into JavaScript that is compatible with web browsers. This comprehensive pipeline takes care of all essential operations seamlessly. The compilation process is recursive and dynamic, eliminating the need for additional updates when adding or modifying files, with the exception of aliasing new paths.
 
-To build the project, execute the command "yarn build," which triggers the build script. If you wish to minify the code, provide the "--minify" parameter or "--no-minify" to skip minification. If no parameter is provided, you will be prompted for your preference. If you want to suppress the output of the build script, include the "--suppress-output" argument.
+To build the project, execute the command "yarn build," which triggers the build script. If you wish to minify the code, provide the "--minify" parameter or "--no-minify" to skip minification. If no parameter is provided, you will be prompted for your preference. To suppress the output of the build script, include the "--suppress-output" argument.
