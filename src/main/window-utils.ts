@@ -24,7 +24,7 @@ export const getConstructorOptions = (tabName?: string): DefaultConstructorOptio
 	fullscreenable: true,
 	darkTheme: true,
 	backgroundColor: '#1c1c1c',
-	icon: resolve(__dirname, '../static/icon96x96.png'),
+	icon: resolve(__dirname, '../static/icon96.png'),
 	webPreferences: {
 		nodeIntegration: false,
 		contextIsolation: true,
