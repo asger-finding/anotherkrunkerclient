@@ -192,14 +192,22 @@ class Application {
 		// Read the user-defined filter lists. The JSON should already be validated.
 		const urlFilterLists = (this.store.get(`${StoreConstants.PREFIX}.${Saveables.USER_FILTER_LISTS}`, '') as string)
 			.split(',')
-			.filter(filterList => {
+			.filter(filterListURL => {
 				// Iterate over. If an item is prefixed with `swapper://`,
 				// filter it out and push it to the other array
-				if (filterList.startsWith('swapper://')) {
-					swapperFilterLists.push(filterList);
+				if (filterListURL.startsWith('swapper://')) {
+					swapperFilterLists.push(filterListURL);
 					return false;
 				}
-				return true;
+
+				// Validate the URL or don't fetch
+				try {
+					// eslint-disable-next-line no-new
+					new URL(filterListURL);
+					return true;
+				} catch {
+					return false;
+				}
 			});
 
 		this.blockerEngine = await ElectronBlocker.fromLists(fetch, [
