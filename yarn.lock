@@ -1132,7 +1132,7 @@ __metadata:
     acorn: latest
     acorn-walk: latest
     del: ^6
-    electron: ^11
+    electron: 11.5.0
     electron-builder: next
     electron-localshortcut: latest
     electron-store: latest
@@ -3421,7 +3421,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:^11":
+"electron@npm:11.5.0":
   version: 11.5.0
   resolution: "electron@npm:11.5.0"
   dependencies:
