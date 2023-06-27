@@ -30,8 +30,6 @@ export default class SettingsBackend {
 
 	public static readonly saveables = Saveables;
 
-	public savedCache: SettingsObject = {};
-
 	private store = new PatchedStore();
 
 	private eventListeners: {
@@ -40,7 +38,7 @@ export default class SettingsBackend {
 	}[] = [];
 
 	/**
-	 * Get a setting property by its key. Look in cache and fallback to the store.
+	 * Get a setting property by its key and emit a read event
 	 * 
 	 * @param key Key to look up
 	 * @param defaultValue Value fallback
@@ -55,7 +53,7 @@ export default class SettingsBackend {
 	}
 
 	/**
-	 * Write a setting to the cache and optionally the file
+	 * Write a setting to file and emit a write event
 	 * 
 	 * @param key Key to write to
 	 * @param value Value to write to key
