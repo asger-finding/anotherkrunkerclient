@@ -12,7 +12,7 @@ const imagemin = require('gulp-imagemin');
 const ignore = require('gulp-ignore');
 const { argv } = yargs(process.argv.slice(2));
 const { map } = require('event-stream');
-const { parse } = require('acorn');
+const { parse } = require('acorn-loose');
 const { simple } = require('acorn-walk');
 const { relative, resolve } = require('path');
 

@@ -1023,6 +1023,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"acorn-loose@npm:^8.3.0":
+  version: 8.3.0
+  resolution: "acorn-loose@npm:8.3.0"
+  dependencies:
+    acorn: ^8.5.0
+  checksum: 3418a20bded1e74a20950dee8289fb87808c21a50d4065e4ec48230668ea77f4238be1dd1ee30b2116f469e496bcdaf937ccb86d469482e028052f8eec804c07
+  languageName: node
+  linkType: hard
+
 "acorn-walk@npm:latest":
   version: 8.2.0
   resolution: "acorn-walk@npm:8.2.0"
@@ -1030,7 +1039,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.5.0, acorn@npm:^8.8.0, acorn@npm:latest":
+"acorn@npm:^8.5.0, acorn@npm:^8.8.0":
   version: 8.8.2
   resolution: "acorn@npm:8.8.2"
   bin:
@@ -1129,10 +1138,10 @@ __metadata:
     "@types/tmi.js": ^1.8.1
     "@typescript-eslint/eslint-plugin": latest
     "@typescript-eslint/parser": latest
-    acorn: latest
+    acorn-loose: ^8.3.0
     acorn-walk: latest
     del: ^6
-    electron: 11.5.0
+    electron: 10.4.7
     electron-builder: next
     electron-localshortcut: latest
     electron-store: latest
@@ -3421,16 +3430,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:11.5.0":
-  version: 11.5.0
-  resolution: "electron@npm:11.5.0"
+"electron@npm:10.4.7":
+  version: 10.4.7
+  resolution: "electron@npm:10.4.7"
   dependencies:
     "@electron/get": ^1.0.1
     "@types/node": ^12.0.12
     extract-zip: ^1.0.3
   bin:
     electron: cli.js
-  checksum: 9c7cc76bf2d10d3299ed60ca1461573e62f30a0e38520e6447f8544d369a1aa743c4b0c59fed9666b3c9c5ba4638d9d797edea1ea4379adbf21b79eb3949b7a0
+  checksum: 95f3d590aaf3727a6c036bfddd747bb9126543dc014f64d4b449db3c2aeaa52f0be3786486977a29b595ca8d72b1d9ed61b7f31fc20c0c9f7ef474e95d744bcb
   languageName: node
   linkType: hard
 
