@@ -15,15 +15,29 @@ const ELECTRON_FLAGS: Flags = [
 	// Solve frame rate being capped to refresh rate
 	['disable-frame-rate-limit'],
 
+	// Enable hardware acceleration
+	['ignore-gpu-blocklist'],
+
 	// Krunker does a bad fps readout if this flag is not applied in chromium > 83
 	// For example, setting frame cap to 60 will show 50 on the in-game fps meter
-	['run-all-compositor-stages-before-draw'],
+	// ['run-all-compositor-stages-before-draw'],
 
 	// Disable some antialiasing for better performance
 	['disable-composited-antialiasing'],
 
-	// Enable hardware acceleration
-	['ignore-gpu-blocklist']
+	['disable-accelerated-video-decode', 'false'],
+	['disable-accelerated-video-encode', 'false'],
+	['disable-breakpad'],
+	['disable-compontent-update'],
+	['disable-bundled-ppapi-flash'],
+	['disable-2d-canvas-clip-aa'],
+	['disable-hang-monitor'],
+	['webrtc-max-cpu-consumption-percentage', '100'],
+	['autoplay-policy', 'no-user-gesture-required'],
+	['enable-quic'],
+	['quic-max-packet-length', '1460'],
+	['high-dpi-support', '1'],
+	['disable-renderer-backgrounding']
 ];
 
 const isUnix = process.platform !== 'win32' && process.platform !== 'darwin';
