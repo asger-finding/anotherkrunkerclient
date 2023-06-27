@@ -1,6 +1,5 @@
-import { MESSAGES, QUICKJOIN_URL_QUERY_PARAM, TARGET_GAME_URL } from '@constants';
+import { QUICKJOIN_URL_QUERY_PARAM, TARGET_GAME_URL } from '@constants';
 import { info } from '@logger';
-import { ipcMain } from 'electron';
 import { navigate } from '@window-utils';
 import { register } from 'electron-localshortcut';
 
@@ -22,8 +21,12 @@ export default class {
 			browserWindow.once('ready-to-show', () => {
 				info('ready-to-show reached on Game window');
 				browserWindow.show();
+
+				resolve();
 			});
-			browserWindow.webContents.once('did-finish-load', () => {
+
+			// eslint-disable-next-line multiline-comment-style
+			/* browserWindow.webContents.once('did-finish-load', () => {
 				info('did-finish-load reached on Game window');
 
 				// Resolve the promise when everything is done and dusted in the game window.
@@ -32,7 +35,7 @@ export default class {
 
 					resolve();
 				});
-			});
+			});*/
 		});
 	}
 
