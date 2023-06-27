@@ -29,7 +29,13 @@ export const getConstructorOptions = (tabName?: string): DefaultConstructorOptio
 		nodeIntegration: false,
 		contextIsolation: true,
 		worldSafeExecuteJavaScript: true,
-		enableRemoteModule: false
+		enableRemoteModule: false,
+		...(tabName === TABS.GAME
+			? {
+				backgroundThrottling: false,
+				nativeWindowOpen: true
+			}
+			: {})
 	},
 	...store.get(`window.${ tabName }`, {
 		width: 1280,

@@ -69,7 +69,9 @@ class Application {
 				...getConstructorOptions(TABS.GAME).webPreferences,
 				preload: resolve(__dirname, './preload/game'),
 				contextIsolation: false,
-				nodeIntegrationInSubFrames: true
+				nodeIntegrationInSubFrames: true,
+				backgroundThrottling: false,
+				nativeWindowOpen: true
 			}
 		}, TARGET_GAME_URL);
 		gameWindow.webContents.once('dom-ready', () => {
