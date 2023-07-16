@@ -49,17 +49,18 @@ linux:
   packageCategory: net
   executableName: anotherkrunkerclient
   synopsis: The be-all and end-all of Krunker clients
-  description:
-    "anotherkrunkerclient is a super lightweight, easy-to-install krunker client. Built with boilerplate in mind.\r
-    This client aims to support all platforms, bug-free.\r
-    \r
-    Philosophy and ambitions:\r
-     • Bug-free experience\r
-     • Privacy-respecting\r
-     • Easy to install\r
-     • Solid framework for heavy customizability\r
-     • Extremely lightweight and reasonably fast\r
-     • Feature-heavy"
+  description: Super lightweight, easy-to-install and Linux-focused krunker client.
+  # description:
+  #  "anotherkrunkerclient is a super lightweight, easy-to-install krunker client. Built with boilerplate in mind.\r
+  #  This client aims to support all platforms, bug-free.\r
+  #  \r
+  #  Philosophy and ambitions:\r
+  #   • Bug-free experience\r
+  #   • Privacy-respecting\r
+  #   • Easy to install\r
+  #   • Solid framework for heavy customizability\r
+  #   • Extremely lightweight and reasonably fast\r
+  #   • Feature-heavy"
   artifactName: anotherkrunkerclient-linux-${arch}.${ext}
   desktop:
     Name: anotherkrunkerclient
@@ -67,6 +68,21 @@ linux:
     Comment: The be-all and end-all of Krunker clients
     StartupNotify: 'false'
     Encoding: UTF-8
+    # electron-builder has no direct support for Desktop Actions
+    # We employ this hack which tricks the .desktop generator
+    # into including the actions field.
+    Actions: |
+      open-social;open-editor;
+
+      [Desktop Action open-social]
+      Name=New Social Window
+      Exec=/opt/anotherkrunkerclient/anotherkrunkerclient --args --tab=social
+      Icon=anotherkrunkerclient
+
+      [Desktop Action open-editor]
+      Name=New Editor Window
+      Exec=/opt/anotherkrunkerclient/anotherkrunkerclient --args --tab=editor
+      Icon=anotherkrunkerclient
 deb:
   compression: bzip2
 rpm:

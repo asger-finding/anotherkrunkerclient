@@ -23,7 +23,6 @@ export const toGrayscale = (value: Hexadecimal) => {
 	 * Max. Decomp.:   Math.max(red, green, blue)
 	 * Min. Decomp.:   Math.min(red, green, blue)
 	 */
-	// TODO: Support multiple algorithms via parameter or settings.
 	const gray = (Math.max(red, green, blue) + Math.min(red, green, blue)) / 2;
 
 	// Merge the grayscale value into a hex value and round to the nearest integer.

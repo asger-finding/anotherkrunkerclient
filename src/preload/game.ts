@@ -1,6 +1,7 @@
-import { Color, MapExport } from '@typings/krunker';
-import { EventListenerTypes, Saveables } from '@settings-backend';
+
+import { EventListenerTypes, Savable } from '@settings-backend';
 import { parse, resolve } from 'path';
+import { Color } from '@typings/krunker';
 import GameSettings from '@game-settings';
 import { KrunkerDomains } from '@typings/client';
 import { MESSAGES } from '@constants';
@@ -28,7 +29,7 @@ if (process.isMainFrame) {
 		title: 'Twitch Integration',
 		type: 'checkbox',
 		inputNodeAttributes: {
-			id: Saveables.INTEGRATE_WITH_TWITCH,
+			id: Savable.INTEGRATE_WITH_TWITCH,
 
 			/**
 			 * Toggle Twitch chat integration
@@ -39,14 +40,14 @@ if (process.isMainFrame) {
 			oninput: evt => {
 				const { checked } = <HTMLInputElement>evt.target;
 
-				return gameSettings.writeSetting(Saveables.INTEGRATE_WITH_TWITCH, checked);
+				return gameSettings.writeSetting(Savable.INTEGRATE_WITH_TWITCH, checked);
 			}
 		}
 	}, {
 		title: 'Resource Swapper Path',
 		type: 'text',
 		inputNodeAttributes: {
-			id: Saveables.RESOURCE_SWAPPER_PATH,
+			id: Savable.RESOURCE_SWAPPER_PATH,
 			placeholder: 'default path',
 
 			/**
@@ -69,7 +70,7 @@ if (process.isMainFrame) {
 
 					if (!/[<>:"|?*]/u.test(filePath)) {
 						element.classList.remove('inputRed2');
-						return gameSettings.writeSetting(Saveables.RESOURCE_SWAPPER_PATH, value);
+						return gameSettings.writeSetting(Savable.RESOURCE_SWAPPER_PATH, value);
 					}
 				}
 
@@ -81,7 +82,7 @@ if (process.isMainFrame) {
 		title: 'Reset Filter Lists Cache',
 		type: 'button',
 		inputNodeAttributes: {
-			id: Saveables.RESET_FILTER_LISTS_CACHE,
+			id: Savable.RESET_FILTER_LISTS_CACHE,
 			innerText: 'Reset',
 
 			/**
@@ -103,7 +104,7 @@ if (process.isMainFrame) {
 		title: 'Filter Lists',
 		type: 'text',
 		inputNodeAttributes: {
-			id: Saveables.USER_FILTER_LISTS,
+			id: Savable.USER_FILTER_LISTS,
 			placeholder: '',
 
 			/**
@@ -141,14 +142,14 @@ if (process.isMainFrame) {
 				}
 				element.classList.remove('inputRed2');
 
-				return gameSettings.writeSetting(Saveables.USER_FILTER_LISTS, value);
+				return gameSettings.writeSetting(Savable.USER_FILTER_LISTS, value);
 			}
 		}
 	}, {
 		title: 'Game Frontend',
 		type: 'select',
 		inputNodeAttributes: {
-			id: Saveables.GAME_FRONTEND,
+			id: Savable.GAME_FRONTEND,
 			value: <KrunkerDomains>'krunker.io',
 
 			/**
@@ -161,7 +162,7 @@ if (process.isMainFrame) {
 				const element = evt.target as HTMLInputElement;
 				const { value } = element;
 
-				return gameSettings.writeSetting(Saveables.GAME_FRONTEND, value);
+				return gameSettings.writeSetting(Savable.GAME_FRONTEND, value);
 			}
 		},
 		options: <Record<KrunkerDomains, KrunkerDomains>>{
@@ -176,7 +177,7 @@ if (process.isMainFrame) {
 		title: 'Reply to !link in Twitch chat',
 		type: 'checkbox',
 		inputNodeAttributes: {
-			id: Saveables.ALLOW_TWITCH_LINK_COMMAND,
+			id: Savable.ALLOW_TWITCH_LINK_COMMAND,
 			value: 'off',
 
 			/**
@@ -188,7 +189,26 @@ if (process.isMainFrame) {
 			oninput: evt => {
 				const { checked } = <HTMLInputElement>evt.target;
 
-				return gameSettings.writeSetting(Saveables.ALLOW_TWITCH_LINK_COMMAND, checked);
+				return gameSettings.writeSetting(Savable.ALLOW_TWITCH_LINK_COMMAND, checked);
+			}
+		}
+	}, {
+		title: 'Render Twitch chatters name color',
+		type: 'checkbox',
+		inputNodeAttributes: {
+			id: Savable.RENDER_TWITCH_NAME_COLOR,
+			value: 'off',
+
+			/**
+			 * Toggle whether !link is active
+			 * 
+			 * @param evt Input event
+			 * @returns void
+			 */
+			oninput: evt => {
+				const { checked } = <HTMLInputElement>evt.target;
+
+				return gameSettings.writeSetting(Savable.RENDER_TWITCH_NAME_COLOR, checked);
 			}
 		}
 	}), ...gameSettings.createSection({
@@ -199,7 +219,7 @@ if (process.isMainFrame) {
 		title: 'Map Attributes (JSON)',
 		type: 'text',
 		inputNodeAttributes: {
-			id: Saveables.MAP_ATTRIBUTES,
+			id: Savable.MAP_ATTRIBUTES,
 			value: '{}',
 
 			/**
@@ -223,7 +243,7 @@ if (process.isMainFrame) {
 				}
 				element.classList.remove('inputRed2');
 
-				return gameSettings.writeSetting(Saveables.MAP_ATTRIBUTES, value);
+				return gameSettings.writeSetting(Savable.MAP_ATTRIBUTES, value);
 			}
 		}
 	},
@@ -231,7 +251,7 @@ if (process.isMainFrame) {
 		title: 'Skydome Top Color',
 		type: 'color',
 		inputNodeAttributes: {
-			id: Saveables.SKY_TOP_COLOR,
+			id: Savable.SKY_TOP_COLOR,
 
 			/**
 			 * Set top sky color
@@ -242,7 +262,7 @@ if (process.isMainFrame) {
 			oninput: evt => {
 				const { value } = <HTMLInputElement>evt.target;
 
-				return gameSettings.writeSetting(Saveables.SKY_TOP_COLOR, value);
+				return gameSettings.writeSetting(Savable.SKY_TOP_COLOR, value);
 			}
 		}
 	},
@@ -250,7 +270,7 @@ if (process.isMainFrame) {
 		title: 'Skydome Middle Color',
 		type: 'color',
 		inputNodeAttributes: {
-			id: Saveables.SKY_MIDDLE_COLOR,
+			id: Savable.SKY_MIDDLE_COLOR,
 
 			/**
 			 * Set middle sky color
@@ -261,7 +281,7 @@ if (process.isMainFrame) {
 			oninput: evt => {
 				const { value } = <HTMLInputElement>evt.target;
 
-				return gameSettings.writeSetting(Saveables.SKY_MIDDLE_COLOR, value);
+				return gameSettings.writeSetting(Savable.SKY_MIDDLE_COLOR, value);
 			}
 		}
 	},
@@ -269,7 +289,7 @@ if (process.isMainFrame) {
 		title: 'Skydome Bottom Color',
 		type: 'color',
 		inputNodeAttributes: {
-			id: Saveables.SKY_BOTTOM_COLOR,
+			id: Savable.SKY_BOTTOM_COLOR,
 
 			/**
 			 * Set bottom sky color
@@ -280,7 +300,7 @@ if (process.isMainFrame) {
 			oninput: evt => {
 				const { value } = <HTMLInputElement>evt.target;
 
-				return gameSettings.writeSetting(Saveables.SKY_BOTTOM_COLOR, value);
+				return gameSettings.writeSetting(Savable.SKY_BOTTOM_COLOR, value);
 			}
 		}
 	}));
@@ -311,9 +331,8 @@ if (process.isMainFrame) {
 		}
 	});
 
-	if (gameSettings.getSetting(Saveables.INTEGRATE_WITH_TWITCH, false)) {
+	if (gameSettings.getSetting(Savable.INTEGRATE_WITH_TWITCH, false)) {
 		const twitchChat = new TwitchChat();
-		twitchChat.init();
 	}
 }
 
@@ -323,9 +342,9 @@ if (process.isMainFrame) {
  * @returns Top, middle and bottom saved colors in rgb format
  */
 const getSavedSkycolor = (): [string, string, string] => ([
-	gameSettings.getSetting(Saveables.SKY_TOP_COLOR, '#0a0b0c'),
-	gameSettings.getSetting(Saveables.SKY_MIDDLE_COLOR, '#0a0b0c'),
-	gameSettings.getSetting(Saveables.SKY_BOTTOM_COLOR, '#0a0b0c')
+	gameSettings.getSetting(Savable.SKY_TOP_COLOR, '#0a0b0c'),
+	gameSettings.getSetting(Savable.SKY_MIDDLE_COLOR, '#0a0b0c'),
+	gameSettings.getSetting(Savable.SKY_BOTTOM_COLOR, '#0a0b0c')
 ] as ReturnType<typeof getSavedSkycolor>);
 
 type ThreeRenderer = {
@@ -377,9 +396,9 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 				if (program.cacheKey.includes('endColor')) {
 					gameSettings.addEventListener(EventListenerTypes.ON_WRITE_SETTING, eventId => {
 						const [top, middle, bottom] = hexToRGB(1, ...getSavedSkycolor());
-						if (eventId === Saveables.SKY_TOP_COLOR
-							|| eventId === Saveables.SKY_MIDDLE_COLOR
-							|| eventId === Saveables.SKY_BOTTOM_COLOR) setSkycolor(renderer, program, top, middle, bottom);
+						if (eventId === Savable.SKY_TOP_COLOR
+							|| eventId === Savable.SKY_MIDDLE_COLOR
+							|| eventId === Savable.SKY_BOTTOM_COLOR) setSkycolor(renderer, program, top, middle, bottom);
 					});
 					Reflect.defineProperty(renderer.info.programs, 'push', { value: Array.prototype.push });
 				}
@@ -396,68 +415,3 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 		return Reflect.getOwnPropertyDescriptor(this, 'renderer')?.value;
 	}
 });
-
-// Disabled until further notice
-(() => {
-	return;
-	(nativeFetch => {
-		window.fetch = async function(...args: unknown[]) {
-			const result = await nativeFetch.apply(this, args as never);
-
-			const [target] = args;
-			if (typeof target === 'string' && /^maps\/(?:.*)(?:.\.json)/u.test(target)) {
-				const clone = result.clone();
-				const json = await clone.json();
-
-				const mapSettings = JSON.parse(gameSettings.getSetting(Saveables.MAP_ATTRIBUTES, '{}') as string) as Partial<MapExport>;
-				const [skyDomeCol0, skyDomeCol1, skyDomeCol2] = getSavedSkycolor();
-				const spoofedJSON = JSON.stringify({
-					...json,
-					...mapSettings,
-					...{ skyDomeCol0, skyDomeCol1, skyDomeCol2 }
-				});
-				const spoofedStream = new ReadableStream({
-					start(controller) {
-						controller.enqueue(spoofedJSON);
-						controller.close();
-					}
-				});
-
-				Reflect.defineProperty(result, 'json', {
-					value() {
-						return spoofedJSON;
-					}
-				});
-			}
-
-			return result;
-		};
-	})(window.fetch);
-
-	(nativeParse => {
-		JSON.parse = function(...args: unknown[]) {
-			const result = nativeParse.apply(this, args as never);
-
-			if (result instanceof Object && result.name && result.spawns) {
-				/**
-				 * Merge the parsed map with the client map settings.
-				 * Proxy the map settings so whenever they're accessed,
-				 * we can pass values and reference mapSettings.
-				 */
-				const mapSettings = nativeParse(gameSettings.getSetting(Saveables.MAP_ATTRIBUTES, '{}') as string) as Partial<MapExport>;
-				const [skyDomeCol0, skyDomeCol1, skyDomeCol2] = getSavedSkycolor();
-				return new Proxy({
-					...result,
-					...mapSettings,
-					...{ skyDomeCol0, skyDomeCol1, skyDomeCol2 }
-				}, {
-					get(target: MapExport, key: keyof MapExport) {
-						return mapSettings[key] ?? target[key];
-					}
-				});
-			}
-
-			return result;
-		};
-	})(JSON.parse);
-})();

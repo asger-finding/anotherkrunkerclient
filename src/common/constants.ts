@@ -1,5 +1,5 @@
 import { Author, KrunkerDomains, WindowData } from '@typings/client';
-import SettingsBackend, { Saveables } from '@settings-backend';
+import SettingsBackend, { Savable } from '@settings-backend';
 import { author, productName, repository, version } from '../../package.json';
 import { app } from 'electron';
 
@@ -20,7 +20,7 @@ export {
 // Permalink to the license
 export const CLIENT_LICENSE_PERMALINK = 'https://yerl.org/ZKZ8V';
 
-export const TARGET_GAME_DOMAIN = settings.getSetting(Saveables.GAME_FRONTEND, 'krunker.io') as KrunkerDomains;
+export const TARGET_GAME_DOMAIN = settings.getSetting(Savable.GAME_FRONTEND, 'krunker.io') as KrunkerDomains;
 export const TARGET_GAME_URL = `https://${ TARGET_GAME_DOMAIN }/`;
 export const QUICKJOIN_URL_QUERY_PARAM = 'quickjoin';
 
@@ -30,7 +30,9 @@ export enum TWITCH {
 	PORT = 33333,
 	MATERIAL_ICON = 'live_tv'
 }
-export const TWITCH_GET_CHANNELINFO_INTERVAL = 60_000;
+
+// ms
+export const TWITCH_GET_CHANNEL_STATE_INTERVAL = 60_000;
 
 // If not contained, it will throw an error whenever Constants is referenced outside the main process.
 export const IS_DEVELOPMENT = process.type === 'browser' ? !app.isPackaged : null;
@@ -42,23 +44,25 @@ export const WINDOW_ALL_CLOSED_BUFFER_TIME = 200;
 export const USERAGENT_LIFETIME = 14 * 24 * 60 * 60 * 1000;
 
 // Named krunker tabs
-export const TABS = {
-	GAME: 'game',
-	SOCIAL: 'social',
-	DOCS: 'docs',
-	COMP: 'comp',
-	VIEWER: 'viewer',
-	EDITOR: 'editor'
-};
+export enum TABS {
+	GAME = 'game',
+	SOCIAL = 'social',
+	DOCS = 'docs',
+	COMP = 'comp',
+	VIEWER = 'viewer',
+	EDITOR = 'editor'
+}
 
 // ipc messages must be typeof string
 export enum MESSAGES {
 	GAME_DONE = 'game-done',
 	EXIT_CLIENT = 'exit-client',
-	CLEAR_ELECTRON_BLOCKER_CACHE = 'clearElectronBlockerCache',
+	CLEAR_ELECTRON_BLOCKER_CACHE = 'clear-blocker-cache',
+	TWITCH_READY = 'twitch-connected',
 	TWITCH_GET_INFO = 'twitch-get-info',
 	TWITCH_MESSAGE_SEND = 'twitch-message-send',
-	TWITCH_MESSAGE_RECEIVE = 'twitch-message-receive'
+	TWITCH_MESSAGE_RECEIVE = 'twitch-message-receive',
+	TWITCH_MESSAGE_DELETE = 'twitch-message-delete'
 }
 
 /**
@@ -75,7 +79,7 @@ export const getURLData = (baseURL?: string): WindowData => {
 
 		const isKrunker = url.hostname.endsWith(TARGET_GAME_DOMAIN);
 		const tab = isKrunker ? (String(url.pathname.split('/')[1]).replace('.html', '') || TABS.GAME) : '';
-		const isInTabs = Object.values(TABS).includes(tab);
+		const isInTabs = Object.values(TABS).includes(tab as TABS);
 		const quickJoin = url.searchParams.get(QUICKJOIN_URL_QUERY_PARAM) === 'true';
 
 		return {

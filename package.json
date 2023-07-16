@@ -27,18 +27,22 @@
     "@store": "src/common/patched-store",
     "@flags": "src/main/flags",
     "@game-settings": "src/preload/game-settings",
+    "@chat-manager": "src/preload/chat-manager",
     "@twitch-chat": "src/preload/twitch-chat",
     "@game-utils": "src/main/game-utils",
     "@window-utils": "src/main/window-utils",
     "@resource-swapper": "src/main/resource-swapper",
     "@useragent-spoof": "src/main/useragent-spoof"
   },
+  "resolutions": {
+    "tmi.js": "patch:@tmi.js@https://github.com/Durss/tmi.js#patches/tmi.js-no-types.patch"
+  },
   "dependencies": {
     "@cliqz/adblocker-electron": "latest",
     "electron-localshortcut": "latest",
     "electron-store": "latest",
     "node-fetch": "^2",
-    "tmi.js": "^1.8.5",
+    "tmi.js": "https://github.com/Durss/tmi.js",
     "top-user-agents": "latest"
   },
   "devDependencies": {
@@ -47,7 +51,7 @@
     "@types/electron-localshortcut": "^3.1.0",
     "@types/node": "12.12.21",
     "@types/node-fetch": "^2",
-    "@types/tmi.js": "^1.8.1",
+    "@types/tmi.js": "^1.8.3",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "acorn-loose": "^8.3.0",

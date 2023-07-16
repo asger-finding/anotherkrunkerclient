@@ -4,8 +4,9 @@ import PatchedStore from '@store';
 export enum StoreConstants {
 	PREFIX = 'settings'
 }
-export enum Saveables {
+export enum Savable {
 	INTEGRATE_WITH_TWITCH = 'twitchIntegration',
+	RENDER_TWITCH_NAME_COLOR = 'renderTwitchNameColor',
 	RESOURCE_SWAPPER_PATH = 'resourceSwapperPath',
 	RESET_FILTER_LISTS_CACHE = 'resetFilterListsCache',
 	USER_FILTER_LISTS = 'userFilterLists',
@@ -21,14 +22,12 @@ export enum EventListenerTypes {
 	ON_READ_SETTING,
 	ON_WRITE_SETTING
 }
-type SettingsObject = Partial<Record<Saveables, unknown>>;
+type SettingsObject = Partial<Record<Savable, unknown>>;
 
 export default class SettingsBackend {
 
 	// settings store prefix
 	private static readonly prefix = StoreConstants.PREFIX;
-
-	public static readonly saveables = Saveables;
 
 	private store = new PatchedStore();
 
@@ -44,7 +43,7 @@ export default class SettingsBackend {
 	 * @param defaultValue Value fallback
 	 * @returns Saved data or fallback value
 	 */
-	public getSetting(key: Saveables, defaultValue: unknown): SettingsObject[Saveables] {
+	public getSetting(key: Savable, defaultValue: unknown): SettingsObject[Savable] {
 		const saved = this.store.get(`${ SettingsBackend.prefix }.${ key }`, defaultValue);
 
 		this.emitEvent(EventListenerTypes.ON_READ_SETTING, key, saved);
@@ -58,7 +57,7 @@ export default class SettingsBackend {
 	 * @param key Key to write to
 	 * @param value Value to write to key
 	 */
-	public writeSetting(key: Saveables, value: SettingsObject[Saveables]): void {
+	public writeSetting(key: Savable, value: SettingsObject[Savable]): void {
 		this.store.set(`${ SettingsBackend.prefix }.${ key }`, value);
 
 		this.emitEvent(EventListenerTypes.ON_WRITE_SETTING, key);

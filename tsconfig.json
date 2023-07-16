@@ -2,6 +2,7 @@
     "compilerOptions": {
         "target": "esnext",
         "module": "commonjs",
+        "esModuleInterop": true,
         "resolveJsonModule": true,
         "allowSyntheticDefaultImports": true,
         "strict": true,
@@ -32,6 +33,7 @@
 
             // preload
             "@game-settings": ["src/preload/game-settings"],
+            "@chat-manager": ["src/preload/chat-manager"],
             "@twitch-chat": ["src/preload/twitch-chat"],
 
             // typings

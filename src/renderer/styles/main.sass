@@ -6,34 +6,37 @@ body
 .inputRed2
     background-color: #ffaaaa
 
-#chatInputClone
-    width: 269px
-    padding: 6px
-    padding-left: 10px
-    margin-top: 0
+.clonedChatInput
+    width: 255px
+    padding: 6px !important
+    padding-left: 10px !important
     color: #fff
-    font-size: 15px
+    font-size: 14px
     box-sizing: border-box
     background-color: rgba(0,0,0,.4)
     border: 2px solid rgba(0,0,0,.1)
     pointer-events: all
-    border-radius: 5px
-    margin-left: 4px
+    border-radius: 4px
 
     &::placeholder
         color: rgba(255,255,255,.7)
 
-#chatListClone 
-    overflow-y: hidden
+.clonedChatList
     overflow-y: auto
     overflow-x: hidden
     z-index: 999999
     border-radius: 5px
-    background-color: rgba(0,0,0,.4)
+    background-color: rgba(0, 0, 0, 0.4)
     pointer-events: all
     position: relative
     direction: rtl
     text-align: left
+
+    .chatItem.chatItemDeleted
+        opacity: 0.6
+
+        > .chatMsg
+            font-style: italic
 
     &::-webkit-scrollbar 
         width: 6px

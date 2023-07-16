@@ -1,10 +1,10 @@
-import { Saveables } from '@settings-backend';
+import { Savable } from '@settings-backend';
 
 export type EventListener = (eventId: string, data?: unknown) => void;
 export type KrunkerDomains = 'krunker.io' | 'browserfps.com';
 
 export type InputNodeAttributes<Target extends HTMLElement> = {
-	id: Saveables;
+	id: Savable;
 } & Partial<Target>;
 
 export type Callback = (...args: never[]) => unknown;
@@ -65,6 +65,7 @@ export type DefaultConstructorOptions = Electron.BrowserWindowConstructorOptions
 export type SimplifiedTwitchMessage = {
 	username: string;
 	message: string;
+	messageId: string;
 	color?: string;
 };
 

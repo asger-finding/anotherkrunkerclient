@@ -427,6 +427,7 @@ export default class GameSettings extends SettingsBackend {
 	 * @param inputNodeAttributes.oninput Event handler
 	 * @returns Wrapper
 	 */
+	// eslint-disable-next-line class-methods-use-this
 	private createButton(title: string, inputNodeAttributes: InputNodeAttributes<HTMLDivElement>) {
 		const button = Object.assign(document.createElement('div'), inputNodeAttributes);
 		button.classList.add('settingsBtn');

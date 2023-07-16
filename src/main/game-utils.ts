@@ -24,18 +24,6 @@ export default class {
 
 				resolve();
 			});
-
-			// eslint-disable-next-line multiline-comment-style
-			/* browserWindow.webContents.once('did-finish-load', () => {
-				info('did-finish-load reached on Game window');
-
-				// Resolve the promise when everything is done and dusted in the game window.
-				ipcMain.once(MESSAGES.GAME_DONE, () => {
-					info(`${ MESSAGES.GAME_DONE } received`);
-
-					resolve();
-				});
-			});*/
 		});
 	}
 

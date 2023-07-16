@@ -12,7 +12,7 @@ import {
 	TARGET_GAME_URL
 } from '@constants';
 import { ElectronBlocker, fullLists as cliqzFullList } from '@cliqz/adblocker-electron';
-import { Saveables, StoreConstants } from '@settings-backend';
+import { Savable, StoreConstants } from '@settings-backend';
 import WindowUtils, { getConstructorOptions } from '@window-utils';
 import { app, ipcMain, protocol, session } from 'electron';
 import { join, resolve } from 'path';
@@ -30,83 +30,149 @@ This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under certain
 conditions; read ${ CLIENT_LICENSE_PERMALINK } for more details.\n`);
 
-class Application {
+export default class Application {
 
-	private store: Store;
-
-	private blockerEngine: ElectronBlocker;
-
-	/**
-	 * 
-	 */
+	/** Preload app configurations that can be set before app.ready */
 	constructor() {
 		Application.registerAppEventListeners();
 		Application.registerIpcEventListeners();
 		Application.setAppFlags();
 	}
 
+	private store: Store;
+
+	private blockerEngine: ElectronBlocker;
+
 	/**
-	 * Initialize the app, register protocols.  
-	 * Create the game window.
+	 * Initialize the app after app.ready.
+	 * 
+	 * Initalize the store  
+	 * Register the resource swapper  
+	 * Initialize Twitch in the main process,
+	 * register Twitch event handlers  
+	 * Spawn the primary BrowserWindow
 	 */
 	public async init(): Promise<void> {
+		if (!app.isReady()) throw new Error('App must be ready before Application.init()');
+
 		const store = new PatchedStore();
 		this.store = store;
 
-		this.registerFileProtocols();
+		this.registerSwapperProtocols();
 
-		const [client] = await Promise.all([
+		const [twitchClient] = await Promise.all([
 			TwitchUtils.createClient(),
 			this.enableTrackerBlocking()
 		]);
 
-		if (client === null) return;
+		const tab = Application.getTabToLaunch();
+		Application.spawnWindowFromTab(tab);
 
-		const gameWindow = await WindowUtils.createWindow({
-			...getConstructorOptions(TABS.GAME),
-			show: false,
-			webPreferences: {
-				...getConstructorOptions(TABS.GAME).webPreferences,
-				preload: resolve(__dirname, './preload/game'),
-				contextIsolation: false,
-				nodeIntegrationInSubFrames: true,
-				backgroundThrottling: false,
-				nativeWindowOpen: true
-			}
-		}, TARGET_GAME_URL);
-		gameWindow.webContents.once('dom-ready', () => {
-			client.connect();
-			client.on('message', (_listener, chatUserstate, message) => {
-				if (chatUserstate['message-type'] !== 'chat' || !message) return;
+		if (twitchClient === null) return;
+		twitchClient.connect()
+			.then(() => Application.sendToAllGameWindows(MESSAGES.TWITCH_READY));
 
-				gameWindow.webContents.send(MESSAGES.TWITCH_MESSAGE_RECEIVE, {
-					chatUserstate,
-					message
-				});
-			});
+		// When the channel receives a message
+		twitchClient.on('message', (_listener, chatUserstate, message) => {
+			if (chatUserstate['message-type'] !== 'chat' || !message) return;
 
-			// Setup event listener
-			ipcMain.on(MESSAGES.TWITCH_MESSAGE_SEND, (_evt, message: string) => {
-				const [channel] = client.getChannels();
-				client.say(channel, message);
-			});
+			Application.sendToAllGameWindows(MESSAGES.TWITCH_MESSAGE_RECEIVE, { chatUserstate, message });
+		});
 
-			ipcMain.handle(MESSAGES.TWITCH_GET_INFO, async() => {
-				const [channel] = client.getChannels();
+		// When a message is deleted on the channel
+		twitchClient.on('messagedeleted', (_channel, _username, _deletedMessage, deletedChatUserstate) => {
+			const uuid = deletedChatUserstate['target-msg-id'];
+			Application.sendToAllGameWindows(MESSAGES.TWITCH_MESSAGE_DELETE, uuid);
+		});
 
-				return {
-					isLive: await TwitchUtils.isLive(),
-					username: client.getUsername(),
-					channel
-				};
-			});
+		// When the renderer requests the channel state
+		ipcMain.handle(MESSAGES.TWITCH_GET_INFO, async() => {
+			const channels = twitchClient.getChannels();
+			return {
+				isLive: await TwitchUtils.isLive(),
+				username: twitchClient.getUsername(),
+				channel: channels[0]
+			};
+		});
+
+		// When the client user sends an in-game message to from Krunker to Twitch
+		ipcMain.on(MESSAGES.TWITCH_MESSAGE_SEND, (_evt, message: string) => {
+			const [channel] = twitchClient.getChannels();
+			twitchClient.say(channel, message);
 		});
 	}
 
-	/** Register the listeners for the app process (e.g. 'window-all-closed') */
+	/**
+	 * Emit an event to the ipcRenderer of all game windows.
+	 * 
+	 * @param channel ipcRenderer channel
+	 * @param args Arguments to pass
+	 */
+	private static sendToAllGameWindows(channel: string, ...args: unknown[]): void {
+		for (const browserWindow of WindowUtils.getAllWindowsOfType(TABS.GAME)) browserWindow.webContents.send(channel, ...args);
+	}
+
+	/**
+	 * **Linux-only feature**  
+	 * Get the tab to point the client to, as provided by process arguments.
+	 * 
+	 * @param argv Process args or arguments passed to function
+	 * @returns Extracted tab, defaulting to game tab
+	 */
+	private static getTabToLaunch(argv = process.argv): TABS | string {
+		let tab: string = TABS.GAME;
+		for (const arg of argv.slice(2)) {
+			if (arg.startsWith('--tab')) tab = arg.slice(arg.indexOf('=') + 1);
+			break;
+		}
+
+		return tab;
+	}
+
+	/**
+	 * Conditionally spawn a BrowserWindow instance based on the tab argument
+	 * 
+	 * For example, a "game" tab will create a BrowserWindow
+	 * with options designed for a game instance.
+	 * 
+	 * @param tab Tab to depend upon
+	 */
+	private static spawnWindowFromTab(tab: TABS | string): void {
+		switch (tab) {
+			case TABS.SOCIAL:
+				WindowUtils.createWindow(getConstructorOptions(TABS.SOCIAL), `${ TARGET_GAME_URL }social.html`);
+				break;
+			case TABS.EDITOR:
+				WindowUtils.createWindow(getConstructorOptions(TABS.SOCIAL), `${ TARGET_GAME_URL }editor.html`);
+				break;
+			case TABS.GAME:
+			default:
+				WindowUtils.createWindow({
+					...getConstructorOptions(TABS.GAME),
+					show: false,
+					webPreferences: {
+						...getConstructorOptions(TABS.GAME).webPreferences,
+						preload: resolve(__dirname, './preload/game'),
+						contextIsolation: false,
+						nodeIntegrationInSubFrames: true,
+						backgroundThrottling: false,
+						nativeWindowOpen: true
+					}
+				}, TARGET_GAME_URL);
+		}
+	}
+
+	/** 
+	 * Register event listeners for the app process (e.g. 'window-all-closed')
+	 * This can be done before app.ready
+	 */
 	private static registerAppEventListeners(): void {
 		info('Registering app event listeners');
 
+		app.on('second-instance', (_event, argv) => {
+			const newInstanceTab = Application.getTabToLaunch(argv);
+			Application.spawnWindowFromTab(newInstanceTab);
+		});
 		app.on('quit', () => app.quit());
 		app.on('window-all-closed', () => {
 			if (process.platform !== 'darwin') app.quit();
@@ -143,14 +209,14 @@ class Application {
 			if (initialResult) return initialResult;
 
 			// Check that it worked
-			const worked = await fs.access(cachePath)
+			const success = await fs.access(cachePath)
 				.then(() => ({
 					result: false,
 					message: 'For reason unknown, the cache still exists — please report!'
 				}))
 				.catch(() => ({ result: true }));
 
-			return worked;
+			return success;
 		});
 	}
 
@@ -165,9 +231,9 @@ class Application {
 	/**
 	 * Register resource swapper file protocols
 	 */
-	private registerFileProtocols(): void {
+	private registerSwapperProtocols(): void {
 		// Register the protocol source for the resource swapper.
-		global.resourceswapProtocolSource = this.store.get(`${ StoreConstants.PREFIX }.${ Saveables.RESOURCE_SWAPPER_PATH }`) as string
+		global.resourceswapProtocolSource = this.store.get(`${ StoreConstants.PREFIX }.${ Savable.RESOURCE_SWAPPER_PATH }`) as string
 		|| join(app.getPath('documents'), `/${ CLIENT_NAME }`);
 
 		// Register resource swapper file protocols.
@@ -192,7 +258,7 @@ class Application {
 		const swapperFilterLists: string[] = [];
 
 		// Read the user-defined filter lists. The JSON should already be validated.
-		const urlFilterLists = (this.store.get(`${StoreConstants.PREFIX}.${Saveables.USER_FILTER_LISTS}`, '') as string)
+		const urlFilterLists = (this.store.get(`${StoreConstants.PREFIX}.${Savable.USER_FILTER_LISTS}`, '') as string)
 			.split(',')
 			.filter(filterListURL => {
 				// Iterate over. If an item is prefixed with `swapper://`,
@@ -247,5 +313,4 @@ protocol.registerSchemesAsPrivileged([
 	}
 ]);
 
-const application = new Application();
-app.whenReady().then(() => application.init());
+export type ApplicationType = typeof Application;

@@ -123,6 +123,17 @@ export default class {
 	}
 
 	/**
+	 * Get all window instances of a krunker tab type
+	 * 
+	 * @param tab Tab to filter to
+	 * @returns Filtered browser windows
+	 */
+	public static getAllWindowsOfType(tab: TABS): BrowserWindow[] {
+		return BrowserWindow.getAllWindows()
+			.filter(browserWindow => getURLData(browserWindow.webContents.getURL()).tab === tab);
+	}
+
+	/**
 	 * Register global shortcuts for the window. Should be done before dom-ready
 	 *
 	 * @param browserWindow The window to register the event on

@@ -645,6 +645,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tmi.js@https://github.com/Durss/tmi.js":
+  version: 1.9.0-pre.1
+  resolution: "@tmi.js@https://github.com/Durss/tmi.js.git#commit=e4eea3ac59f5d30aa8352b9c5f1202cf4aed9821"
+  dependencies:
+    ws: 8.8.0
+  checksum: c2ea1790fcffab1abdaa1da26d3d2dca70ec298b58502a23886d31544ff8cfb0d90dd5a18e550d2eb546f49a5dbfb30135fbcce98977d0fd1f8b69a199d92b68
+  languageName: node
+  linkType: hard
+
 "@tokenizer/token@npm:^0.3.0":
   version: 0.3.0
   resolution: "@tokenizer/token@npm:0.3.0"
@@ -863,7 +872,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/tmi.js@npm:^1.8.1":
+"@types/tmi.js@npm:^1.8.3":
   version: 1.8.3
   resolution: "@types/tmi.js@npm:1.8.3"
   checksum: 9effc360faf22573de974807d9434d4b393d1b2f31788032dd4e4be352a7c3905c77b2bc225b2caed227912d3468d5de849f5d9edeba70c156d0628835411d6d
@@ -1135,7 +1144,7 @@ __metadata:
     "@types/electron-localshortcut": ^3.1.0
     "@types/node": 12.12.21
     "@types/node-fetch": ^2
-    "@types/tmi.js": ^1.8.1
+    "@types/tmi.js": ^1.8.3
     "@typescript-eslint/eslint-plugin": latest
     "@typescript-eslint/parser": latest
     acorn-loose: ^8.3.0
@@ -1161,7 +1170,7 @@ __metadata:
     node-fetch: ^2
     postcss: latest
     sass: latest
-    tmi.js: ^1.8.5
+    tmi.js: "https://github.com/Durss/tmi.js"
     top-user-agents: latest
     typescript: latest
     yargs: ^17.6.0
@@ -7364,7 +7373,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2, node-fetch@npm:^2.6.1":
+"node-fetch@npm:^2":
   version: 2.6.9
   resolution: "node-fetch@npm:2.6.9"
   dependencies:
@@ -9831,13 +9840,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tmi.js@npm:^1.8.5":
-  version: 1.8.5
-  resolution: "tmi.js@npm:1.8.5"
+"tmi.js@patch:@tmi.js@https://github.com/Durss/tmi.js#patches/tmi.js-no-types.patch::locator=anotherkrunkerclient%40workspace%3A.":
+  version: 1.9.0-pre.1
+  resolution: "tmi.js@patch:@tmi.js@https%3A//github.com/Durss/tmi.js.git%23commit=e4eea3ac59f5d30aa8352b9c5f1202cf4aed9821#patches/tmi.js-no-types.patch::version=1.9.0-pre.1&hash=d40551&locator=anotherkrunkerclient%40workspace%3A."
   dependencies:
-    node-fetch: ^2.6.1
-    ws: ^8.2.0
-  checksum: a48a05d9f2c5ac27a6d14ef243e787e6693bce8a3891c65da26d359c12d311b46518b36f98fe8139d0f96b74c0d773e039a5ea2763e9aaeace4eed63f91c2c86
+    ws: 8.8.0
+  checksum: a97235056c5f934d112029fcef309f624b49aa97bbd2c35da5e78d2fd9a6285aa0f3f701410e209866d25f38fac050eedc114a12e46b598601bd8bfeb4a5c2b9
   languageName: node
   linkType: hard
 
@@ -10605,18 +10613,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.2.0":
-  version: 8.12.1
-  resolution: "ws@npm:8.12.1"
+"ws@npm:8.8.0":
+  version: 8.8.0
+  resolution: "ws@npm:8.8.0"
   peerDependencies:
     bufferutil: ^4.0.1
-    utf-8-validate: ">=5.0.2"
+    utf-8-validate: ^5.0.2
   peerDependenciesMeta:
     bufferutil:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 97301c1c4d838fc81bd413f370f75c12aabe44527b31323b761eab3043a9ecb7e32ffd668548382c9a6a5ad3a1c3a9249608e8338e6b939f2f9540f1e21970b5
+  checksum: 6ceed1ca1cb800ef60c7fc8346c7d5d73d73be754228eb958765abf5d714519338efa20ffe674167039486eb3a813aae5a497f8d319e16b4d96216a31df5bd95
   languageName: node
   linkType: hard
 
