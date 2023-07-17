@@ -2,15 +2,15 @@ import { AsyncReturnType, DefaultConstructorOptions, WindowData, WindowSaveData 
 import { BrowserWindow, app, dialog } from 'electron';
 import { TABS, getURLData } from '@constants';
 import GameUtils from '@game-utils';
-import PatchedStore from '@store';
 import ResourceSwapper from '@resource-swapper';
+import Store from 'electron-store';
 import { exec } from 'child_process';
 import { getSpoofedUA } from '@useragent-spoof';
 import { info } from '@logger';
 import { register } from 'electron-localshortcut';
 import { resolve } from 'path';
 
-const store = new PatchedStore();
+const store = new Store();
 
 /**
  * Returns the default window options, with sizing for the given tab.

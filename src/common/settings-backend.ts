@@ -1,5 +1,5 @@
 import { EventListener } from '@typings/client';
-import PatchedStore from '@store';
+import Store from 'electron-store';
 
 export enum StoreConstants {
 	PREFIX = 'settings'
@@ -29,7 +29,7 @@ export default class SettingsBackend {
 	// settings store prefix
 	private static readonly prefix = StoreConstants.PREFIX;
 
-	private store = new PatchedStore();
+	private store = new Store();
 
 	private eventListeners: {
 		type: EventListenerTypes,
@@ -45,6 +45,7 @@ export default class SettingsBackend {
 	 */
 	public getSetting(key: Savable, defaultValue: unknown): SettingsObject[Savable] {
 		const saved = this.store.get(`${ SettingsBackend.prefix }.${ key }`, defaultValue);
+		// log(this.store.path);
 
 		this.emitEvent(EventListenerTypes.ON_READ_SETTING, key, saved);
 

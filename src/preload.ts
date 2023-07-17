@@ -5,8 +5,8 @@
 // only initialize native libraries that
 // can't interfere or load anything unexpected
 import { ApplicationType } from './app';
+import Store from 'electron-store';
 import { app } from 'electron';
-import { initRenderer } from 'electron-store';
 import { join } from 'path';
 import { productName } from '../package.json';
 
@@ -14,7 +14,7 @@ if (!app.isPackaged) {
 	app.setName(productName);
 	app.setPath('userData', join(app.getPath('appData'), productName));
 }
-initRenderer();
+Store.initRenderer();
 
 if (!app.requestSingleInstanceLock()) {
 	app.quit();
@@ -25,6 +25,6 @@ if (!app.requestSingleInstanceLock()) {
 		const Module = await ((await import('./app')).default as ApplicationType);
 		const application = new Module();
 
-		app.whenReady().then(() => application.init());
+		app.whenReady().then(() => application.launch());
 	})();
 }

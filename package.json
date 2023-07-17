@@ -35,12 +35,13 @@
     "@useragent-spoof": "src/main/useragent-spoof"
   },
   "resolutions": {
-    "tmi.js": "patch:@tmi.js@https://github.com/Durss/tmi.js#patches/tmi.js-no-types.patch"
+    "tmi.js": "patch:@tmi.js@https://github.com/Durss/tmi.js#./patches/tmi.js-no-types.patch",
+    "electron-store@8.1.0": "patch:electron-store@npm%3A8.1.0#./patches/electron-store-default-export.patch"
   },
   "dependencies": {
     "@cliqz/adblocker-electron": "latest",
     "electron-localshortcut": "latest",
-    "electron-store": "latest",
+    "electron-store": "8.1.0",
     "node-fetch": "^2",
     "tmi.js": "https://github.com/Durss/tmi.js",
     "top-user-agents": "latest"

@@ -1,9 +1,9 @@
-import PatchedStore from '@store';
+import Store from 'electron-store';
 import { USERAGENT_LIFETIME } from '@constants';
 import { info } from '@logger';
 
 const storeSchema = 'userAgentSpoof';
-const store = new PatchedStore();
+const store = new Store();
 
 /**
  * Get the current operating system and return it in a format matching a UA.

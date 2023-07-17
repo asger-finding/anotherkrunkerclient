@@ -1,0 +1,10 @@
+diff --git a/index.js b/index.js
+index b41f091240923332cb10d2ca2e4221b1c6640ea9..2ae0387532158ad21f18ca7b464a5c6e63bc3c78 100644
+--- a/index.js
++++ b/index.js
+@@ -78,4 +78,4 @@ class ElectronStore extends Conf {
+ 	}
+ }
+ 
+-module.exports = ElectronStore;
++module.exports.default = ElectronStore;

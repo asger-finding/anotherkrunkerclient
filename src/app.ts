@@ -1,8 +1,3 @@
-
-/** 
- * Set the app name and the userdata path properly under development.
- * This must be done before initializing any stores
- */
 import {
 	CLIENT_AUTHOR,
 	CLIENT_LICENSE_PERMALINK,
@@ -16,7 +11,6 @@ import { Savable, StoreConstants } from '@settings-backend';
 import WindowUtils, { getConstructorOptions } from '@window-utils';
 import { app, ipcMain, protocol, session } from 'electron';
 import { join, resolve } from 'path';
-import PatchedStore from '@store';
 import Store from 'electron-store';
 import TwitchUtils from '@twitch-utils';
 import fetch from 'node-fetch';
@@ -39,7 +33,7 @@ export default class Application {
 		Application.setAppFlags();
 	}
 
-	private store: Store;
+	private store = new Store();
 
 	private blockerEngine: ElectronBlocker;
 
@@ -52,12 +46,8 @@ export default class Application {
 	 * register Twitch event handlers  
 	 * Spawn the primary BrowserWindow
 	 */
-	public async init(): Promise<void> {
-		if (!app.isReady()) throw new Error('App must be ready before Application.init()');
-
-		const store = new PatchedStore();
-		this.store = store;
-
+	public async launch(): Promise<void> {
+		if (!app.isReady()) throw new Error('App must be ready before Application.launch()');
 		this.registerSwapperProtocols();
 
 		const [twitchClient] = await Promise.all([

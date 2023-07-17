@@ -1153,7 +1153,7 @@ __metadata:
     electron: 10.4.7
     electron-builder: next
     electron-localshortcut: latest
-    electron-store: latest
+    electron-store: 8.1.0
     eslint: latest
     eslint-config-airbnb-typescript: latest
     eslint-config-raven: ^1.0.3
@@ -3416,13 +3416,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-store@npm:latest":
+"electron-store@npm:8.1.0":
   version: 8.1.0
   resolution: "electron-store@npm:8.1.0"
   dependencies:
     conf: ^10.2.0
     type-fest: ^2.17.0
   checksum: 7036f6d91cdcf6e08b10e24df9b144b9a04fe6cb1d7a7cc009277c1f6ad206d96cfbc3ada8ead47206fc5dadec0d34ff1beb8345bb3696e200f071f66b0abd8e
+  languageName: node
+  linkType: hard
+
+"electron-store@patch:electron-store@npm%3A8.1.0#./patches/electron-store-default-export.patch::locator=anotherkrunkerclient%40workspace%3A.":
+  version: 8.1.0
+  resolution: "electron-store@patch:electron-store@npm%3A8.1.0#./patches/electron-store-default-export.patch::version=8.1.0&hash=f5a7a9&locator=anotherkrunkerclient%40workspace%3A."
+  dependencies:
+    conf: ^10.2.0
+    type-fest: ^2.17.0
+  checksum: 67e72aeb7a7c0bede6174054f8ac614d88c54a4f91214035d9d967be2a95eb428eee8b5455b39fe5a8bb3a685d8abdd0154c6d396bfa8c74a641f3b303127b16
   languageName: node
   linkType: hard
 
@@ -9840,9 +9850,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tmi.js@patch:@tmi.js@https://github.com/Durss/tmi.js#patches/tmi.js-no-types.patch::locator=anotherkrunkerclient%40workspace%3A.":
+"tmi.js@patch:@tmi.js@https://github.com/Durss/tmi.js#./patches/tmi.js-no-types.patch::locator=anotherkrunkerclient%40workspace%3A.":
   version: 1.9.0-pre.1
-  resolution: "tmi.js@patch:@tmi.js@https%3A//github.com/Durss/tmi.js.git%23commit=e4eea3ac59f5d30aa8352b9c5f1202cf4aed9821#patches/tmi.js-no-types.patch::version=1.9.0-pre.1&hash=d40551&locator=anotherkrunkerclient%40workspace%3A."
+  resolution: "tmi.js@patch:@tmi.js@https%3A//github.com/Durss/tmi.js.git%23commit=e4eea3ac59f5d30aa8352b9c5f1202cf4aed9821#./patches/tmi.js-no-types.patch::version=1.9.0-pre.1&hash=d40551&locator=anotherkrunkerclient%40workspace%3A."
   dependencies:
     ws: 8.8.0
   checksum: a97235056c5f934d112029fcef309f624b49aa97bbd2c35da5e78d2fd9a6285aa0f3f701410e209866d25f38fac050eedc114a12e46b598601bd8bfeb4a5c2b9
