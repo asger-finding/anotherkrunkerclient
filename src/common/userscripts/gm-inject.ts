@@ -2,6 +2,26 @@ import MetadataParser from '@userscripts/gm-metadata-parser';
 import fetch from 'node-fetch-commonjs';
 
 /**
+ * Create a pseudo-random string
+ * 
+ * 
+ * @param length Length of string
+ * @returns Random string of length N
+ */
+const getRandomString = (length = 10) => {
+	for (let random = ''; (random += Math.random().toString(36)
+		.slice(2));) if (random.length >= length) return random.slice(0, length);
+};
+
+/**
+ * Generate a new unique Id with a prefix
+ * 
+ * @param prefix What to prefix the Id with
+ * @returns Pseudo-random id
+ */
+const getUniqueId = (prefix = 'VM') => prefix + getRandomString();
+
+/**
  *
  * 
  * @param require URL that's been required
@@ -31,14 +51,19 @@ const generateInjectCode = async(rawUserscript: string) => {
 
 	const required = await Promise.all(meta.require.map(require => handleRequire(require)))
 		.then(requires => requires.map(code => (/\n(?:(?!\n)\s)*$/u.test(code) ? `${ code };` : `${ code };\n`)));
+	const windowKey = getUniqueId();
+	const dataKey = getUniqueId();
 	const generated = `
+	window.${ windowKey } = function ${ dataKey }(${ meta.grant ? 'GM' : '{ GM, GM_info, unsafeWindow, cloneInto, createObjectIn, exportFunction }'}) {
+		${ meta.grant ? 'with (this) with (c) delete (c),' : '' }
 		((define, module, exports) => {
 			${ required }
 			${ required.length ? '(() => {' : '' }
 				${ rawUserscript }
 			${ required.length ? '})()' : '' } 
 		})()
-	`;
+	}`;
+
 	console.log(generated);
 };
 
