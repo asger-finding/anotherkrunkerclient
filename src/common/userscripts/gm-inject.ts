@@ -1,5 +1,5 @@
 import MetadataParser from '@userscripts/gm-metadata-parser';
-import fetch from 'node-fetch';
+import fetch from 'node-fetch-commonjs';
 
 /**
  *

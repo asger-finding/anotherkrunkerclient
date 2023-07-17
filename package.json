@@ -42,7 +42,7 @@
     "@cliqz/adblocker-electron": "latest",
     "electron-localshortcut": "latest",
     "electron-store": "8.1.0",
-    "node-fetch": "^2",
+    "node-fetch-commonjs": "^3.3.1",
     "tmi.js": "https://github.com/Durss/tmi.js",
     "top-user-agents": "latest"
   },
@@ -51,7 +51,6 @@
     "@swc/core": "latest",
     "@types/electron-localshortcut": "^3.1.0",
     "@types/node": "12.12.21",
-    "@types/node-fetch": "^2",
     "@types/tmi.js": "^1.8.3",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
