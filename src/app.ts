@@ -13,7 +13,7 @@ import { app, ipcMain, protocol, session } from 'electron';
 import { join, resolve } from 'path';
 import Store from 'electron-store';
 import TwitchUtils from '@twitch-utils';
-import fetch from 'node-fetch-commonjs';
+import fetch from 'electron-fetch';
 import { promises as fs } from 'fs';
 import getFlags from '@flags';
 import { info } from '@logger';

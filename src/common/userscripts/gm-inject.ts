@@ -1,5 +1,5 @@
 import MetadataParser from '@userscripts/gm-metadata-parser';
-import fetch from 'node-fetch-commonjs';
+import fetch from 'electron-fetch';
 
 /**
  * Create a pseudo-random string

@@ -6,7 +6,7 @@ import { error, info, warn } from '@logger';
 import { Client } from 'tmi.js';
 import Store from 'electron-store';
 import { createServer } from 'http';
-import fetch from 'node-fetch-commonjs';
+import fetch from 'electron-fetch';
 import { openExternal } from '@window-utils';
 
 const store = new Store();
