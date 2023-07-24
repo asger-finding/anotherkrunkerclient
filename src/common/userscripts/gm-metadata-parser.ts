@@ -1,4 +1,4 @@
-import { ImmutableValue, MetaValueTypes, Userscript } from '@typings/userscripts';
+import { type ImmutableValue, type MetaValueTypes, type Userscript } from '@typings/userscripts';
 
 /** Class that handles parsing of the metadata block of a userscript */
 export default class MetadataParser {

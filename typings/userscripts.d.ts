@@ -1,4 +1,4 @@
-import { RequiredFieldsOnly, UnrequiredFieldsOnly } from '@typings/client';
+import { type RequiredFieldsOnly, type UnrequiredFieldsOnly } from '@typings/client';
 
 declare type NumBool = 0 | 1;
 declare type NumBoolNull = NumBool | null;

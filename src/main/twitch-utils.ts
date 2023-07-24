@@ -3,8 +3,8 @@ import {
 	TWITCH
 } from '@constants';
 import { error, info, warn } from '@logger';
-import { Client } from 'tmi.js';
 import Store from 'electron-store';
+import { Client as TwitchClient } from 'tmi.js';
 import { createServer } from 'http';
 import fetch from 'electron-fetch';
 import { openExternal } from '@window-utils';
@@ -18,7 +18,7 @@ export default class {
 	 * 
 	 * @returns Promise for a tmi.js client instance or null if failed.
 	 */
-	public static async createClient(): Promise<Client | null> {
+	public static async createClient(): Promise<TwitchClient | null> {
 		info('Initializing Twitch client');
 
 		const token = await this.getAccessToken();
@@ -26,7 +26,7 @@ export default class {
 
 		if (username === null) return null;
 
-		return new Client({
+		return new TwitchClient({
 			options: { debug: IS_DEVELOPMENT ?? false },
 			logger: { info, warn, error },
 			identity: {

@@ -1006,6 +1006,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@xhayper/discord-rpc@npm:1.0.21":
+  version: 1.0.21
+  resolution: "@xhayper/discord-rpc@npm:1.0.21"
+  dependencies:
+    axios: ^1.4.0
+    discord-api-types: ^0.37.48
+    ws: ^8.13.0
+  checksum: 85ae62cc1b8c5bc09a6b1eb6223f6ecaf8843586b80d06df5d98ff017e2e1f67a39c1e98a2d45b03fbb1a55bf2dfd4a37b7c89ebf18547ca19a4d61c02fcb0a5
+  languageName: node
+  linkType: hard
+
+"@xhayper/discord-rpc@patch:@xhayper/discord-rpc@npm%3A1.0.21#./patches/discord-rpc-for-electron.patch::locator=anotherkrunkerclient%40workspace%3A.":
+  version: 1.0.21
+  resolution: "@xhayper/discord-rpc@patch:@xhayper/discord-rpc@npm%3A1.0.21#./patches/discord-rpc-for-electron.patch::version=1.0.21&hash=482036&locator=anotherkrunkerclient%40workspace%3A."
+  dependencies:
+    axios: ^1.4.0
+    discord-api-types: ^0.37.48
+    ws: ^8.13.0
+  checksum: 30f2141d71675432d2a95138642caed1fa34fb90903cfc36ab15e6fd370c68945b031b6e4508284dff44cd0d59a36a67339dc3afa9155f10417efd20538bf5b4
+  languageName: node
+  linkType: hard
+
 "abbrev@npm:^1.0.0":
   version: 1.1.1
   resolution: "abbrev@npm:1.1.1"
@@ -1136,6 +1158,7 @@ __metadata:
     "@types/tmi.js": ^1.8.3
     "@typescript-eslint/eslint-plugin": latest
     "@typescript-eslint/parser": latest
+    "@xhayper/discord-rpc": 1.0.21
     acorn-loose: ^8.3.0
     acorn-walk: latest
     del: ^6
@@ -1610,6 +1633,17 @@ __metadata:
   version: 1.0.5
   resolution: "available-typed-arrays@npm:1.0.5"
   checksum: 20eb47b3cefd7db027b9bbb993c658abd36d4edd3fe1060e83699a03ee275b0c9b216cc076ff3f2db29073225fb70e7613987af14269ac1fe2a19803ccc97f1a
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "axios@npm:1.4.0"
+  dependencies:
+    follow-redirects: ^1.15.0
+    form-data: ^4.0.0
+    proxy-from-env: ^1.1.0
+  checksum: 7fb6a4313bae7f45e89d62c70a800913c303df653f19eafec88e56cea2e3821066b8409bc68be1930ecca80e861c52aa787659df0ffec6ad4d451c7816b9386b
   languageName: node
   linkType: hard
 
@@ -3099,6 +3133,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"discord-api-types@npm:^0.37.48":
+  version: 0.37.50
+  resolution: "discord-api-types@npm:0.37.50"
+  checksum: 08dc5145dbefda5f52b479cd42d96ac2b8110300861855e1f92cc8a0a6525a4059e32724cd5237490c286f5afd86797a86823238cd5eee016198560bb36f6d43
+  languageName: node
+  linkType: hard
+
 "dmg-builder@npm:24.4.0":
   version: 24.4.0
   resolution: "dmg-builder@npm:24.4.0"
@@ -4507,6 +4548,16 @@ __metadata:
     inherits: ^2.0.3
     readable-stream: ^2.3.6
   checksum: 42e07747f83bcd4e799da802e621d6039787749ffd41f5517f8c4f786ee967e31ba32b09f8b28a9c6f67bd4f5346772e604202df350e8d99f4141771bae31279
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.15.0":
+  version: 1.15.2
+  resolution: "follow-redirects@npm:1.15.2"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: faa66059b66358ba65c234c2f2a37fcec029dc22775f35d9ad6abac56003268baf41e55f9ee645957b32c7d9f62baf1f0b906e68267276f54ec4b4c597c2b190
   languageName: node
   linkType: hard
 
@@ -8307,6 +8358,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"proxy-from-env@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "proxy-from-env@npm:1.1.0"
+  checksum: ed7fcc2ba0a33404958e34d95d18638249a68c430e30fcb6c478497d72739ba64ce9810a24f53a7d921d0c065e5b78e3822759800698167256b04659366ca4d4
+  languageName: node
+  linkType: hard
+
 "pseudomap@npm:^1.0.2":
   version: 1.0.2
   resolution: "pseudomap@npm:1.0.2"
@@ -10584,6 +10642,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 6ceed1ca1cb800ef60c7fc8346c7d5d73d73be754228eb958765abf5d714519338efa20ffe674167039486eb3a813aae5a497f8d319e16b4d96216a31df5bd95
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.13.0":
+  version: 8.13.0
+  resolution: "ws@npm:8.13.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 53e991bbf928faf5dc6efac9b8eb9ab6497c69feeb94f963d648b7a3530a720b19ec2e0ec037344257e05a4f35bd9ad04d9de6f289615ffb133282031b18c61c
   languageName: node
   linkType: hard
 

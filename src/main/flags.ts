@@ -1,4 +1,4 @@
-import { Flags, PartialGPU } from '@typings/client';
+import { type Flags, type PartialGPU } from '@typings/client';
 import { app } from 'electron';
 import { warn } from '@logger';
 

@@ -26,6 +26,7 @@
     "@settings-backend": "src/common/settings-backend",
     "@store": "src/common/patched-store",
     "@flags": "src/main/flags",
+    "@renderer": "src/preload",
     "@game-settings": "src/preload/game-settings",
     "@chat-manager": "src/preload/chat-manager",
     "@twitch-chat": "src/preload/twitch-chat",
@@ -36,10 +37,12 @@
   },
   "resolutions": {
     "tmi.js": "patch:@tmi.js@https://github.com/Durss/tmi.js#./patches/tmi.js-no-types.patch",
-    "electron-store@8.1.0": "patch:electron-store@npm%3A8.1.0#./patches/electron-store-default-export.patch"
+    "electron-store@8.1.0": "patch:electron-store@npm%3A8.1.0#./patches/electron-store-default-export.patch",
+    "@xhayper/discord-rpc@1.0.21": "patch:@xhayper/discord-rpc@npm%3A1.0.21#./patches/discord-rpc-for-electron.patch"
   },
   "dependencies": {
     "@cliqz/adblocker-electron": "latest",
+    "@xhayper/discord-rpc": "1.0.21",
     "electron-fetch": "^1.9.1",
     "electron-localshortcut": "latest",
     "electron-store": "8.1.0",

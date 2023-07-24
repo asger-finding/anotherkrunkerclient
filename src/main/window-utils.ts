@@ -1,4 +1,4 @@
-import { AsyncReturnType, DefaultConstructorOptions, WindowData, WindowSaveData } from '@typings/client';
+import { type AsyncReturnType, type DefaultConstructorOptions, type WindowData, type WindowSaveData } from '@typings/client';
 import { BrowserWindow, app, dialog } from 'electron';
 import { TABS, getURLData } from '@constants';
 import GameUtils from '@game-utils';

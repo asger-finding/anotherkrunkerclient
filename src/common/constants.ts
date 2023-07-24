@@ -1,4 +1,4 @@
-import { Author, KrunkerDomains, WindowData } from '@typings/client';
+import { type Author, type KrunkerDomains, type WindowData } from '@typings/client';
 import SettingsBackend, { Savable } from '@settings-backend';
 import { author, productName, repository, version } from '../../package.json';
 import { app } from 'electron';
@@ -24,11 +24,17 @@ export const TARGET_GAME_DOMAIN = settings.getSetting(Savable.GAME_FRONTEND, 'kr
 export const TARGET_GAME_URL = `https://${ TARGET_GAME_DOMAIN }/`;
 export const QUICKJOIN_URL_QUERY_PARAM = 'quickjoin';
 
-// Client ID can be obtained by creating a new app on the Twitch developer portal (https://dev.twitch.tv/console/apps)
+// Twitch Client ID can be obtained with a new
+// app on the Twitch developer portal: https://dev.twitch.tv/console/apps
 export enum TWITCH {
 	CLIENT_ID = 'b8ee5yb7azo5fochp2ajvt9e5f4sfs',
-	PORT = 33333,
-	MATERIAL_ICON = 'live_tv'
+	PORT = 33333
+}
+
+// Discord Client ID can be obtained with a new
+// app on the Discord developer portal: https://discord.com/developers/applications
+export enum DISCORD {
+	CLIENT_ID = '1132649632695058564'
 }
 
 // ms
@@ -55,6 +61,7 @@ export enum TABS {
 
 // ipc messages must be typeof string
 export enum MESSAGES {
+	UPDATE_GAME_ACTIVITY = 'update-game-activity',
 	GAME_DONE = 'game-done',
 	EXIT_CLIENT = 'exit-client',
 	CLEAR_ELECTRON_BLOCKER_CACHE = 'clear-blocker-cache',

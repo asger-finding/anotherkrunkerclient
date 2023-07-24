@@ -7,6 +7,23 @@ type SlimBoolean = (0 | 1 | boolean);
 /** RGB array type */
 export type Color = [number, number, number];
 
+/** Return value of Krunker's native window.getGameActivity() */
+export type GameActivity = {
+	id: string;
+	class: {
+		index: number;
+		name: string;
+	}
+	map: string | null;
+	mode: string | null;
+	time: number | null;
+	custom: boolean | null;
+};
+export type GetGameActivity = () => GameActivity;
+
+/** Function type for Krunker's native window.switchChat */
+export type SwitchChat = (element: HTMLElement) => void;
+
 export interface KrunkerWindow extends Window {
 	windows: [
 		{

@@ -1,11 +1,5 @@
-import {
-	CLIENT_AUTHOR,
-	CLIENT_LICENSE_PERMALINK,
-	CLIENT_NAME,
-	MESSAGES,
-	TABS,
-	TARGET_GAME_URL
-} from '@constants';
+import { CLIENT_AUTHOR, CLIENT_LICENSE_PERMALINK, CLIENT_NAME, DISCORD, MESSAGES, TABS, TARGET_GAME_URL } from '@constants';
+import { Client as DiscordClient, type SetActivity } from '@xhayper/discord-rpc';
 import { ElectronBlocker, fullLists as cliqzFullList } from '@cliqz/adblocker-electron';
 import { Savable, StoreConstants } from '@settings-backend';
 import WindowUtils, { getConstructorOptions } from '@window-utils';
@@ -28,6 +22,7 @@ export default class Application {
 
 	/** Preload app configurations that can be set before app.ready */
 	constructor() {
+		Application.connectDiscordRPC();
 		Application.registerAppEventListeners();
 		Application.registerIpcEventListeners();
 		Application.setAppFlags();
@@ -100,6 +95,23 @@ export default class Application {
 	 */
 	private static sendToAllGameWindows(channel: string, ...args: unknown[]): void {
 		for (const browserWindow of WindowUtils.getAllWindowsOfType(TABS.GAME)) browserWindow.webContents.send(channel, ...args);
+	}
+
+	/**
+	 * Initialize Discord RPC client and setup Discord ipc bridge
+	 */
+	private static connectDiscordRPC(): void {
+		const discordClient = new DiscordClient({
+			clientId: DISCORD.CLIENT_ID,
+			transport: { type: 'ipc' }
+		});
+		const discordRPCReady = new Promise<void>(res => discordClient.on('ready', res));
+		discordClient.login();
+
+		ipcMain.on(MESSAGES.UPDATE_GAME_ACTIVITY, async(_evt, data: SetActivity) => {
+			await discordRPCReady;
+			discordClient.user?.setActivity(data);
+		});
 	}
 
 	/**

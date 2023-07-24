@@ -1,4 +1,4 @@
-type SwitchChat = (element: HTMLElement) => void;
+import { type SwitchChat } from '@typings/krunker';
 type ChatSwitch = InstanceType<typeof ChatManager>['chatSwitch'];
 type BuiltInChat = InstanceType<typeof ChatManager>['builtInChat'];
 type ChatClone = InstanceType<typeof ChatManager>['chatClone'];

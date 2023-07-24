@@ -1,4 +1,4 @@
-import { Color, Hexadecimal } from '@typings/krunker';
+import { type Color, type Hexadecimal } from '@typings/krunker';
 
 /**
  * Get the grayscale value of a given color using the specified algorithm.

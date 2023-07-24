@@ -18,6 +18,10 @@ export type UnrequiredFieldsOnly<T> = {
 	[K in keyof T as T[K] extends Required<T>[K] ? never : K]: T[K];
 };
 
+export type NonNullableObject<T> = {
+	[K in keyof T]: NonNullable<T[K]>;
+};
+
 declare global {
 	namespace NodeJS {
 		interface Global {

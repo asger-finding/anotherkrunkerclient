@@ -1,4 +1,4 @@
-import { EventListener } from '@typings/client';
+import { type EventListener } from '@typings/client';
 import Store from 'electron-store';
 
 export enum StoreConstants {
@@ -18,7 +18,7 @@ export enum Savable {
 	SKY_BOTTOM_COLOR = 'skyBottomColor',
 	GAME_CHAT_STATE = 'gameChatState'
 }
-export enum EventListenerTypes {
+export enum EventListeners {
 	ON_READ_SETTING,
 	ON_WRITE_SETTING
 }
@@ -32,7 +32,7 @@ export default class SettingsBackend {
 	private store = new Store();
 
 	private eventListeners: {
-		type: EventListenerTypes,
+		type: EventListeners,
 		eventListener: EventListener
 	}[] = [];
 
@@ -45,9 +45,8 @@ export default class SettingsBackend {
 	 */
 	public getSetting(key: Savable, defaultValue: unknown): SettingsObject[Savable] {
 		const saved = this.store.get(`${ SettingsBackend.prefix }.${ key }`, defaultValue);
-		// log(this.store.path);
 
-		this.emitEvent(EventListenerTypes.ON_READ_SETTING, key, saved);
+		this.emitEvent(EventListeners.ON_READ_SETTING, key, saved);
 
 		return saved;
 	}
@@ -61,7 +60,7 @@ export default class SettingsBackend {
 	public writeSetting(key: Savable, value: SettingsObject[Savable]): void {
 		this.store.set(`${ SettingsBackend.prefix }.${ key }`, value);
 
-		this.emitEvent(EventListenerTypes.ON_WRITE_SETTING, key);
+		this.emitEvent(EventListeners.ON_WRITE_SETTING, key);
 	}
 
 	/**
@@ -70,7 +69,7 @@ export default class SettingsBackend {
 	 * @param type Type of event to make the callback on
 	 * @param eventListener Event listener to call on
 	 */
-	public addEventListener(type: EventListenerTypes, eventListener: EventListener): void {
+	public addEventListener(type: EventListeners, eventListener: EventListener): void {
 		this.eventListeners.push({ type, eventListener });
 	}
 
@@ -90,7 +89,7 @@ export default class SettingsBackend {
 	 * @param eventId Event ID to distinguish the event
 	 * @param data Optional data for the event
 	 */
-	private emitEvent(eventType: EventListenerTypes, eventId: string, data?: unknown) {
+	private emitEvent(eventType: EventListeners, eventId: string, data?: unknown) {
 		for (const { type, eventListener } of this.eventListeners) if (type === eventType) eventListener(eventId, data);
 	}
 

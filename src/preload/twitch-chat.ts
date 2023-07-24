@@ -1,7 +1,7 @@
 import { MESSAGES, TWITCH_GET_CHANNEL_STATE_INTERVAL } from '@constants';
 import SettingsBackend, { Savable } from '@settings-backend';
 import ChatManager from '@chat-manager';
-import { ChatUserstate } from 'tmi.js';
+import { type ChatUserstate } from 'tmi.js';
 import { ipcRenderer } from 'electron';
 
 type ViewerRoles = 'subscriber' | 'vip' | 'moderator' | 'broadcaster';

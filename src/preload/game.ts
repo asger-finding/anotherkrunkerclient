@@ -1,9 +1,10 @@
 
-import { EventListenerTypes, Savable } from '@settings-backend';
+import { EventListeners, Savable } from '@settings-backend';
 import { parse, resolve } from 'path';
-import { Color } from '@typings/krunker';
+import { type Color } from '@typings/krunker';
+import DiscordRPC from '@renderer/discord-rpc';
 import GameSettings from '@game-settings';
-import { KrunkerDomains } from '@typings/client';
+import { type KrunkerDomains } from '@typings/client';
 import { MESSAGES } from '@constants';
 import TwitchChat from '@twitch-chat';
 import { promises as fs } from 'fs';
@@ -21,6 +22,17 @@ const ensureContentLoaded = () => new Promise<void>(promiseResolve => {
 const gameSettings = new GameSettings();
 
 if (process.isMainFrame) {
+	(async function() {
+		const [css] = await Promise.all([
+			fs.readFile(resolve(__dirname, '../renderer/styles/main.css'), 'utf8'),
+			ensureContentLoaded()
+		]);
+
+		const injectElement = document.createElement('style');
+		injectElement.innerHTML = css;
+		document.head.appendChild(injectElement);
+	}());
+
 	gameSettings.itemElements.push(...gameSettings.createSection({
 		title: 'Client',
 		id: 'client',
@@ -305,17 +317,6 @@ if (process.isMainFrame) {
 		}
 	}));
 
-	(async function() {
-		const [css] = await Promise.all([
-			fs.readFile(resolve(__dirname, '../renderer/styles/main.css'), 'utf8'),
-			ensureContentLoaded()
-		]);
-
-		const injectElement = document.createElement('style');
-		injectElement.innerHTML = css;
-		document.head.appendChild(injectElement);
-	}());
-
 	/** Send a close message to main when function is called */
 	const closeClient = () => {
 		ipcRenderer.send(MESSAGES.EXIT_CLIENT);
@@ -333,6 +334,7 @@ if (process.isMainFrame) {
 
 	if (gameSettings.getSetting(Savable.INTEGRATE_WITH_TWITCH, false)) {
 		const twitchChat = new TwitchChat();
+		const discordRpc = new DiscordRPC();
 	}
 }
 
@@ -394,7 +396,7 @@ Reflect.defineProperty(Object.prototype, 'renderer', {
 				const [program] = args as [ThreeProgram];
 
 				if (program.cacheKey.includes('endColor')) {
-					gameSettings.addEventListener(EventListenerTypes.ON_WRITE_SETTING, eventId => {
+					gameSettings.addEventListener(EventListeners.ON_WRITE_SETTING, eventId => {
 						const [top, middle, bottom] = hexToRGB(1, ...getSavedSkycolor());
 						if (eventId === Savable.SKY_TOP_COLOR
 							|| eventId === Savable.SKY_MIDDLE_COLOR

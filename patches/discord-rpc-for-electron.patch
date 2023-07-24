@@ -1,0 +1,109 @@
+diff --git a/dist/Client.d.ts b/dist/Client.d.ts
+index d96d807a1d3424993e9cca2b356db579cbf14f10..41ea88c5b025de58dcd85e7b37447cd80f23fd09 100644
+--- a/dist/Client.d.ts
++++ b/dist/Client.d.ts
+@@ -1,7 +1,8 @@
+ import type { APIApplication, OAuth2Scopes } from "discord-api-types/v10";
+ import { type FormatFunction } from "./transport/IPC";
+ import type { TypedEventEmitter } from "./utils/TypedEventEmitter";
+-import { type AxiosResponse, type Method } from "axios";
++// FIXME: electron-fetch does not have Method type. Should not matter in prod.
++import { type Response, type Method } from "electron-fetch";
+ import { ClientUser } from "./structures/ClientUser";
+ import { type RPC_CMD, type CommandIncoming, type RPC_EVT, type Transport, type TransportOptions } from "./structures/Transport";
+ export type AuthorizeOptions = {
+@@ -106,7 +107,7 @@ export declare class Client extends Client_base {
+         data?: any;
+         query?: string;
+         headers?: any;
+-    }): Promise<AxiosResponse<R>>;
++    }): Promise<Response<R>>;
+     /**
+      * @hidden
+      */
+diff --git a/dist/Client.js b/dist/Client.js
+index a84422aa6938c5be0fe81bc0f3b06cd39553a79c..30cdb9de15eee7056e8bdfac932f22990f916eaa 100644
+--- a/dist/Client.js
++++ b/dist/Client.js
+@@ -5,12 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.Client = void 0;
+ const IPC_1 = require("./transport/IPC");
+-const axios_1 = __importDefault(require("axios"));
++const fetch_1 = __importDefault(require("electron-fetch"));
+ const WebSocket_1 = require("./transport/WebSocket");
+ const ClientUser_1 = require("./structures/ClientUser");
+ const RPCError_1 = require("./utils/RPCError");
+-const node_events_1 = require("node:events");
+-const node_crypto_1 = __importDefault(require("node:crypto"));
++const node_events_1 = require("events");
++const node_crypto_1 = __importDefault(require("crypto"));
+ const Transport_1 = require("./structures/Transport");
+ class Client extends node_events_1.EventEmitter {
+     /**
+@@ -101,7 +101,7 @@ class Client extends node_events_1.EventEmitter {
+         if (req?.query)
+             for (const [key, value] of req.query)
+                 url.searchParams.append(key, value);
+-        return await (0, axios_1.default)({
++        return await (0, fetch_1.default)({
+             url: url.toString(),
+             method,
+             data: req?.data ?? undefined,
+@@ -118,7 +118,7 @@ class Client extends node_events_1.EventEmitter {
+         const error = new RPCError_1.RPCError(Transport_1.RPC_ERROR_CODE.RPC_UNKNOWN_ERROR);
+         RPCError_1.RPCError.captureStackTrace(error, this.request);
+         return new Promise((resolve, reject) => {
+-            const nonce = node_crypto_1.default.randomUUID();
++            const nonce = node_crypto_1.default.randomBytes(20).toString('hex');
+             this.transport.send({ cmd, args, evt, nonce });
+             this._nonceMap.set(nonce, { resolve, reject, error });
+         });
+diff --git a/dist/structures/Transport.js b/dist/structures/Transport.js
+index c5594af6db187c92992cc22dd3aed33f088cf9dc..bdf6d1cd082601e75b9f8eb3ded43e6367241dba 100644
+--- a/dist/structures/Transport.js
++++ b/dist/structures/Transport.js
+@@ -1,7 +1,7 @@
+ "use strict";
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.Transport = exports.CUSTOM_RPC_ERROR_CODE = exports.RPC_ERROR_CODE = exports.RPC_CLOSE_CODE = void 0;
+-const node_events_1 = require("node:events");
++const node_events_1 = require("events");
+ var RPC_CLOSE_CODE;
+ (function (RPC_CLOSE_CODE) {
+     RPC_CLOSE_CODE[RPC_CLOSE_CODE["RPC_CLOSE_NORMAL"] = 1000] = "RPC_CLOSE_NORMAL";
+diff --git a/dist/transport/IPC.js b/dist/transport/IPC.js
+index 03612658e5cc5c0e3ac1397593ae2bfdc45fdefc..96f872183c71141857a7569cfea0d0b10dc336ca 100644
+--- a/dist/transport/IPC.js
++++ b/dist/transport/IPC.js
+@@ -6,10 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.IPCTransport = exports.IPC_OPCODE = void 0;
+ const Transport_1 = require("../structures/Transport");
+ const RPCError_1 = require("../utils/RPCError");
+-const node_crypto_1 = __importDefault(require("node:crypto"));
+-const node_path_1 = __importDefault(require("node:path"));
+-const node_net_1 = __importDefault(require("node:net"));
+-const node_fs_1 = __importDefault(require("node:fs"));
++const node_crypto_1 = __importDefault(require("crypto"));
++const node_path_1 = __importDefault(require("path"));
++const node_net_1 = __importDefault(require("net"));
++const node_fs_1 = __importDefault(require("fs"));
+ var IPC_OPCODE;
+ (function (IPC_OPCODE) {
+     IPC_OPCODE[IPC_OPCODE["HANDSHAKE"] = 0] = "HANDSHAKE";
+diff --git a/package.json b/package.json
+index a33d9be6e7cb7cc52ef5db186a4ae7dbda1552d7..f2ef0fffd402d5583d44c359ecdeeb0b69dae98a 100644
+--- a/package.json
++++ b/package.json
+@@ -21,9 +21,9 @@
+         "prepack": "pnpm run build"
+     },
+     "dependencies": {
+-        "axios": "^1.4.0",
++        "electron-fetch": "^1.9.1",
+         "discord-api-types": "^0.37.48",
+-        "ws": "^8.13.0"
++        "ws": "8.8.0"
+     },
+     "devDependencies": {
+         "@types/node": "^14.*",
