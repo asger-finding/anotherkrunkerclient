@@ -8,16 +8,8 @@ const separator = process.platform === 'win32' ? '>' : '›';
  * 
  * @returns Formatted timestring in the format of 'HH:MM:SS.mmm' 
  */
-const newTimestamp = (): string => {
-	// Return date formatted as HH:MM:SS.mmm
-	const date = new Date();
-	const HH = (`${ date.getHours() }`).padStart(2, '0');
-	const MM = (`${ date.getMinutes() }`).padStart(2, '0');
-	const SS = (`${ date.getSeconds() }`).padStart(2, '0');
-	const mmm = (`${ date.getMilliseconds() }`).padStart(3, '0');
-
-	return `${ HH }:${ MM }:${ SS }.${ mmm }`;
-};
+const newTimestamp = (): string => new Date().toISOString()
+	.slice(11, -1);
 
 /**
  * If in development, log a timestamped message to the console in blue.
