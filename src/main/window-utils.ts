@@ -255,6 +255,12 @@ export default class {
 				// Fallback if openDevTools fails
 				browserWindow.webContents.closeDevTools();
 
+				const existingDevtools = browserWindow.webContents.devToolsWebContents;
+				if (existingDevtools) {
+					BrowserWindow.fromWebContents(existingDevtools)?.show();
+					return;
+				}
+
 				const devtoolsWindow = new BrowserWindow();
 				devtoolsWindow.setMenuBarVisibility(false);
 
