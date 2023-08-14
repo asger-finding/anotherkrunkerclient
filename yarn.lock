@@ -1006,25 +1006,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xhayper/discord-rpc@npm:1.0.21":
-  version: 1.0.21
-  resolution: "@xhayper/discord-rpc@npm:1.0.21"
+"@xhayper/discord-rpc@npm:1.0.22":
+  version: 1.0.22
+  resolution: "@xhayper/discord-rpc@npm:1.0.22"
   dependencies:
     axios: ^1.4.0
-    discord-api-types: ^0.37.48
+    discord-api-types: ^0.37.52
     ws: ^8.13.0
-  checksum: 85ae62cc1b8c5bc09a6b1eb6223f6ecaf8843586b80d06df5d98ff017e2e1f67a39c1e98a2d45b03fbb1a55bf2dfd4a37b7c89ebf18547ca19a4d61c02fcb0a5
-  languageName: node
-  linkType: hard
-
-"@xhayper/discord-rpc@patch:@xhayper/discord-rpc@npm%3A1.0.21#./patches/discord-rpc-for-electron.patch::locator=anotherkrunkerclient%40workspace%3A.":
-  version: 1.0.21
-  resolution: "@xhayper/discord-rpc@patch:@xhayper/discord-rpc@npm%3A1.0.21#./patches/discord-rpc-for-electron.patch::version=1.0.21&hash=482036&locator=anotherkrunkerclient%40workspace%3A."
-  dependencies:
-    axios: ^1.4.0
-    discord-api-types: ^0.37.48
-    ws: ^8.13.0
-  checksum: 30f2141d71675432d2a95138642caed1fa34fb90903cfc36ab15e6fd370c68945b031b6e4508284dff44cd0d59a36a67339dc3afa9155f10417efd20538bf5b4
+  checksum: c35daa23fe9514392606d09a12e2104b00390106dc800137b440586019db3c6bd702050dfd946f4a88d4ff1e2a04e41b87254faf4ec6ec5f9c00b5620f034b2c
   languageName: node
   linkType: hard
 
@@ -1158,7 +1147,7 @@ __metadata:
     "@types/tmi.js": ^1.8.3
     "@typescript-eslint/eslint-plugin": latest
     "@typescript-eslint/parser": latest
-    "@xhayper/discord-rpc": 1.0.21
+    "@xhayper/discord-rpc": 1.0.22
     acorn-loose: ^8.3.0
     acorn-walk: latest
     del: ^6
@@ -3133,10 +3122,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord-api-types@npm:^0.37.48":
-  version: 0.37.50
-  resolution: "discord-api-types@npm:0.37.50"
-  checksum: 08dc5145dbefda5f52b479cd42d96ac2b8110300861855e1f92cc8a0a6525a4059e32724cd5237490c286f5afd86797a86823238cd5eee016198560bb36f6d43
+"discord-api-types@npm:^0.37.52":
+  version: 0.37.53
+  resolution: "discord-api-types@npm:0.37.53"
+  checksum: cff6bc976f01d6c9550e48ab758cb2a2ac9042272174d4384915b830aecc4a5551f9dafe3ec21382214700b4188c766ab318179458e4e09e9df9f45a3f4902ed
   languageName: node
   linkType: hard
 
