@@ -1006,25 +1006,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xhayper/discord-rpc@npm:1.0.21":
-  version: 1.0.21
-  resolution: "@xhayper/discord-rpc@npm:1.0.21"
+"@xhayper/discord-rpc@npm:1.0.23":
+  version: 1.0.23
+  resolution: "@xhayper/discord-rpc@npm:1.0.23"
   dependencies:
-    axios: ^1.4.0
-    discord-api-types: ^0.37.48
-    ws: ^8.13.0
-  checksum: 85ae62cc1b8c5bc09a6b1eb6223f6ecaf8843586b80d06df5d98ff017e2e1f67a39c1e98a2d45b03fbb1a55bf2dfd4a37b7c89ebf18547ca19a4d61c02fcb0a5
-  languageName: node
-  linkType: hard
-
-"@xhayper/discord-rpc@patch:@xhayper/discord-rpc@npm%3A1.0.21#./patches/discord-rpc-for-electron.patch::locator=anotherkrunkerclient%40workspace%3A.":
-  version: 1.0.21
-  resolution: "@xhayper/discord-rpc@patch:@xhayper/discord-rpc@npm%3A1.0.21#./patches/discord-rpc-for-electron.patch::version=1.0.21&hash=482036&locator=anotherkrunkerclient%40workspace%3A."
-  dependencies:
-    axios: ^1.4.0
-    discord-api-types: ^0.37.48
-    ws: ^8.13.0
-  checksum: 30f2141d71675432d2a95138642caed1fa34fb90903cfc36ab15e6fd370c68945b031b6e4508284dff44cd0d59a36a67339dc3afa9155f10417efd20538bf5b4
+    axios: ^1.5.1
+    discord-api-types: ^0.37.58
+    ws: ^8.14.2
+  checksum: 9832cce1412c9fb25979dc67cd9cef33f8770d33bd96bcc9912b7a24792714e94945d84da8780537e6c78fa6a20fe83f735bbe55ce384df980dd9eaeaa99b81b
   languageName: node
   linkType: hard
 
@@ -1158,7 +1147,7 @@ __metadata:
     "@types/tmi.js": ^1.8.3
     "@typescript-eslint/eslint-plugin": latest
     "@typescript-eslint/parser": latest
-    "@xhayper/discord-rpc": 1.0.21
+    "@xhayper/discord-rpc": 1.0.23
     acorn-loose: ^8.3.0
     acorn-walk: latest
     del: ^6
@@ -1636,14 +1625,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "axios@npm:1.4.0"
+"axios@npm:^1.5.1":
+  version: 1.5.1
+  resolution: "axios@npm:1.5.1"
   dependencies:
     follow-redirects: ^1.15.0
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
-  checksum: 7fb6a4313bae7f45e89d62c70a800913c303df653f19eafec88e56cea2e3821066b8409bc68be1930ecca80e861c52aa787659df0ffec6ad4d451c7816b9386b
+  checksum: 4444f06601f4ede154183767863d2b8e472b4a6bfc5253597ed6d21899887e1fd0ee2b3de792ac4f8459fe2e359d2aa07c216e45fd8b9e4e0688a6ebf48a5a8d
   languageName: node
   linkType: hard
 
@@ -3133,10 +3122,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord-api-types@npm:^0.37.48":
-  version: 0.37.50
-  resolution: "discord-api-types@npm:0.37.50"
-  checksum: 08dc5145dbefda5f52b479cd42d96ac2b8110300861855e1f92cc8a0a6525a4059e32724cd5237490c286f5afd86797a86823238cd5eee016198560bb36f6d43
+"discord-api-types@npm:^0.37.58":
+  version: 0.37.59
+  resolution: "discord-api-types@npm:0.37.59"
+  checksum: fff8b2d04b3dc571aae8dbb48e81999462c04f155aee8b0ebf11b60b184ca0026875fd31f5abaf43f72bba9d84b421e4d77edb79207515226ed08d4223e5d05d
   languageName: node
   linkType: hard
 
@@ -10645,9 +10634,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.13.0":
-  version: 8.13.0
-  resolution: "ws@npm:8.13.0"
+"ws@npm:^8.14.2":
+  version: 8.14.2
+  resolution: "ws@npm:8.14.2"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ">=5.0.2"
@@ -10656,7 +10645,7 @@ __metadata:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 53e991bbf928faf5dc6efac9b8eb9ab6497c69feeb94f963d648b7a3530a720b19ec2e0ec037344257e05a4f35bd9ad04d9de6f289615ffb133282031b18c61c
+  checksum: 3ca0dad26e8cc6515ff392b622a1467430814c463b3368b0258e33696b1d4bed7510bc7030f7b72838b9fdeb8dbd8839cbf808367d6aae2e1d668ce741d4308b
   languageName: node
   linkType: hard
 
