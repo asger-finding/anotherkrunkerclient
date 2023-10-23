@@ -699,12 +699,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/electron-localshortcut@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@types/electron-localshortcut@npm:3.1.0"
+"@types/electron-localshortcut@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "@types/electron-localshortcut@npm:3.1.2"
   dependencies:
     electron: "*"
-  checksum: e082a81821950b014b3243c14da0e391fd49fe9dd88d9295b543d0ff93c11cc98565ad2036cf1cda7c6b51decce52b53252e640da49e60f4dd7e52b46c5d2f94
+  checksum: 3d714c7b83f76c1a8fc7d7efefe691326feecdf08b3ed7b3dc94bc3a7c39676c26be76411504fe7d535ee13129eb9a111904c16cf9c3d4720dca5ee1e39464f3
   languageName: node
   linkType: hard
 
@@ -1153,7 +1153,7 @@ __metadata:
     "@cliqz/adblocker-electron": latest
     "@swc/cli": ^0.1.62
     "@swc/core": latest
-    "@types/electron-localshortcut": ^3.1.0
+    "@types/electron-localshortcut": ^3.1.2
     "@types/node": 12.12.21
     "@types/tmi.js": ^1.8.3
     "@typescript-eslint/eslint-plugin": latest
