@@ -54,7 +54,7 @@
     "@swc/core": "latest",
     "@types/electron-localshortcut": "^3.1.0",
     "@types/node": "12.12.21",
-    "@types/tmi.js": "^1.8.3",
+    "@types/tmi.js": "^1.8.5",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "acorn-loose": "^8.3.0",

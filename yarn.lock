@@ -862,10 +862,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/tmi.js@npm:^1.8.3":
-  version: 1.8.3
-  resolution: "@types/tmi.js@npm:1.8.3"
-  checksum: 9effc360faf22573de974807d9434d4b393d1b2f31788032dd4e4be352a7c3905c77b2bc225b2caed227912d3468d5de849f5d9edeba70c156d0628835411d6d
+"@types/tmi.js@npm:^1.8.5":
+  version: 1.8.5
+  resolution: "@types/tmi.js@npm:1.8.5"
+  checksum: 124853ce460dab134fe0c985b093c332d6ce86e1c9311bcb0c286d6f332c0b947f072f9e280897299600fe7937d358ae3d70dc19b81f7abc83d8745e7e233fea
   languageName: node
   linkType: hard
 
@@ -1155,7 +1155,7 @@ __metadata:
     "@swc/core": latest
     "@types/electron-localshortcut": ^3.1.0
     "@types/node": 12.12.21
-    "@types/tmi.js": ^1.8.3
+    "@types/tmi.js": ^1.8.5
     "@typescript-eslint/eslint-plugin": latest
     "@typescript-eslint/parser": latest
     "@xhayper/discord-rpc": 1.0.21
