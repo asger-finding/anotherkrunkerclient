@@ -57,7 +57,7 @@
     "@types/tmi.js": "^1.8.3",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
-    "acorn-loose": "^8.3.0",
+    "acorn-loose": "^8.4.0",
     "acorn-walk": "latest",
     "del": "^6",
     "electron": "10.4.7",
