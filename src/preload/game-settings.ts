@@ -15,10 +15,8 @@ type InputTypeToElement<T extends string> =
 
 export default class GameSettings extends SettingsBackend {
 
-	itemElements: HTMLElement[] = [];
-
 	/**
-	 * Construct the 
+	 * Initalize the settings backend and construct the game settings
 	 * 
 	 * @param DOMContentLoadedPromise A promise that will be resolved when the DOM is loaded
 	 */
@@ -27,6 +25,8 @@ export default class GameSettings extends SettingsBackend {
 
 		if (process.isMainFrame) this.mainFrameInit(DOMContentLoadedPromise);
 	}
+
+	itemElements: HTMLElement[] = [];
 
 	/**
 	 * Initialize the store for the main frame.

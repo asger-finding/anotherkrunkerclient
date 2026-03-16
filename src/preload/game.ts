@@ -1,25 +1,119 @@
 
 import { EventListeners, Savable } from '@settings-backend';
+import { hexToRGB } from '@color-utils';
 import { parse, resolve } from 'path';
-import { type Color } from '@typings/krunker';
 import DiscordRPC from '@renderer/discord-rpc';
 import GameSettings from '@game-settings';
 import { type KrunkerDomains } from '@typings/client';
 import { MESSAGES } from '@constants';
 import TwitchChat from '@twitch-chat';
 import { promises as fs } from 'fs';
-import { hexToRGB } from '@color-utils';
 import { ipcRenderer } from 'electron';
 
-/**
- * Return a promise for when/if the DOM content has loaded
- */
 const ensureContentLoaded = () => new Promise<void>(promiseResolve => {
 	if (document.readyState === 'interactive' || document.readyState === 'complete') promiseResolve();
 	else document.addEventListener('DOMContentLoaded', () => promiseResolve());
 });
 
 const gameSettings = new GameSettings();
+
+// Cap frame rate to prevent compositor stalls with --disable-frame-rate-limit
+(function frameLimiter() {
+	const TARGET_FPS = 500;
+	const FRAME_TIME = 1000 / TARGET_FPS;
+	const originalRAF = window.requestAnimationFrame;
+	let lastFrame = 0;
+
+	window.requestAnimationFrame = function(callback: FrameRequestCallback) {
+		return originalRAF.call(window, (timestamp: number) => {
+			const elapsed = timestamp - lastFrame;
+			if (elapsed >= FRAME_TIME) {
+				lastFrame = timestamp - (elapsed % FRAME_TIME);
+				callback(timestamp);
+			} else {
+				originalRAF.call(window, (ts: number) => {
+					lastFrame = ts;
+					callback(ts);
+				});
+			}
+		});
+	};
+}());
+
+// Hook WebGL to detect the skydome shader program by its uniforms,
+// avoiding Object.prototype modification that triggers anti-cheat.
+(function hookSkydomeShader() {
+	const SKYDOME_UNIFORMS = ['firstColor', 'middleColor', 'endColor'] as const;
+	let skydomeProgram: WebGLProgram | null = null;
+	let skyUniforms: Record<string, WebGLUniformLocation | null> | null = null;
+
+	for (const Proto of [WebGLRenderingContext.prototype, WebGL2RenderingContext.prototype] as const) {
+		const originalLinkProgram = Proto.linkProgram;
+		Proto.linkProgram = function(this: WebGLRenderingContext | WebGL2RenderingContext, program: WebGLProgram) {
+			originalLinkProgram.call(this, program);
+
+			const activeUniforms = this.getProgramParameter(program, this.ACTIVE_UNIFORMS) as number;
+			const uniformNames: string[] = [];
+			for (let i = 0; i < activeUniforms; i++) {
+				const info = this.getActiveUniform(program, i);
+				if (info) uniformNames.push(info.name);
+			}
+
+			if (SKYDOME_UNIFORMS.every(name => uniformNames.includes(name))) {
+				skydomeProgram = program;
+				skyUniforms = {};
+				for (const name of SKYDOME_UNIFORMS) {
+					skyUniforms[name] = this.getUniformLocation(program, name);
+				}
+			}
+		};
+	}
+
+	let activeProgram: WebGLProgram | null = null;
+	const originalUseProgram = WebGL2RenderingContext.prototype.useProgram;
+	WebGL2RenderingContext.prototype.useProgram = function(program: WebGLProgram | null) {
+		activeProgram = program;
+		return originalUseProgram.call(this, program);
+	};
+
+	let skyColors: [number[], number[], number[]] | null = null;
+
+	const updateSkyColors = () => {
+		const [top, middle, bottom] = hexToRGB(1,
+			gameSettings.getSetting(Savable.SKY_TOP_COLOR, '#0a0b0c'),
+			gameSettings.getSetting(Savable.SKY_MIDDLE_COLOR, '#0a0b0c'),
+			gameSettings.getSetting(Savable.SKY_BOTTOM_COLOR, '#0a0b0c')
+		);
+		skyColors = [top, middle, bottom];
+	};
+	updateSkyColors();
+
+	gameSettings.addEventListener(EventListeners.ON_WRITE_SETTING, eventId => {
+		if (eventId === Savable.SKY_TOP_COLOR
+			|| eventId === Savable.SKY_MIDDLE_COLOR
+			|| eventId === Savable.SKY_BOTTOM_COLOR) updateSkyColors();
+	});
+
+	const overrideSkyUniforms = function(this: WebGL2RenderingContext) {
+		if (skydomeProgram && activeProgram === skydomeProgram && skyUniforms && skyColors) {
+			if (skyUniforms.firstColor) this.uniform3f(skyUniforms.firstColor, ...skyColors[0] as [number, number, number]);
+			if (skyUniforms.middleColor) this.uniform3f(skyUniforms.middleColor, ...skyColors[1] as [number, number, number]);
+			if (skyUniforms.endColor) this.uniform3f(skyUniforms.endColor, ...skyColors[2] as [number, number, number]);
+		}
+	};
+
+	const originalDrawArrays = WebGL2RenderingContext.prototype.drawArrays;
+	WebGL2RenderingContext.prototype.drawArrays = function(...args: Parameters<WebGL2RenderingContext['drawArrays']>) {
+		overrideSkyUniforms.call(this);
+		return originalDrawArrays.apply(this, args);
+	};
+
+	const originalDrawElements = WebGL2RenderingContext.prototype.drawElements;
+	WebGL2RenderingContext.prototype.drawElements = function(...args: Parameters<WebGL2RenderingContext['drawElements']>) {
+		overrideSkyUniforms.call(this);
+		return originalDrawElements.apply(this, args);
+	};
+}());
 
 if (process.isMainFrame) {
 	(async function() {
@@ -42,16 +136,8 @@ if (process.isMainFrame) {
 		type: 'checkbox',
 		inputNodeAttributes: {
 			id: Savable.INTEGRATE_WITH_TWITCH,
-
-			/**
-			 * Toggle Twitch chat integration
-			 * 
-			 * @param evt Input event
-			 * @returns void
-			 */
 			oninput: evt => {
 				const { checked } = <HTMLInputElement>evt.target;
-
 				return gameSettings.writeSetting(Savable.INTEGRATE_WITH_TWITCH, checked);
 			}
 		}
@@ -61,18 +147,10 @@ if (process.isMainFrame) {
 		inputNodeAttributes: {
 			id: Savable.RESOURCE_SWAPPER_PATH,
 			placeholder: 'default path',
-
-			/**
-			 * User-specified path to the resource swapper
-			 * 
-			 * @param evt Input event
-			 * @returns void
-			 */
 			oninput: evt => {
 				const element = evt.target as HTMLInputElement;
 				const { value } = element;
 
-				// Validate the path
 				if (typeof value === 'string') {
 					let filePath = value;
 					if (filePath.length > 248) return false;
@@ -96,12 +174,6 @@ if (process.isMainFrame) {
 		inputNodeAttributes: {
 			id: Savable.RESET_FILTER_LISTS_CACHE,
 			innerText: 'Reset',
-
-			/**
-			 * Reset the electron blocker cache
-			 * 
-			 * @returns void
-			 */
 			onclick: async() => {
 				const result: {
 					result: boolean,
@@ -118,19 +190,11 @@ if (process.isMainFrame) {
 		inputNodeAttributes: {
 			id: Savable.USER_FILTER_LISTS,
 			placeholder: '',
-
-			/**
-			 * User-specified path to the resource swapper
-			 * 
-			 * @param evt Input event
-			 * @returns void
-			 */
 			// eslint-disable-next-line complexity
 			oninput: evt => {
 				const element = evt.target as HTMLInputElement;
 				let { value } = element;
 
-				// Validate the JSON
 				if (value.length) {
 					try {
 						const parsed = value.split(',');
@@ -163,17 +227,9 @@ if (process.isMainFrame) {
 		inputNodeAttributes: {
 			id: Savable.GAME_FRONTEND,
 			value: <KrunkerDomains>'krunker.io',
-
-			/**
-			 * Dropdown selector for krunker.io or browserfps.com
-			 * 
-			 * @param evt Input event
-			 * @returns void
-			 */
 			oninput: evt => {
 				const element = evt.target as HTMLInputElement;
 				const { value } = element;
-
 				return gameSettings.writeSetting(Savable.GAME_FRONTEND, value);
 			}
 		},
@@ -191,16 +247,8 @@ if (process.isMainFrame) {
 		inputNodeAttributes: {
 			id: Savable.ALLOW_TWITCH_LINK_COMMAND,
 			value: 'off',
-
-			/**
-			 * Toggle whether !link is active
-			 * 
-			 * @param evt Input event
-			 * @returns void
-			 */
 			oninput: evt => {
 				const { checked } = <HTMLInputElement>evt.target;
-
 				return gameSettings.writeSetting(Savable.ALLOW_TWITCH_LINK_COMMAND, checked);
 			}
 		}
@@ -210,16 +258,8 @@ if (process.isMainFrame) {
 		inputNodeAttributes: {
 			id: Savable.RENDER_TWITCH_NAME_COLOR,
 			value: 'off',
-
-			/**
-			 * Toggle whether !link is active
-			 * 
-			 * @param evt Input event
-			 * @returns void
-			 */
 			oninput: evt => {
 				const { checked } = <HTMLInputElement>evt.target;
-
 				return gameSettings.writeSetting(Savable.RENDER_TWITCH_NAME_COLOR, checked);
 			}
 		}
@@ -228,52 +268,12 @@ if (process.isMainFrame) {
 		id: 'gameModding',
 		requiresRestart: false
 	}, {
-		title: 'Map Attributes (JSON)',
-		type: 'text',
-		inputNodeAttributes: {
-			id: Savable.MAP_ATTRIBUTES,
-			value: '{}',
-
-			/**
-			 * Get and validate map attribute JSON.
-			 * 
-			 * @param evt Input event
-			 * @returns void
-			 */
-			oninput: evt => {
-				const element = evt.target as HTMLInputElement;
-				let { value } = element;
-
-				// Validate the JSON
-				if (value.length) {
-					try { JSON.parse(value); } catch {
-						element.classList.add('inputRed2');
-						return false;
-					}
-				} else {
-					value = '{}';
-				}
-				element.classList.remove('inputRed2');
-
-				return gameSettings.writeSetting(Savable.MAP_ATTRIBUTES, value);
-			}
-		}
-	},
-	{
 		title: 'Skydome Top Color',
 		type: 'color',
 		inputNodeAttributes: {
 			id: Savable.SKY_TOP_COLOR,
-
-			/**
-			 * Set top sky color
-			 * 
-			 * @param evt Input event
-			 * @returns void
-			 */
 			oninput: evt => {
 				const { value } = <HTMLInputElement>evt.target;
-
 				return gameSettings.writeSetting(Savable.SKY_TOP_COLOR, value);
 			}
 		}
@@ -283,16 +283,8 @@ if (process.isMainFrame) {
 		type: 'color',
 		inputNodeAttributes: {
 			id: Savable.SKY_MIDDLE_COLOR,
-
-			/**
-			 * Set middle sky color
-			 * 
-			 * @param evt Input event
-			 * @returns void
-			 */
 			oninput: evt => {
 				const { value } = <HTMLInputElement>evt.target;
-
 				return gameSettings.writeSetting(Savable.SKY_MIDDLE_COLOR, value);
 			}
 		}
@@ -302,27 +294,17 @@ if (process.isMainFrame) {
 		type: 'color',
 		inputNodeAttributes: {
 			id: Savable.SKY_BOTTOM_COLOR,
-
-			/**
-			 * Set bottom sky color
-			 * 
-			 * @param evt Input event
-			 * @returns void
-			 */
 			oninput: evt => {
 				const { value } = <HTMLInputElement>evt.target;
-
 				return gameSettings.writeSetting(Savable.SKY_BOTTOM_COLOR, value);
 			}
 		}
 	}));
 
-	/** Send a close message to main when function is called */
 	const closeClient = () => {
 		ipcRenderer.send(MESSAGES.EXIT_CLIENT);
 	};
 
-	// When closeClient is called from the onclick, close the client. The game will attempt to override this.
 	Reflect.defineProperty(window, 'closeClient', {
 		set() {
 			Reflect.defineProperty(window, 'closeClient', { value: closeClient });
@@ -337,83 +319,3 @@ if (process.isMainFrame) {
 		const discordRpc = new DiscordRPC();
 	}
 }
-
-/**
- * Get the saved skycolor config as an array
- * 
- * @returns Top, middle and bottom saved colors in rgb format
- */
-const getSavedSkycolor = (): [string, string, string] => ([
-	gameSettings.getSetting(Savable.SKY_TOP_COLOR, '#0a0b0c'),
-	gameSettings.getSetting(Savable.SKY_MIDDLE_COLOR, '#0a0b0c'),
-	gameSettings.getSetting(Savable.SKY_BOTTOM_COLOR, '#0a0b0c')
-] as ReturnType<typeof getSavedSkycolor>);
-
-type ThreeRenderer = {
-	getContext: () => WebGL2RenderingContext;
-	[key: string]: unknown;
-};
-type ThreeProgram = {
-	getUniforms: () => {
-		seq: [never];
-		map: Record<string, Record<string, never> & {
-			addr: WebGLUniformLocation;
-		}>
-	}
-	cacheKey: string;
-	program: WebGLProgram;
-	[key: string]: unknown;
-};
-
-/**
- * Set the top, middle and bottom sky color of the skydome program
- * 
- * @param renderer THREE.js renderer instance
- * @param skydomeProgram The program for the skydome
- * @param firstColor Top color of the skydome
- * @param middleColor Middle color of the skydome
- * @param endColor Bottom color of the skydome
- */
-const setSkycolor = (renderer: ThreeRenderer, skydomeProgram: ThreeProgram, firstColor: Color, middleColor: Color, endColor: Color): void => {
-	const gl: WebGL2RenderingContext = renderer.getContext();
-	const initialProgram = renderer.getContext().getParameter(renderer.getContext().CURRENT_PROGRAM);
-	const { map } = skydomeProgram.getUniforms();
-
-	if (map.firstColor && map.middleColor && map.endColor) {
-		gl.useProgram(skydomeProgram.program);
-		gl.uniform3f(map.firstColor.addr, ...firstColor);
-		gl.uniform3f(map.middleColor.addr, ...middleColor);
-		gl.uniform3f(map.endColor.addr, ...endColor);
-
-		gl.useProgram(initialProgram);
-	}
-};
-
-Reflect.defineProperty(Object.prototype, 'renderer', {
-	set(renderer) {
-		Reflect.defineProperty(renderer.info.programs, 'push', {
-			value(...args: unknown[]) {
-				const [program] = args as [ThreeProgram];
-
-				if (program.cacheKey.includes('endColor')) {
-					gameSettings.addEventListener(EventListeners.ON_WRITE_SETTING, eventId => {
-						const [top, middle, bottom] = hexToRGB(1, ...getSavedSkycolor());
-						if (eventId === Savable.SKY_TOP_COLOR
-							|| eventId === Savable.SKY_MIDDLE_COLOR
-							|| eventId === Savable.SKY_BOTTOM_COLOR) setSkycolor(renderer, program, top, middle, bottom);
-					});
-					Reflect.defineProperty(renderer.info.programs, 'push', { value: Array.prototype.push });
-				}
-
-				return Array.prototype.push.apply(this, args);
-			},
-			enumerable: true,
-			configurable: true
-		});
-
-		return Reflect.defineProperty(this, 'renderer', { value: renderer });
-	},
-	get() {
-		return Reflect.getOwnPropertyDescriptor(this, 'renderer')?.value;
-	}
-});

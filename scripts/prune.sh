@@ -214,6 +214,6 @@ minify_node_modules(){
     -C jsc.minify.compress=true \
     -C jsc.minify.mangle=true \
     -C module.type=commonjs \
-    -C jsc.target='es2022' \
+    -C jsc.target='es2024' \
     -d ./node_modules > /dev/null 2>&1
 }

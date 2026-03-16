@@ -1,19 +1,19 @@
 import { CLIENT_AUTHOR, CLIENT_LICENSE_PERMALINK, CLIENT_NAME, DISCORD, MESSAGES, TABS, TARGET_GAME_URL } from '@constants';
 import { Client as DiscordClient, type SetActivity } from '@xhayper/discord-rpc';
-import { ElectronBlocker, fullLists as cliqzFullList } from '@cliqz/adblocker-electron';
+import { ElectronBlocker, fullLists } from '@ghostery/adblocker-electron';
 import { Savable, StoreConstants } from '@settings-backend';
 import WindowUtils, { getConstructorOptions } from '@window-utils';
-import { app, ipcMain, protocol, session } from 'electron';
+import { app, ipcMain, net, protocol, session } from 'electron';
+import { info, warn } from '@logger';
 import { join, resolve } from 'path';
 import Store from 'electron-store';
 import TwitchUtils from '@twitch-utils';
 import fetch from 'electron-fetch';
 import { promises as fs } from 'fs';
 import getFlags from '@flags';
-import { info } from '@logger';
 
 // eslint-disable-next-line no-console
-console.log(`${ CLIENT_NAME }  Copyright (C) 2023  ${ CLIENT_AUTHOR }
+console.log(`${ CLIENT_NAME }  Copyright (C) 2026  ${ CLIENT_AUTHOR }
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under certain
 conditions; read ${ CLIENT_LICENSE_PERMALINK } for more details.\n`);
@@ -31,6 +31,8 @@ export default class Application {
 	private store = new Store();
 
 	private blockerEngine: ElectronBlocker;
+
+	private static startupTimestamp = Date.now();
 
 	/**
 	 * Initialize the app after app.ready.
@@ -105,13 +107,59 @@ export default class Application {
 			clientId: DISCORD.CLIENT_ID,
 			transport: { type: 'ipc' }
 		});
-		const discordRPCReady = new Promise<void>(res => discordClient.on('ready', res));
-		discordClient.login();
+		discordClient.on('error', () => warn('Discord RPC transport error'));
+
+		const loginRetry = setInterval((function login() {
+			discordClient.login()
+				.then(() => info('Discord RPC connected'))
+				.catch(() => warn('Discord RPC could not connect.\nTrying again in 30 seconds ...'));
+			return login;
+		}()), 30_000);
+		const discordRPCReady = new Promise<void>(res => discordClient.on('ready', (clearInterval(loginRetry), res)));
 
 		ipcMain.on(MESSAGES.UPDATE_GAME_ACTIVITY, async(_evt, data: SetActivity) => {
 			await discordRPCReady;
-			discordClient.user?.setActivity(data);
+			const timeSinceStartup = Date.now() - Application.startupTimestamp;
+			const durationElapsed = Application.formatDuration(timeSinceStartup);
+			discordClient.user?.setActivity({
+				...data,
+				smallImageKey: 'logo',
+				smallImageText: `${ durationElapsed } elapsed`,
+				partySize: 5,
+				partyMax: 8
+			}).catch(() => warn('Discord RPC failed to set activity'));
 		});
+	}
+
+	/**
+	 * Format milliseconds to a duration of second(s), minute(s) or hour(s)
+	 * 
+	 * @param ms Duration represented in milliseconds
+	 * @returns Formatted duration
+	 */
+	private static formatDuration(ms: number): string {
+		/**
+		 * Append an s to the unit if needed
+		 *
+		 * @param count Time count
+		 * @param unit Time unit
+		 * @returns Processed unit
+		 */
+		const pluralize = (count: number, unit: string) => (count === 1 ? unit : `${unit}s`);
+
+		const seconds = Math.floor(ms / 1000);
+		const minutes = Math.floor(seconds / 60);
+		const hours = Math.floor(minutes / 60);
+
+		if (hours >= 1) {
+			const hourLabel = pluralize(hours, 'hour');
+			return `${hours} ${hourLabel}`;
+		} else if (minutes >= 1) {
+			const minuteLabel = pluralize(minutes, 'minute');
+			return `${minutes} ${minuteLabel}`;
+		}
+		const secondLabel = pluralize(seconds, 'second');
+		return `${seconds} ${secondLabel}`;
 	}
 
 	/**
@@ -157,8 +205,8 @@ export default class Application {
 						preload: resolve(__dirname, './preload/game'),
 						contextIsolation: false,
 						nodeIntegrationInSubFrames: true,
-						backgroundThrottling: false,
-						nativeWindowOpen: true
+						sandbox: false,
+						backgroundThrottling: false
 					}
 				}, TARGET_GAME_URL);
 		}
@@ -197,6 +245,9 @@ export default class Application {
 
 		// Kill the application when it's broadcast that user attempts to exit the client
 		ipcMain.on(MESSAGES.EXIT_CLIENT, app.quit);
+
+		// Bridge renderer logs to main stdout
+		ipcMain.on(MESSAGES.RENDERER_LOG, (_evt, ...args: unknown[]) => info('[renderer]', ...args));
 
 		// Handle the user attempting to clear the electron blocker cache
 		ipcMain.handle(MESSAGES.CLEAR_ELECTRON_BLOCKER_CACHE, async() => {
@@ -241,10 +292,9 @@ export default class Application {
 		// Register resource swapper file protocols.
 		const protocolSource = global.resourceswapProtocolSource;
 
-		protocol.registerFileProtocol(CLIENT_NAME, ({ url }, callback) => {
-			callback(decodeURI(`${ protocolSource }${
-				url.replace(`${ CLIENT_NAME }:`, '')
-			}`));
+		protocol.handle(CLIENT_NAME, ({ url }) => {
+			const filePath = decodeURI(`${ protocolSource }${ url.replace(`${ CLIENT_NAME }:`, '') }`);
+			return net.fetch(`file://${ filePath }`);
 		});
 	}
 
@@ -281,7 +331,7 @@ export default class Application {
 			});
 
 		this.blockerEngine = await ElectronBlocker.fromLists(fetch, [
-			...cliqzFullList,
+			...fullLists,
 			...urlFilterLists
 		], { enableCompression: true }, {
 			path: `${ app.getPath('userData') }/electronblocker-cache.bin`,
@@ -301,7 +351,7 @@ export default class Application {
 		}
 
 		// Start blocking
-		this.blockerEngine.enableBlockingInSession(session.defaultSession);
+		this.blockerEngine.enableBlockingInSession(session.defaultSession, { preload: false });
 
 		info('Tracker blocking initialized');
 	}

@@ -54,6 +54,30 @@ interface Condition {
 
 export default class TwitchChat {
 
+	/**
+	 * Initialize the Twitch chat and ipc message handlers.
+	 */
+	constructor() {
+		this.chatManager.bindSubmitCallback(message => ipcRenderer.send(MESSAGES.TWITCH_MESSAGE_SEND, message));
+
+		ipcRenderer.once(MESSAGES.TWITCH_READY, () => this.periodicallyRefreshTwitchChannelInfo());
+		ipcRenderer.on(MESSAGES.TWITCH_MESSAGE_RECEIVE, (_evt, item: TwitchMessageItem) => {
+			const uuid = item.chatUserstate.id;
+			if (uuid) {
+				this.iterateOverConditions(item);
+
+				this.chatManager.set(uuid, {
+					username: item.chatUserstate.username ?? '',
+					message: item.message,
+					isMasked: false,
+					usernameColor: item.chatUserstate.color ?? '#ffffff',
+					uuid
+				});
+			}
+		});
+		ipcRenderer.on(MESSAGES.TWITCH_MESSAGE_DELETE, (_evt, deletedMessageUuid: string) => this.chatManager.delete(deletedMessageUuid));
+	}
+
 	private channelState: {
 		username: string;
 		isLive: boolean;
@@ -90,30 +114,6 @@ export default class TwitchChat {
 			}
 		}
 	];
-
-	/**
-	 * Initialize the Twitch chat and ipc message handlers.
-	 */
-	constructor() {
-		this.chatManager.bindSubmitCallback(message => ipcRenderer.send(MESSAGES.TWITCH_MESSAGE_SEND, message));
-
-		ipcRenderer.once(MESSAGES.TWITCH_READY, () => this.periodicallyRefreshTwitchChannelInfo());
-		ipcRenderer.on(MESSAGES.TWITCH_MESSAGE_RECEIVE, (_evt, item: TwitchMessageItem) => {
-			const uuid = item.chatUserstate.id;
-			if (uuid) {
-				this.iterateOverConditions(item);
-
-				this.chatManager.set(uuid, {
-					username: item.chatUserstate.username ?? '',
-					message: item.message,
-					isMasked: false,
-					usernameColor: item.chatUserstate.color ?? '#ffffff',
-					uuid
-				});
-			}
-		});
-		ipcRenderer.on(MESSAGES.TWITCH_MESSAGE_DELETE, (_evt, deletedMessageUuid: string) => this.chatManager.delete(deletedMessageUuid));
-	}
 
 	/**
 	 * Iterate over the Twitch command conditions and call the callbacks if the condition is met.

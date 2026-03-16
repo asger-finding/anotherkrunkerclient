@@ -27,14 +27,14 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v2
 
-      # Install Node.js, npm and yarn
+      # Install Node.js, npm and pnpm
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
           check-latest: true
-          cache: yarn
-          cache-dependency-path: yarn.lock
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
-      - run: yarn install
-      - run: yarn lint
+      - run: pnpm install
+      - run: pnpm lint

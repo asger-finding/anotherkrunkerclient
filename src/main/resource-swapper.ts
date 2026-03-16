@@ -3,7 +3,16 @@ import { existsSync, mkdirSync, readdirSync } from 'fs';
 import { error } from '@logger';
 import { join } from 'path';
 
-export default class {
+export default class ResourceSwapper {
+
+	/**
+	 * Set the target window.
+	 *
+	 * @param browserWindow The target window.
+	 */
+	public constructor(browserWindow: Electron.BrowserWindow) {
+		this.browserWindow = browserWindow;
+	}
 
 	/** Target directory path. */
 	private target: string = global.resourceswapProtocolSource;
@@ -16,15 +25,6 @@ export default class {
 
 	/** Has start() been called on the class? */
 	private started = false;
-
-	/**
-	 * Set the target window.
-	 *
-	 * @param browserWindow The target window.
-	 */
-	public constructor(browserWindow: Electron.BrowserWindow) {
-		this.browserWindow = browserWindow;
-	}
 
 	/** Initialize the resource swapper for the target window.*/
 	public start(): void {
@@ -46,8 +46,7 @@ export default class {
 
 				// Redirect to the local resource.
 				callback({
-					redirectURL: `${ CLIENT_NAME }:/${ path.startsWith('/assets/') ? path.substring(7) : path }`.replace('/crxfs/', ''),
-					confirmed: true
+					redirectURL: `${ CLIENT_NAME }:/${ path.startsWith('/assets/') ? path.substring(7) : path }`.replace('/crxfs/', '')
 				});
 			});
 		}

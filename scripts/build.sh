@@ -45,8 +45,8 @@ else
     exec 3>&1
 fi
 
-if ! type "yarn" > /dev/null; then
-    print "yarn not found ..."
+if ! type "pnpm" > /dev/null; then
+    print "pnpm not found ..."
     exit
 else
     setup_directories &&
@@ -58,7 +58,7 @@ else
     fi
 
     # Install dependencies
-    yarn install &&
+    pnpm install &&
 
     if [[ "$*" != *"minify"* ]] && [[ "$*" != *"no-minify"* ]]; then
         print "No argument for minifying provided. Querying user."
@@ -73,7 +73,7 @@ else
     # Check for minify parameter or query the user on it
     if [[ $shouldMinify == 1 ]]; then
         # Compile the project with minification
-        yarn run gulp --state=production &&
+        pnpm gulp --state=production &&
 
         print "Minifying node modules. This might take a while..."
         remove_redundant_files
@@ -82,15 +82,15 @@ else
         print "Skipping minification"
 
         # Compile the project without minification
-        yarn run gulp
+        pnpm gulp
     fi
 
     if [[ "$OSTYPE" =~ ^darwin ]]; then
         print "Building for Windows, Mac and Linux."
-        yarn electron-builder --win --linux --mac;
+        pnpm electron-builder --win --linux --mac;
     else
         print "Building for Windows and Linux. Only a darwin environment can build for Mac."
-        yarn electron-builder --win --linux;
+        pnpm electron-builder --win --linux;
     fi
 
     paths=($(find $DISTRIBUTION_FOLDER -maxdepth 1 -iregex '.*\(exe\|appimage\|dmg\|rpm\|deb\)'))

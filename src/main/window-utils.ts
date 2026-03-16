@@ -1,4 +1,4 @@
-import { type AsyncReturnType, type DefaultConstructorOptions, type WindowData, type WindowSaveData } from '@typings/client';
+import { type DefaultConstructorOptions, type WindowData, type WindowSaveData } from '@typings/client';
 import { BrowserWindow, app, dialog } from 'electron';
 import { TABS, getURLData } from '@constants';
 import GameUtils from '@game-utils';
@@ -28,13 +28,8 @@ export const getConstructorOptions = (tabName?: string): DefaultConstructorOptio
 	webPreferences: {
 		nodeIntegration: false,
 		contextIsolation: true,
-		worldSafeExecuteJavaScript: true,
-		enableRemoteModule: false,
 		...(tabName === TABS.GAME
-			? {
-				backgroundThrottling: false,
-				nativeWindowOpen: true
-			}
+			? { backgroundThrottling: false }
 			: {})
 	},
 	...store.get(`window.${ tabName }`, {
@@ -51,17 +46,9 @@ export const getConstructorOptions = (tabName?: string): DefaultConstructorOptio
  * @param browserWindow The target window to spoof
  * @param windowUrl URL to load
  */
-const loadSpoofedURL = async(browserWindow: Electron.BrowserWindow, windowUrl: string): Promise<void> => {
-	let ua: AsyncReturnType<typeof getSpoofedUA> = '';
-	const windowUserAgent = browserWindow.webContents.getUserAgent();
-	const isElectron = windowUserAgent.includes('Electron');
-
-	if (isElectron) ua = await getSpoofedUA();
-	browserWindow.loadURL(windowUrl, { userAgent: ua || windowUserAgent });
+const loadSpoofedURL = (browserWindow: Electron.BrowserWindow, windowUrl: string): void => {
+	browserWindow.loadURL(windowUrl, { userAgent: getSpoofedUA() });
 };
-
-// RegEx expression to match the major, minor and patch version of a valid semver scheme
-const semverRegex = /^(?<major>0|[1-9]+[0-9]*)\.(?<minor>0|[1-9]+[0-9]*)\.(?<patch>0|[1-9]+[0-9]*)(?:-(?:0|[1-9A-Za-z-][0-9A-Za-z-]*)(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/u;
 
 /**
  * Run when navigated (exclude `windowUrl` param) or when navigating (include `windowUrl` param) to a new URL.
@@ -95,7 +82,7 @@ export const openExternal = (externalUrl: string): void => {
 	exec(`${ command } "${ externalUrl }"`);
 };
 
-export default class {
+export default class WindowUtils {
 
 	/**
 	 * Create a new window instance, load given URL (if any)  
@@ -176,16 +163,15 @@ export default class {
 		}
 
 		// When Krunker URLs are opened, open them in the default electron window. If the URL is external, open it in the default browser.
-		webContents.on('new-window', (evt, newWindowURL, frameName) => {
-			evt.preventDefault();
-
-			const newWindowData = getURLData(newWindowURL);
+		webContents.setWindowOpenHandler(({ url, frameName }) => {
+			const newWindowData = getURLData(url);
 			if (newWindowData.isKrunker) {
-				if (frameName === '_self') navigate(browserWindow, newWindowURL);
-				else this.createWindow(getConstructorOptions(newWindowData.tab), newWindowURL);
+				if (frameName === '_self') navigate(browserWindow, url);
+				else this.createWindow(getConstructorOptions(newWindowData.tab), url);
 			} else {
-				openExternal(newWindowURL);
+				openExternal(url);
 			}
+			return { action: 'deny' };
 		});
 
 		webContents.on('will-navigate', async(evt, newWindowURL) => {
@@ -207,6 +193,11 @@ export default class {
 			})) evt.preventDefault();
 		});
 
+
+		// Suppress the native context menu on game windows
+		if (windowData.tab === TABS.GAME) {
+			webContents.on('context-menu', (evt) => evt.preventDefault());
+		}
 
 		// Don't allow the target website to set the window title.
 		browserWindow.on('page-title-updated', evt => evt.preventDefault());
@@ -245,31 +236,7 @@ export default class {
 	 * @param mode The mode to open the DevTools in
 	 */
 	public static openDevToolsWithFallback(browserWindow: Electron.BrowserWindow, mode?: Electron.OpenDevToolsOptions): void {
-		// Addresses https://stackoverflow.com/q/69969658/11452298 for electron < 13.5.0
 		browserWindow.webContents.openDevTools(mode);
-
-		const [, major, minor] = (process.versions.electron.match(semverRegex) as [string, string, string]).map(Number);
-		if (major <= 13 && minor < 5) {
-			// devtools-opened takes about 300 ms to fire on a Windows 10 VirtualBox VM with 8 gb of ram and 8 threads.
-			const fallback = setTimeout(() => {
-				// Fallback if openDevTools fails
-				browserWindow.webContents.closeDevTools();
-
-				const existingDevtools = browserWindow.webContents.devToolsWebContents;
-				if (existingDevtools) {
-					BrowserWindow.fromWebContents(existingDevtools)?.show();
-					return;
-				}
-
-				const devtoolsWindow = new BrowserWindow();
-				devtoolsWindow.setMenuBarVisibility(false);
-
-				browserWindow.webContents.setDevToolsWebContents(devtoolsWindow.webContents);
-				browserWindow.webContents.openDevTools({ mode: 'detach' });
-				browserWindow.once('closed', () => devtoolsWindow.destroy());
-			}, 500);
-			browserWindow.webContents.once('devtools-opened', () => clearTimeout(fallback));
-		}
 	}
 
 	/**

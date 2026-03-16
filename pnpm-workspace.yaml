@@ -1,0 +1,4 @@
+patchedDependencies:
+  '@xhayper/discord-rpc': patches/@xhayper__discord-rpc.patch
+  electron-store: patches/electron-store.patch
+  tmi.js@1.9.0-pre.1: patches/tmi.js@1.9.0-pre.1.patch

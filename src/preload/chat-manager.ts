@@ -14,55 +14,6 @@ interface ChatMessageStruct {
 
 export default class ChatManager<Key extends string, Value extends ChatMessageStruct> extends Map<Key, Value> {
 
-	// Promise to determine when the in-game chat has loaded fully
-	public static chatLoaded = new Promise<SwitchChat>(resolve => {
-		Reflect.defineProperty(window, 'switchChat', {
-			configurable: true,
-
-			/**
-			 * Resolve switchChat when it's set, which assumes that the chat has initialized
-			 * 
-			 * @param value SwitchChat function
-			 */
-			set: (value: SwitchChat) => {
-				// eslint-disable-next-line no-undefined
-				Reflect.defineProperty(window, 'switchChat', { set: undefined, get: undefined });
-				Reflect.defineProperty(window, 'switchChat', { value });
-				resolve(value);
-			},
-
-			/**
-			 * Irrelevant getter since getter is reset anyhow when switchChat is set
-			 * 
-			 * @returns undefined
-			 */
-			// eslint-disable-next-line no-undefined
-			get: () => undefined
-		});
-	});
-
-	private materialIcon = '';
-
-	private identifier = '';
-
-	private maxCapacity = 200;
-
-	private totalSize = 0;
-
-	private chatSwitch: HTMLDivElement;
-
-	private submitCallbackBound = false;
-
-	private builtInChat: {
-		list: HTMLDivElement
-		input: HTMLInputElement
-	};
-
-	private chatClone: {
-		list: HTMLDivElement
-		input: HTMLInputElement
-	};
-
 	/**
 	 * Construct the manager. Save necessary elements to class, and set global variables.
 	 * 
@@ -176,6 +127,55 @@ export default class ChatManager<Key extends string, Value extends ChatMessageSt
 		});
 	}
 
+	// Promise to determine when the in-game chat has loaded fully
+	public static chatLoaded = new Promise<SwitchChat>(resolve => {
+		Reflect.defineProperty(window, 'switchChat', {
+			configurable: true,
+
+			/**
+			 * Resolve switchChat when it's set, which assumes that the chat has initialized
+			 * 
+			 * @param value SwitchChat function
+			 */
+			set: (value: SwitchChat) => {
+				// eslint-disable-next-line no-undefined
+				Reflect.defineProperty(window, 'switchChat', { set: undefined, get: undefined });
+				Reflect.defineProperty(window, 'switchChat', { value });
+				resolve(value);
+			},
+
+			/**
+			 * Irrelevant getter since getter is reset anyhow when switchChat is set
+			 * 
+			 * @returns undefined
+			 */
+			// eslint-disable-next-line no-undefined
+			get: () => undefined
+		});
+	});
+
+	private materialIcon = '';
+
+	private identifier = '';
+
+	private maxCapacity = 200;
+
+	private totalSize = 0;
+
+	private chatSwitch: HTMLDivElement;
+
+	private submitCallbackBound = false;
+
+	private builtInChat: {
+		list: HTMLDivElement
+		input: HTMLInputElement
+	};
+
+	private chatClone: {
+		list: HTMLDivElement
+		input: HTMLInputElement
+	};
+
 	/**
 	 * Toggles this chat manager on visually, and hides the previous one
 	 */
@@ -197,8 +197,9 @@ export default class ChatManager<Key extends string, Value extends ChatMessageSt
 	}
 
 	/**
+	 * Bind a callback function to when the user submits the input.
 	 * 
-	 * @param cb -
+	 * @param cb Callback function with the text input passed as an argument
 	 */
 	bindSubmitCallback(cb: (message: string) => void): void {
 		if (this.submitCallbackBound) throw new Error('Cannot bind the submit callback more than once for the same chat manager');

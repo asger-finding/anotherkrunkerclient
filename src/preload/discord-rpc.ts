@@ -4,7 +4,7 @@ import { type NonNullableObject } from '@typings/client';
 import { type SetActivity } from '@xhayper/discord-rpc';
 import { ipcRenderer } from 'electron';
 
-class DiscordRPC {
+export default class DiscordRPC {
 
 	/**
 	 * Initialize the Discord RPC
@@ -13,39 +13,49 @@ class DiscordRPC {
 		Reflect.defineProperty(window, 'getGameActivity', {
 			// eslint-disable-next-line jsdoc/require-jsdoc
 			set: (getGameActivity: GetGameActivity) => {
-				// eslint-disable-next-line no-undefined
-				Reflect.defineProperty(window, 'getGameActivity', { set: undefined, get: undefined });
-				Reflect.defineProperty(window, 'getGameActivity', { value: getGameActivity });
+				// Reflect.defineProperty(window, 'getGameActivity', { value: getGameActivity });
+				if (this.getGameActivity) return;
 
 				this.getGameActivity = getGameActivity;
-				this.setRpcActivity();
+				this.refreshRpcActivity();
 			},
-			// eslint-disable-next-line no-undefined
-			get: undefined
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			get: () => this.getGameActivity
 		});
 	}
+
+	private currentGameActivity: GameActivity;
+
+	private getGameActivity?: GetGameActivity;
+
+	private rpcUpdateTime = 15_000;
 
 	/**
 	 * Send a Discord RPC activity block down the drain
 	 */
 	private setRpcActivity(): void {
-		const gameActivity = this.getGameActivity();
+		const gameActivity = this.getGameActivity ? this.getGameActivity() : null;
+		if (!gameActivity) return;
 
 		if (!DiscordRPC.isGameActivityReady(gameActivity)) {
 			setTimeout(() => this.setRpcActivity(), 100);
 			return;
 		}
 
-		const newRpcActivity = DiscordRPC.generateActivity(gameActivity as NonNullableObject<typeof gameActivity>);
+		const newRpcActivity = this.generateActivity(gameActivity as NonNullableObject<typeof gameActivity>);
 		if (!DiscordRPC.uglyDeepEqual(this.currentGameActivity, newRpcActivity)) {
 			ipcRenderer.send(MESSAGES.UPDATE_GAME_ACTIVITY, newRpcActivity);
 			this.currentGameActivity = gameActivity;
 		}
 	}
 
-	private currentGameActivity: GameActivity;
-
-	private getGameActivity: GetGameActivity;
+	/**
+	 * Update the rpc status at an interval
+	 */
+	private refreshRpcActivity(): void {
+		setInterval(() => this.setRpcActivity(), this.rpcUpdateTime);
+		this.setRpcActivity();
+	}
 
 	/**
 	 * Object comparison by stringifying.
@@ -81,13 +91,17 @@ class DiscordRPC {
 	 * @param gameActivity Ready game activity object
 	 * @returns Discord RPC object to send to ipcMain
 	 */
-	private static generateActivity = (gameActivity: NonNullableObject<GameActivity>): SetActivity => ({
-		details: gameActivity.class.name,
-		state: `${ gameActivity.mode } on ${ gameActivity.map }`,
-		largeImageKey: `icon_${ gameActivity.class.index }`
-	});
+	private generateActivity = (gameActivity: NonNullableObject<GameActivity>): SetActivity => {
+		const gameTimeFormatted = `${ new Date(Math.ceil(gameActivity.time / (this.rpcUpdateTime / 1000)) * this.rpcUpdateTime)
+			.toISOString()
+			.slice(14, 19) } left`;
+		const gameEndedText = gameActivity.time === 0 ? 'Game ended' : null;
+		return {
+			details: `${ gameActivity.mode } on ${ gameActivity.map }`,
+			state: gameActivity.custom ? gameTimeFormatted : gameEndedText || gameTimeFormatted,
+			largeImageText: gameActivity.class.name,
+			largeImageKey: `icon_${ gameActivity.class.index }`
+		};
+	};
 
 }
-
-
-export default DiscordRPC;

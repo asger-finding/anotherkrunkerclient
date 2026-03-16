@@ -11,7 +11,7 @@ import { openExternal } from '@window-utils';
 
 const store = new Store();
 
-export default class {
+export default class TwitchUtils {
 
 	/**
 	 * Create a new Twitch client.

@@ -104,7 +104,7 @@ function scripts() {
 					decorators: true,
 					dynamicImport: true
 				},
-				target: 'es2022',
+				target: 'es2024',
 				...state.prod
 					? {
 						minify: {

@@ -3,10 +3,10 @@ import { info } from '@logger';
 import { navigate } from '@window-utils';
 import { register } from 'electron-localshortcut';
 
-export default class {
+export default class GameUtils {
 
 	/**
-	 * Load the game window with the game URL.  
+	 * Load the game window with the game URL.
 	 * Show the window on ready-to-show and callback.
 	 *
 	 * @param browserWindow The target window to load onto

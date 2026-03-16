@@ -8,35 +8,26 @@ export enum GPUVendors {
 	intel = 0x8086
 }
 
-// Flags source code for chromium 86.0.4234.0 (electron-nightly@12.0.0-nightly.20200914)
-// https://github.com/chromium/chromium/blob/8273a33818244f231767bc6e5e073a2c1fd1bb96/chrome/common/chrome_switches.cc
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/chrome_switches.cc
 const ELECTRON_FLAGS: Flags = [
 
-	// Solve frame rate being capped to refresh rate
+	// Uncap frame rate
 	['disable-frame-rate-limit'],
 
 	// Enable hardware acceleration
 	['ignore-gpu-blocklist'],
-
-	// Krunker does a bad fps readout if this flag is not applied in chromium > 83
-	// For example, setting frame cap to 60 will show 50 on the in-game fps meter
-	// ['run-all-compositor-stages-before-draw'],
-
+	
 	// Disable some antialiasing for better performance
-	['disable-composited-antialiasing'],
+	//['disable-composited-antialiasing'],
 
-	['disable-accelerated-video-decode', 'false'],
-	['disable-accelerated-video-encode', 'false'],
 	['disable-breakpad'],
-	['disable-compontent-update'],
-	['disable-bundled-ppapi-flash'],
+	['disable-component-update'],
 	['disable-2d-canvas-clip-aa'],
 	['disable-hang-monitor'],
 	['webrtc-max-cpu-consumption-percentage', '100'],
 	['autoplay-policy', 'no-user-gesture-required'],
 	['enable-quic'],
 	['quic-max-packet-length', '1460'],
-	['high-dpi-support', '1'],
 	['disable-renderer-backgrounding']
 ];
 
@@ -86,24 +77,20 @@ const getGPU = async(): Promise<PartialGPU | null> => {
  */
 const getRecommendedOSFlags = (): Flags => {
 	const OSFlags: Flags = [];
-	if (isUnix && isWaylandNative) if (isWaylandNative) OSFlags.push(['enable-features', 'UseOzonePlatform'], ['ozone-platform', 'wayland']);
+	if (isUnix && isWaylandNative) OSFlags.push(['ozone-platform', 'wayland']);
 
 	return OSFlags;
 };
 
 /**
- * Guess the best GL backend for the enviroment based on the GPU vendor.
- * 
- * It is `desktop` by default and `egl` on Wayland
+ * Get recommended GPU flags for the environment based on the GPU vendor.
  */
 // eslint-disable-next-line complexity
 const getRecommendedGPUFlags = async(): Promise<Flags> => {
 	const GPUFlags: Flags = [];
 
-	const desktopGl: 'desktop' | 'egl' = (isUnix && isWayland) ? 'egl' : 'desktop';
 	const gpuInfo = await getGPU();
 
-	let activeGPU = false;
 	if (gpuInfo) {
 		loop: for (const device of gpuInfo.gpuDevice) {
 			if (device.active) {
@@ -111,11 +98,10 @@ const getRecommendedGPUFlags = async(): Promise<Flags> => {
 					case GPUVendors.intel:
 					case GPUVendors.amd:
 					case GPUVendors.nvidia:
-						GPUFlags.push(['use-gl', desktopGl],
+						GPUFlags.push(
 							['enable-features', 'VaapiVideoDecoder,VaapiVideoEncoder'],
 							['disable-features', 'UseChromeOSDirectVideoDecoder']);
 
-						activeGPU = true;
 						break loop;
 					default:
 						break;
@@ -123,9 +109,6 @@ const getRecommendedGPUFlags = async(): Promise<Flags> => {
 			}
 		}
 	}
-
-	// Use OpenGL ES driver for Linux ARM devices.
-	if (!activeGPU && isUnix && process.arch === 'arm64') GPUFlags.push(['use-gl', 'egl']);
 
 	return GPUFlags;
 };

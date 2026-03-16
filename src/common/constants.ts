@@ -69,7 +69,8 @@ export enum MESSAGES {
 	TWITCH_GET_INFO = 'twitch-get-info',
 	TWITCH_MESSAGE_SEND = 'twitch-message-send',
 	TWITCH_MESSAGE_RECEIVE = 'twitch-message-receive',
-	TWITCH_MESSAGE_DELETE = 'twitch-message-delete'
+	TWITCH_MESSAGE_DELETE = 'twitch-message-delete',
+	RENDERER_LOG = 'renderer-log'
 }
 
 /**
