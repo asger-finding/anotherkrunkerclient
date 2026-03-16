@@ -3,6 +3,7 @@
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/asger-finding/anotherkrunkerclient/blob/main/LICENSE)
 [![Latest release](https://img.shields.io/github/v/release/asger-finding/anotherkrunkerclient?label=Latest%20Release)](https://github.com/asger-finding/anotherkrunkerclient/releases/latest)
 [![Discord server](https://img.shields.io/discord/971394904821485608.svg?label=Connect%20on%20Discord)](https://discord.gg/etxNkUuTru)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fasger-finding%2Fanotherkrunkerclient.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fasger-finding%2Fanotherkrunkerclient?ref=badge_shield)
 
 ---
 
@@ -61,3 +62,7 @@ During the gulp build process, TypeScript files are first converted to JavaScrip
 anotherkrunkerclient utilizes a pipeline inspired by VSCode, leveraging gulp and swc to compile TypeScript source code into JavaScript that is compatible with web browsers. This comprehensive pipeline takes care of all essential operations seamlessly. The compilation process is recursive and dynamic, eliminating the need for additional updates when adding or modifying files, with the exception of aliasing new paths.
 
 To build the project, execute the command "yarn build," which triggers the build script. If you wish to minify the code, provide the "--minify" parameter or "--no-minify" to skip minification. If no parameter is provided, you will be prompted for your preference. To suppress the output of the build script, include the "--suppress-output" argument.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fasger-finding%2Fanotherkrunkerclient.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fasger-finding%2Fanotherkrunkerclient?ref=badge_large)
