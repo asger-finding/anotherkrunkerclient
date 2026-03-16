@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@ghostery/adblocker-electron": "^2.14.1",
-    "@xhayper/discord-rpc": "^1.0.21",
+    "@xhayper/discord-rpc": "^1.3.1",
     "electron-fetch": "^1.9.1",
     "electron-localshortcut": "latest",
     "electron-store": "^8.1.0",
